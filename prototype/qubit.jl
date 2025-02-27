@@ -56,13 +56,27 @@ function calculate_measure_probability(q::Qubit, t::Qubit)
     return prob
 end
 
+function negate(q::Qubit)
+    if     q == KET_ZERO
+        return KET_ONE
+    elseif q == KET_ONE
+        return KET_ZERO
+    elseif q == KET_PLUS
+        return KET_MINUS
+    elseif q == KET_MINUS
+        return KET_PLUS
+    else
+        return Qubit((q.θ + 180) % 360)
+    end
+end
+
 function measure(q::Qubit, t::Qubit)
     p = calculate_measure_probability(q,t)
     r = rand(Float64)
     if p < r
         return t
     else
-        return Qubit(t.θ + 180)
+        return negate(t)
     end
 end
 
@@ -115,5 +129,18 @@ f = plot(ψ)
 save("output/qubit.png", f)
 display(f)
 
-results = [measure(ψ, KET_ZERO) for i=1:100]
-countmap(results)
+sample = [measure(ψ, KET_ZERO) for i=1:100]
+results = countmap(sample)
+display(results)
+
+
+labels = [q.label for q in collect(keys(results)) ]
+values = collect(values(results))
+
+fig = Figure()
+ax = Axis(fig[1,1])
+barplot!(ax,
+    values,
+    axis = (xticks = (1:length(labels), labels))
+)
+display(fig)
