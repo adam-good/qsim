@@ -1,7 +1,23 @@
 using CairoMakie
+using Random
+using StatsBase
+Random.seed!(8675309)
 
 function polarToCartesian(θ::Float64, base1::Matrix, base2::Matrix)
-    return cosd(θ/2) .* base1 + sind(θ/2) .* base2
+    return cosd(θ) .* base1 + sind(θ) .* base2
+end
+
+function dot_prod(a::Matrix, b::Matrix)
+    return sum(a .* b)
+end
+
+function magnitude(v::Matrix)
+    return sqrt(sum(v.^2))
+end
+
+# Project vector a onto vector b
+function project(a::Matrix, b::Matrix)
+    return (dot_prod(a,b) / dot_prod(b,b)) .* b
 end
 
 const BASIS_VECTORS = [
@@ -14,9 +30,38 @@ struct Qubit
     vec::Matrix
     display_vec::Matrix
     Qubit(θ::Float64) = new(θ, 
-        polarToCartesian(θ, BASIS_VECTORS[1], BASIS_VECTORS[2]),
-        polarToCartesian(2*θ, BASIS_VECTORS[1], BASIS_VECTORS[2])
+        polarToCartesian(θ/2, BASIS_VECTORS[1], BASIS_VECTORS[2]),
+        polarToCartesian(θ, BASIS_VECTORS[1], BASIS_VECTORS[2])
     )
+end
+
+import Base.hash, Base.isequal
+function isequal(x::Qubit, y::Qubit)
+    return x.θ ≈ y.θ
+end
+function hash(q::Qubit)
+    return hash(q.θ,)
+end
+
+const KET_ZERO  = Qubit(0.0)
+const KET_ONE   = Qubit(180.0)
+const KET_PLUS  = Qubit(90.0)
+const KET_MINUS = Qubit(270.0)
+
+function calculate_measure_probability(q::Qubit, t::Qubit)
+    proj = project(q.vec, t.vec)
+    prob = magnitude(proj) ^ 2
+    return prob
+end
+
+function measure(q::Qubit, t::Qubit)
+    p = calculate_measure_probability(q,t)
+    r = rand(Float64)
+    if p < r
+        return t
+    else
+        return Qubit(t.θ + 180)
+    end
 end
 
 function plot(q::Qubit)
@@ -55,10 +100,6 @@ function plot(q::Qubit)
     return fig
 end
 
-const KET_ZERO  = Qubit(0.0)
-const KET_ONE   = Qubit(180.0)
-const KET_PLUS  = Qubit(90.0)
-const KET_MINUS = Qubit(270.0)
 
 display([
     KET_ZERO,
@@ -67,6 +108,10 @@ display([
     KET_MINUS
 ])
 
-f = plot(Qubit(32.0))
+ψ = Qubit(32.0)
+f = plot(ψ)
 save("output/qubit.png", f)
 display(f)
+
+results = [measure(ψ, KET_ZERO) for i=1:100]
+countmap(results)
