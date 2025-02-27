@@ -26,13 +26,15 @@ const BASIS_VECTORS = [
 ]
 
 struct Qubit
+    label::String
     θ::Float64
     vec::Matrix
     display_vec::Matrix
-    Qubit(θ::Float64) = new(θ, 
+    Qubit(label::String, θ::Float64) = new(label, θ,
         polarToCartesian(θ/2, BASIS_VECTORS[1], BASIS_VECTORS[2]),
         polarToCartesian(θ, BASIS_VECTORS[1], BASIS_VECTORS[2])
     )
+    Qubit(θ::Float64) = Qubit("", θ)
 end
 
 import Base.hash, Base.isequal
@@ -43,10 +45,10 @@ function hash(q::Qubit)
     return hash(q.θ,)
 end
 
-const KET_ZERO  = Qubit(0.0)
-const KET_ONE   = Qubit(180.0)
-const KET_PLUS  = Qubit(90.0)
-const KET_MINUS = Qubit(270.0)
+const KET_ZERO  = Qubit("|0⟩", 0.0)
+const KET_ONE   = Qubit("|1⟩", 180.0)
+const KET_PLUS  = Qubit("|+⟩", 90.0)
+const KET_MINUS = Qubit("|-⟩", 270.0)
 
 function calculate_measure_probability(q::Qubit, t::Qubit)
     proj = project(q.vec, t.vec)
@@ -65,17 +67,17 @@ function measure(q::Qubit, t::Qubit)
 end
 
 function plot(q::Qubit)
-    function plot_qubit(q::Qubit, realAxs::Axis, dispAxs::Axis; label::String, color::String)
+    function plot_qubit(q::Qubit, realAxs::Axis, dispAxs::Axis; color::String)
         x = q.vec[1]
         y = q.vec[2]
         disp_x = q.display_vec[1]
         disp_y = q.display_vec[2]
 
-        lines!(realAxs, [0.0, x], [0.0, y], label=label, color=color)
-        text!(realAxs, x, y; text=label, fontsize=20)
+        lines!(realAxs, [0.0, x], [0.0, y], label=q.label, color=color)
+        text!(realAxs, x, y; text=q.label, fontsize=20)
 
-        lines!(dispAxs, [0.0, disp_x], [0.0, disp_y], label=label, color=color)
-        text!(dispAxs, disp_x, disp_y; text=label, fontsize=20)
+        lines!(dispAxs, [0.0, disp_x], [0.0, disp_y], label=q.label, color=color)
+        text!(dispAxs, disp_x, disp_y; text=q.label, fontsize=20)
     end
 
     fig = Figure(size=(1000,500))
@@ -91,11 +93,11 @@ function plot(q::Qubit)
     ylims!(ax2, -1.2, 1.2)
 
 
-    plot_qubit(KET_ZERO, ax1, ax2; label="|0⟩", color="blue")
-    plot_qubit(KET_ONE, ax1, ax2; label="|1⟩", color="blue")
-    plot_qubit(KET_PLUS, ax1, ax2; label="|+⟩", color="blue")
-    plot_qubit(KET_MINUS, ax1, ax2; label="|-⟩", color="blue")
-    plot_qubit(q, ax1, ax2; label="|ψ⟩", color="red")
+    plot_qubit(KET_ZERO, ax1, ax2; color="blue")
+    plot_qubit(KET_ONE, ax1, ax2;  color="blue")
+    plot_qubit(KET_PLUS, ax1, ax2; color="blue")
+    plot_qubit(KET_MINUS, ax1, ax2; color="blue")
+    plot_qubit(q, ax1, ax2; color="red")
 
     return fig
 end
@@ -108,7 +110,7 @@ display([
     KET_MINUS
 ])
 
-ψ = Qubit(32.0)
+ψ = Qubit("|ψ⟩", 32.0)
 f = plot(ψ)
 save("output/qubit.png", f)
 display(f)
