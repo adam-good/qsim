@@ -12,27 +12,47 @@ const BASIS_VECTORS = [
 struct Qubit
     θ::Float64
     vec::Matrix
+    display_vec::Matrix
     Qubit(θ::Float64) = new(θ, 
-        polarToCartesian(θ, BASIS_VECTORS[1], BASIS_VECTORS[2])
+        polarToCartesian(θ, BASIS_VECTORS[1], BASIS_VECTORS[2]),
+        polarToCartesian(2*θ, BASIS_VECTORS[1], BASIS_VECTORS[2])
     )
 end
 
 function plot(q::Qubit)
-    fig = Figure()
-    ax = Axis(fig[1,1])
-    arc!(ax, Point2f(0), 1, -π, π)
-    scatter!(ax, [0.0], [0.0]; markersize=15)
-    # scatter!(ax, [q.vec[1]], [q.vec[2]]; markersize=15)
+    function plot_qubit(q::Qubit, realAxs::Axis, dispAxs::Axis; label::String, color::String)
+        x = q.vec[1]
+        y = q.vec[2]
+        disp_x = q.display_vec[1]
+        disp_y = q.display_vec[2]
 
-    lines!(ax, [0.0, KET_ZERO.vec[1]], [0.0, KET_ZERO.vec[2]], color="blue", label="|0⟩")
-    text!(ax, KET_ZERO.vec[1], KET_ZERO.vec[2]; text="|0⟩")
-    lines!(ax, [0.0, KET_ONE.vec[1]], [0.0, KET_ONE.vec[2]], color="blue", label="|1⟩")
-    text!(ax, KET_ONE.vec[1], KET_ONE.vec[2]; text="|1⟩")
-    lines!(ax, [0.0, q.vec[1]], [0.0, q.vec[2]], color="red", label="|ψ⟩")
-    text!(ax, q.vec[1], q.vec[2]; text="|ψ⟩")
+        lines!(realAxs, [0.0, x], [0.0, y], label=label, color=color)
+        text!(realAxs, x, y; text=label, fontsize=20)
 
-    # fig[1,2] = Legend(fig, ax, "Quantum States")
-    display(fig)
+        lines!(dispAxs, [0.0, disp_x], [0.0, disp_y], label=label, color=color)
+        text!(dispAxs, disp_x, disp_y; text=label, fontsize=20)
+    end
+
+    fig = Figure(size=(1000,500))
+
+    ax1 = Axis(fig[1,1], title="Standard Representation")
+    arc!(ax1, Point2f(0), 1, -π/2, π/2)
+    xlims!(ax1, -1.0, 1.2)
+    ylims!(ax1, -1.2, 1.2)
+    
+    ax2 = Axis(fig[1,2], title="Bolch Circle")
+    arc!(ax2, Point2f(0), 1, -π, π)
+    xlims!(ax2, -1.2, 1.2)
+    ylims!(ax2, -1.2, 1.2)
+
+
+    plot_qubit(KET_ZERO, ax1, ax2; label="|0⟩", color="blue")
+    plot_qubit(KET_ONE, ax1, ax2; label="|1⟩", color="blue")
+    plot_qubit(KET_PLUS, ax1, ax2; label="|+⟩", color="blue")
+    plot_qubit(KET_MINUS, ax1, ax2; label="|-⟩", color="blue")
+    plot_qubit(q, ax1, ax2; label="|ψ⟩", color="red")
+
+    return fig
 end
 
 const KET_ZERO  = Qubit(0.0)
@@ -47,4 +67,6 @@ display([
     KET_MINUS
 ])
 
-plot(KET_PLUS)
+f = plot(Qubit(32.0))
+save("output/qubit.png", f)
+display(f)
