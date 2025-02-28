@@ -135,23 +135,4 @@ function plot_prob_dist(q::Qubit,t::Qubit)
     return f
 end
 
-# sample = [measure(ψ, KET_ZERO) for i=1:100]
-# results = countmap(sample)
-# display(results)
-
-
-# labels = [q.label for q in collect(keys(results)) ]
-# vals = collect(values(results))
-
-# fig = Figure()
-# ax = Axis(
-#     fig[1,1], 
-#     xticks = (1:length(labels), labels),
-#     title="Sample Results"
-#     )
-# barplot!(ax,
-#     vals
-# )
-# display(fig)
-
 end # QSim
