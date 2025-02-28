@@ -1,7 +1,12 @@
+module QSim
+
+export Qubit, negate, measure, plot_qubit, plot_prob_dist
+export KET_ZERO, KET_ONE, KET_PLUS, KET_MINUS
+
 using CairoMakie
-using Random
+using Distributions
 using StatsBase
-Random.seed!(8675309)
+# Random.seed!(8675309)
 
 function polarToCartesian(θ::Real, base1::Vector{<:Real}, base2::Vector{<:Real})
     return cosd(θ) * base1 + sind(θ) * base2
@@ -72,15 +77,15 @@ end
 
 function measure(q::Qubit, t::Qubit)
     p = calculate_measure_probability(q,t)
-    r = rand(Float64)
-    if p < r
+    r = rand(Uniform(0.0, 1.0))
+    if p > r
         return t
     else
         return negate(t)
     end
 end
 
-function plot(q::Qubit)
+function plot_qubit(q::Qubit)
     function plot_qubit(q::Qubit, realAxs::Axis, dispAxs::Axis; color::String)
         x = q.vec[1]
         y = q.vec[2]
@@ -116,34 +121,37 @@ function plot(q::Qubit)
     return fig
 end
 
+function plot_prob_dist(q::Qubit,t::Qubit)
+    p = calculate_measure_probability(q,t)
+    nt = negate(t)
 
-display([
-    KET_ZERO,
-    KET_ONE,
-    KET_PLUS,
-    KET_MINUS
-])
-
-ψ = Qubit("|ψ⟩", 32.0)
-f = plot(ψ)
-save("output/qubit.png", f)
-display(f)
-
-sample = [measure(ψ, KET_ZERO) for i=1:100]
-results = countmap(sample)
-display(results)
-
-
-labels = [q.label for q in collect(keys(results)) ]
-vals = collect(values(results))
-
-fig = Figure()
-ax = Axis(
-    fig[1,1], 
-    xticks = (1:length(labels), labels),
-    title="Sample Results"
+    f = Figure()
+    ax = Axis(
+        f[1,1],
+        xticks = (1:2, [t.label, nt.label]),
+        title="Measurement Probability Distribution"
     )
-barplot!(ax,
-    vals
-)
-display(fig)
+    barplot!(ax, [p, 1-p])
+    return f
+end
+
+# sample = [measure(ψ, KET_ZERO) for i=1:100]
+# results = countmap(sample)
+# display(results)
+
+
+# labels = [q.label for q in collect(keys(results)) ]
+# vals = collect(values(results))
+
+# fig = Figure()
+# ax = Axis(
+#     fig[1,1], 
+#     xticks = (1:length(labels), labels),
+#     title="Sample Results"
+#     )
+# barplot!(ax,
+#     vals
+# )
+# display(fig)
+
+end # QSim
