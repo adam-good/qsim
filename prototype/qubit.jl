@@ -3,20 +3,20 @@ using Random
 using StatsBase
 Random.seed!(8675309)
 
-function polarToCartesian(θ::Float64, base1::Vector{Float64}, base2::Vector{Float64})
+function polarToCartesian(θ::Real, base1::Vector{<:Real}, base2::Vector{<:Real})
     return cosd(θ) * base1 + sind(θ) * base2
 end
 
-function dot_prod(a::Vector{Float64}, b::Vector{Float64})
+function dot_prod(a::Vector{<:Real}, b::Vector{<:Real})
     return a' * b
 end
 
-function magnitude(v::Vector{Float64})
+function magnitude(v::Vector{<:Real})
     return sqrt(sum(v.^2))
 end
 
 # Project vector a onto vector b
-function project(a::Vector{Float64}, b::Vector{Float64})
+function project(a::Vector{<:Real}, b::Vector{<:Real})
     return (dot_prod(a,b) / dot_prod(b,b)) .* b
 end
 
@@ -27,14 +27,14 @@ const BASIS_VECTORS = [
 
 struct Qubit
     label::String
-    θ::Float64
-    vec::Vector{Float64}
-    display_vec::Vector{Float64}
-    Qubit(label::String, θ::Float64) = new(label, θ,
+    θ::Real
+    vec::Vector{Real}
+    display_vec::Vector{Real}
+    Qubit(label::String, θ::Real) = new(label, θ,
         polarToCartesian(θ/2, BASIS_VECTORS[1], BASIS_VECTORS[2]),
         polarToCartesian(θ, BASIS_VECTORS[1], BASIS_VECTORS[2])
     )
-    Qubit(θ::Float64) = Qubit("", θ)
+    Qubit(θ::Real) = Qubit("", θ)
 end
 
 import Base.hash, Base.isequal
