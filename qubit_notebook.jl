@@ -28,7 +28,7 @@ end
 
 # ╔═╡ 28b42fbb-b9aa-4815-a757-10692a6e04c1
 md"""
-# Qubit
+# Qubit Example
 """
 
 # ╔═╡ c9d4c55f-d06a-40f8-99db-d023632ebe17
@@ -37,16 +37,39 @@ md"""
 """
 
 # ╔═╡ bd3bbcf2-52c8-47ba-802e-5191fb831d55
-@bind θ PlutoUI.Slider(1:359)
+#@bind t PlutoUI.Clock(0.5)
+@bind θ PlutoUI.Slider(1:360, default=75)
 
 # ╔═╡ d675961d-0529-40d3-a7f1-e9c913523960
-ψ = Qubit("|ψ⟩", θ)
+ψ = Qubit("|ψ\rangle", θ)
 
 # ╔═╡ c6465ddf-de8f-4f06-8976-ff62176b01d8
-plot_qubit(ψ)
+qplot([ψ])
 
 # ╔═╡ a63fa64a-b880-466b-8045-b2aaa97cb862
 plot_prob_dist(ψ, KET_ZERO)
+
+# ╔═╡ a8cf425f-e869-4839-93f4-2f9f06afa848
+md"""
+# Hadamard Gate
+"""
+
+# ╔═╡ 751b5358-b652-4989-bdb4-325ce5ebdade
+md"""
+``H = \begin{bmatrix} \frac{1}{\sqrt{2}} & \frac{1}{\sqrt{2}} \\ \frac{1}{\sqrt{2}} & -\frac{1}{\sqrt{2}} \end{bmatrix}``
+"""
+
+# ╔═╡ f11815bd-5523-40ef-ad51-96c43c513d65
+	@bind ϕ PlutoUI.Slider(0:180, default=20)
+
+# ╔═╡ 6eb02f6c-30f4-4dfa-9d5b-3df2b1f6dd44
+χ = Qubit("|χ⟩", ϕ)
+
+# ╔═╡ 3ff87c76-2df1-4447-b064-a9f24935c64b
+qplot([χ, hadamard(χ)])
+
+# ╔═╡ 4474cc78-42bc-4457-a2fb-e226d17675a0
+#plot_qubit(hadamard(Qubit("|χ⟩", ϕ)))
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1606,12 +1629,18 @@ version = "3.6.0+0"
 """
 
 # ╔═╡ Cell order:
-# ╟─9d904942-f606-11ef-17cc-d3457a8f3467
+# ╠═9d904942-f606-11ef-17cc-d3457a8f3467
 # ╟─28b42fbb-b9aa-4815-a757-10692a6e04c1
 # ╟─c9d4c55f-d06a-40f8-99db-d023632ebe17
 # ╠═bd3bbcf2-52c8-47ba-802e-5191fb831d55
-# ╟─d675961d-0529-40d3-a7f1-e9c913523960
-# ╟─c6465ddf-de8f-4f06-8976-ff62176b01d8
-# ╠═a63fa64a-b880-466b-8045-b2aaa97cb862
+# ╠═d675961d-0529-40d3-a7f1-e9c913523960
+# ╠═c6465ddf-de8f-4f06-8976-ff62176b01d8
+# ╟─a63fa64a-b880-466b-8045-b2aaa97cb862
+# ╟─a8cf425f-e869-4839-93f4-2f9f06afa848
+# ╟─751b5358-b652-4989-bdb4-325ce5ebdade
+# ╠═f11815bd-5523-40ef-ad51-96c43c513d65
+# ╠═6eb02f6c-30f4-4dfa-9d5b-3df2b1f6dd44
+# ╠═3ff87c76-2df1-4447-b064-a9f24935c64b
+# ╠═4474cc78-42bc-4457-a2fb-e226d17675a0
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002

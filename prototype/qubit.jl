@@ -1,7 +1,8 @@
 module QSim
 
-export Qubit, negate, measure, plot_qubit, plot_prob_dist
+export Qubit, negate, measure, qplot, plot_prob_dist, hadamard
 export KET_ZERO, KET_ONE, KET_PLUS, KET_MINUS
+export HADAMARD_GATE, H
 
 using CairoMakie
 using Distributions
@@ -26,8 +27,8 @@ function project(a::Vector{<:Real}, b::Vector{<:Real})
 end
 
 const BASIS_VECTORS = [
-    [0.0; 1.0;],
     [1.0; 0.0;],
+    [0.0; 1.0;],
 ]
 
 struct Qubit
@@ -40,6 +41,19 @@ struct Qubit
         polarToCartesian(θ, BASIS_VECTORS[1], BASIS_VECTORS[2])
     )
     Qubit(θ::Real) = Qubit("", θ)
+    Qubit(label::String, state::Vector{<:Real}) = begin
+        θᵤ = acosd(state[1]) * 2
+        θᵥ = asind(state[2]) * 2
+        if θᵤ ≈ θᵥ
+            return new(
+                label, θᵤ, state,
+                polarToCartesian(θᵤ, BASIS_VECTORS[1], BASIS_VECTORS[2])
+            )
+        else
+            throw("Invalid matrix representation: $(θᵤ) and $(θᵥ)")
+        end
+    end
+    Qubit(state::Vector{<:Real}) = Qubit("", state)
 end
 
 import Base.hash, Base.isequal
@@ -55,28 +69,28 @@ const KET_ONE   = Qubit("|1⟩", 180.0)
 const KET_PLUS  = Qubit("|+⟩", 90.0)
 const KET_MINUS = Qubit("|-⟩", 270.0)
 
-function calculate_measure_probability(q::Qubit, t::Qubit)
-    proj = project(q.vec, t.vec)
+function negate(ψ::Qubit)
+    if     ψ == KET_ZERO
+        return KET_ONE
+    elseif ψ == KET_ONE
+        return KET_ZERO
+    elseif ψ == KET_PLUS
+        return KET_MINUS
+    elseif ψ == KET_MINUS
+        return KET_PLUS
+    else
+        return Qubit((ψ.θ + 180) % 360)
+    end
+end
+
+function calculate_measure_probability(ψ::Qubit, t::Qubit)
+    proj = project(ψ.vec, t.vec)
     prob = magnitude(proj) ^ 2
     return prob
 end
 
-function negate(q::Qubit)
-    if     q == KET_ZERO
-        return KET_ONE
-    elseif q == KET_ONE
-        return KET_ZERO
-    elseif q == KET_PLUS
-        return KET_MINUS
-    elseif q == KET_MINUS
-        return KET_PLUS
-    else
-        return Qubit((q.θ + 180) % 360)
-    end
-end
-
-function measure(q::Qubit, t::Qubit)
-    p = calculate_measure_probability(q,t)
+function measure(ψ::Qubit, t::Qubit)
+    p = calculate_measure_probability(ψ,t)
     r = rand(Uniform(0.0, 1.0))
     if p > r
         return t
@@ -85,24 +99,24 @@ function measure(q::Qubit, t::Qubit)
     end
 end
 
-function plot_qubit(q::Qubit)
-    function plot_qubit(q::Qubit, realAxs::Axis, dispAxs::Axis; color::String)
-        x = q.vec[1]
-        y = q.vec[2]
-        disp_x = q.display_vec[1]
-        disp_y = q.display_vec[2]
+function qplot(Ψ::Vector{Qubit})
+    function plot_qubit(ψ::Qubit, realAxs::Axis, dispAxs::Axis; color::String)
+        x = ψ.vec[1]
+        y = ψ.vec[2]
+        disp_x = ψ.display_vec[1]
+        disp_y = ψ.display_vec[2]
 
-        lines!(realAxs, [0.0, x], [0.0, y], label=q.label, color=color)
-        text!(realAxs, x, y; text=q.label, fontsize=20)
+        lines!(realAxs, [0.0, x], [0.0, y], label=ψ.label, color=color)
+        text!(realAxs, x, y; text=ψ.label, fontsize=20)
 
-        lines!(dispAxs, [0.0, disp_x], [0.0, disp_y], label=q.label, color=color)
-        text!(dispAxs, disp_x, disp_y; text=q.label, fontsize=20)
+        lines!(dispAxs, [0.0, disp_x], [0.0, disp_y], label=ψ.label, color=color)
+        text!(dispAxs, disp_x, disp_y; text=ψ.label, fontsize=20)
     end
 
     fig = Figure(size=(1000,500))
 
     ax1 = Axis(fig[1,1], title="Standard Representation")
-    arc!(ax1, Point2f(0), 1, -π/2, π/2)
+    arc!(ax1, Point2f(0), 1, 0, π)
     xlims!(ax1, -1.0, 1.2)
     ylims!(ax1, -1.2, 1.2)
     
@@ -116,13 +130,15 @@ function plot_qubit(q::Qubit)
     plot_qubit(KET_ONE, ax1, ax2;  color="blue")
     plot_qubit(KET_PLUS, ax1, ax2; color="blue")
     plot_qubit(KET_MINUS, ax1, ax2; color="blue")
-    plot_qubit(q, ax1, ax2; color="red")
+    for ψ in Ψ
+        plot_qubit(ψ, ax1, ax2; color="red")
+    end
 
     return fig
 end
 
-function plot_prob_dist(q::Qubit,t::Qubit)
-    p = calculate_measure_probability(q,t)
+function plot_prob_dist(ψ::Qubit,t::Qubit)
+    p = calculate_measure_probability(ψ,t)
     nt = negate(t)
 
     f = Figure()
@@ -133,6 +149,18 @@ function plot_prob_dist(q::Qubit,t::Qubit)
     )
     barplot!(ax, [p, 1-p])
     return f
+end
+
+struct Gate
+    mat::Matrix{Real}
+end
+
+const HADAMARD_GATE = Gate([1 1; 1 -1;] / √2)
+const H = HADAMARD_GATE
+function hadamard(ψ::Qubit)
+    new_state::Vector{Real} = H.mat * ψ.vec
+    display(new_state)
+    return Qubit("H$(ψ.label)", new_state)
 end
 
 end # QSim

@@ -13,6 +13,6 @@ display([
 ])
 
 ψ = Qubit("|ψ⟩", rand(Uniform(0.0, 180.0)))
-f = plot_qubit(ψ)
+f = qplot(ψ)
 save("output/qubit.png", f)
 display(f)
