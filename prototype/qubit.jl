@@ -21,8 +21,8 @@ function project(a::Matrix, b::Matrix)
 end
 
 const BASIS_VECTORS = [
-    [0 1],
-    [1 0],
+    [0; 1;],
+    [1; 0;],
 ]
 
 struct Qubit
