@@ -3,33 +3,33 @@ using Random
 using StatsBase
 Random.seed!(8675309)
 
-function polarToCartesian(θ::Float64, base1::Matrix, base2::Matrix)
-    return cosd(θ) .* base1 + sind(θ) .* base2
+function polarToCartesian(θ::Float64, base1::Vector{Float64}, base2::Vector{Float64})
+    return cosd(θ) * base1 + sind(θ) * base2
 end
 
-function dot_prod(a::Matrix, b::Matrix)
-    return sum(a .* b)
+function dot_prod(a::Vector{Float64}, b::Vector{Float64})
+    return a' * b
 end
 
-function magnitude(v::Matrix)
+function magnitude(v::Vector{Float64})
     return sqrt(sum(v.^2))
 end
 
 # Project vector a onto vector b
-function project(a::Matrix, b::Matrix)
+function project(a::Vector{Float64}, b::Vector{Float64})
     return (dot_prod(a,b) / dot_prod(b,b)) .* b
 end
 
 const BASIS_VECTORS = [
-    [0; 1;],
-    [1; 0;],
+    [0.0; 1.0;],
+    [1.0; 0.0;],
 ]
 
 struct Qubit
     label::String
     θ::Float64
-    vec::Matrix
-    display_vec::Matrix
+    vec::Vector{Float64}
+    display_vec::Vector{Float64}
     Qubit(label::String, θ::Float64) = new(label, θ,
         polarToCartesian(θ/2, BASIS_VECTORS[1], BASIS_VECTORS[2]),
         polarToCartesian(θ, BASIS_VECTORS[1], BASIS_VECTORS[2])
@@ -135,12 +135,15 @@ display(results)
 
 
 labels = [q.label for q in collect(keys(results)) ]
-values = collect(values(results))
+vals = collect(values(results))
 
 fig = Figure()
-ax = Axis(fig[1,1])
+ax = Axis(
+    fig[1,1], 
+    xticks = (1:length(labels), labels),
+    title="Sample Results"
+    )
 barplot!(ax,
-    values,
-    axis = (xticks = (1:length(labels), labels))
+    vals
 )
 display(fig)
