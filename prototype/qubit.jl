@@ -87,7 +87,7 @@ function measure(ψ::Qubit, t::Qubit)
     if p > r
         return t
     else
-        return Qubit((ψ.θ + 180) % 360)
+        return Qubit((t.θ + 180) % 360)
     end
 end
 
@@ -141,6 +141,10 @@ function plot_prob_dist(ψ::Qubit,t::Qubit)
     )
     barplot!(ax, [p, 1-p])
     return f
+end
+
+function reset(ψ::Qubit)
+    return Qubit(ψ.label, 0.0)
 end
 
 end

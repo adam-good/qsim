@@ -14,7 +14,7 @@ using .Qubits:
     KET_PLUS,
     KET_MINUS
 
-export Qubit, negate, measure, qplot, plot_prob_dist
+export negate, measure, qplot, plot_prob_dist
 export KET_ZERO, KET_ONE, KET_PLUS, KET_MINUS
 
 using .QuGates:
@@ -30,7 +30,8 @@ export HADAMARD_GATE, H, NOT_GATE, X
 
 using .QuDevice:
     QuantumDevice,
-    qalloc!
-export QuantumDevice, qalloc!
+    qalloc!,
+    qfree!
+export QuantumDevice, qalloc!, qfree!
 
 end

@@ -29,21 +29,24 @@ md"""
 
 # ╔═╡ e4869aba-5d10-4696-ab4b-96548c319902
 function qrng(n::Int = 1)
-	res_dict = Dict([(KET_ZERO, 0), (KET_ONE, 1)])
+	quant_to_classic = Dict([(KET_ZERO, 0), (KET_ONE, 1)])
+	
+	device = QuantumDevice(4)
 	function sample()
-		ψ = Qubit(0.0)
+		ψ = qalloc!(device)
 		ψ = hadamard(ψ)
-		ψ = measure(ψ, KET_ZERO)		
+		ψ = measure(ψ, KET_ZERO)
+		result = quant_to_classic[ψ]
+		qfree!(device, ψ)
+		return result
 	end
 
-	Q = [sample() for i=1:n]
-	bit_results = [res_dict[q] for q in Q]
+	results = [sample() for i=1:n]
 
-
-	if length(bit_results) == 1
-		return bit_results[1]
+	if length(results) == 1
+		return results[1]
 	else
-		return bit_results
+		return results
 	end
 end
 
