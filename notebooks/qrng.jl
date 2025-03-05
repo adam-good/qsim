@@ -28,16 +28,27 @@ md"""
 """
 
 # ╔═╡ e4869aba-5d10-4696-ab4b-96548c319902
-function qrng()
+function qrng(n::Int = 1)
 	res_dict = Dict([(KET_ZERO, 0), (KET_ONE, 1)])
-	ψ = Qubit(0.0)
-	ψ = hadamard(ψ)
-	ψ = measure(ψ, KET_ZERO)
-	return res_dict[ψ]
+	function sample()
+		ψ = Qubit(0.0)
+		ψ = hadamard(ψ)
+		ψ = measure(ψ, KET_ZERO)		
+	end
+
+	Q = [sample() for i=1:n]
+	bit_results = [res_dict[q] for q in Q]
+
+
+	if length(bit_results) == 1
+		return bit_results[1]
+	else
+		return bit_results
+	end
 end
 
 # ╔═╡ dc9ca605-6060-4b55-8e04-21f7e658486c
-qrng()
+qrng(16)
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
