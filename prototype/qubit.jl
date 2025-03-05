@@ -75,20 +75,6 @@ const KET_PLUS  = Qubit("|+⟩", 90.0)
 const KET_ONE   = Qubit("|1⟩", 180.0)
 const KET_MINUS = Qubit("|-⟩", -90.0)
 
-function negate(ψ::Qubit)
-    if     ψ == KET_ZERO
-        return KET_ONE
-    elseif ψ == KET_ONE
-        return KET_ZERO
-    elseif ψ == KET_PLUS
-        return KET_MINUS
-    elseif ψ == KET_MINUS
-        return KET_PLUS
-    else
-        return Qubit((ψ.θ + 180) % 360)
-    end
-end
-
 function calculate_measure_probability(ψ::Qubit, t::Qubit)
     proj = project(ψ.vec, t.vec)
     prob = magnitude(proj) ^ 2
