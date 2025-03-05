@@ -18,7 +18,7 @@ end
 
 # ╔═╡ 9d904942-f606-11ef-17cc-d3457a8f3467
 begin
-	include("prototype/qubit.jl")
+	include("prototype/qsim.jl")
 	using CairoMakie
 	using Distributions
 	using StatsBase
@@ -65,8 +65,11 @@ md"""
 # ╔═╡ 6eb02f6c-30f4-4dfa-9d5b-3df2b1f6dd44
 χ = Qubit("|χ⟩", ϕ)
 
+# ╔═╡ 494f7a49-2dee-4a78-8215-39b232407b96
+χₕ = hadamard(χ)
+
 # ╔═╡ 3ff87c76-2df1-4447-b064-a9f24935c64b
-qplot([χ, hadamard(χ)])
+qplot([χ, χₕ])
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1637,6 +1640,7 @@ version = "3.6.0+0"
 # ╟─751b5358-b652-4989-bdb4-325ce5ebdade
 # ╟─f11815bd-5523-40ef-ad51-96c43c513d65
 # ╟─6eb02f6c-30f4-4dfa-9d5b-3df2b1f6dd44
+# ╠═494f7a49-2dee-4a78-8215-39b232407b96
 # ╠═3ff87c76-2df1-4447-b064-a9f24935c64b
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002

@@ -1,4 +1,4 @@
-include("qubit.jl")
+include("qsim.jl")
 
 using .QSim
 using CairoMakie

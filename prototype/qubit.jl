@@ -1,13 +1,11 @@
-module QSim
-
-export Qubit, negate, measure, qplot, plot_prob_dist, hadamard
-export KET_ZERO, KET_ONE, KET_PLUS, KET_MINUS
-export HADAMARD_GATE, H
+module Qubits
 
 using CairoMakie
 using Distributions
 using StatsBase
 # Random.seed!(8675309)
+
+export Qubit
 
 function polarToCartesian(θ::Real, base1::Vector{<:Real}, base2::Vector{<:Real})
     return cosd(θ) * base1 + sind(θ) * base2
@@ -151,16 +149,4 @@ function plot_prob_dist(ψ::Qubit,t::Qubit)
     return f
 end
 
-struct Gate
-    mat::Matrix{Real}
 end
-
-const HADAMARD_GATE = Gate([1 1; 1 -1;] / √2)
-const H = HADAMARD_GATE
-function hadamard(ψ::Qubit)
-    new_state::Vector{Real} = H.mat * ψ.vec
-    display(new_state)
-    return Qubit("H$(ψ.label)", new_state)
-end
-
-end # QSim
