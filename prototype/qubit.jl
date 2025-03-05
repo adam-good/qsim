@@ -87,7 +87,7 @@ function measure(ψ::Qubit, t::Qubit)
     if p > r
         return t
     else
-        return negate(t)
+        return Qubit((ψ.θ + 180) % 360)
     end
 end
 

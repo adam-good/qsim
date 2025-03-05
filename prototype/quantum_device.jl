@@ -6,25 +6,24 @@ using ..Qubits:
 
 mutable struct QuantumDevice
     N::Int
-    Q::Vector{Qubit}
-    function qalloc()
-        q = Q[N]
-        N = N-1
-        return q
-    end
-    # function qfree(q::Qubit)
-    #     N = N+1
-    # end
-
+    allocated::Int
     QuantumDevice(n::Int) = begin
-        new(n, [Qubit(0.0) for i=1:n])
+        new(n,0)
     end
 end
 
 function qalloc!(device::QuantumDevice)
-    q = device.Q[device.N]
-    device.N = device.N - 1
+    if device.allocated >= device.N
+        throw("NO")
+    end
+    q = Qubit(0.0)
+    device.allocated = device.allocated + 1
     return q
+end
+
+function qfree!(device::QuantumDevice, q::Qubit)
+    q = nothing
+    device.allocated = device.allocated - 1
 end
 
 end

@@ -6,7 +6,6 @@ include("quantum_device.jl")
 
 using .Qubits:
     Qubit,
-    negate,
     measure,
     qplot,
     plot_prob_dist,
