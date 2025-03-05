@@ -18,13 +18,17 @@ end
 
 # ╔═╡ 9d904942-f606-11ef-17cc-d3457a8f3467
 begin
-	include("prototype/qsim.jl")
+	include("../prototype/qsim.jl")
 	using CairoMakie
 	using Distributions
 	using StatsBase
 	using PlutoUI
 	using .QSim
 end
+
+# ╔═╡ bd3bbcf2-52c8-47ba-802e-5191fb831d55
+#@bind t PlutoUI.Clock(0.5)
+theta_slider = @bind θ PlutoUI.Slider(1:180, default=75);
 
 # ╔═╡ 28b42fbb-b9aa-4815-a757-10692a6e04c1
 md"""
@@ -35,6 +39,20 @@ md"""
 md"""
 θ is the angle that we use to define the qubit ψ
 """
+
+# ╔═╡ e4070061-51d1-48a0-bdf8-d8b2dc217768
+theta_slider
+
+# ╔═╡ eb186cb3-1ca3-4fcc-a242-83452da1289e
+Markdown.parse("""
+θ = $θ
+""")
+
+# ╔═╡ d675961d-0529-40d3-a7f1-e9c913523960
+ψ = Qubit("|ψ\rangle", θ)
+
+# ╔═╡ c6465ddf-de8f-4f06-8976-ff62176b01d8
+qplot([ψ])
 
 # ╔═╡ a63fa64a-b880-466b-8045-b2aaa97cb862
 #plot_prob_dist(ψ, KET_ZERO)
@@ -49,21 +67,13 @@ md"""
 ``H = \begin{bmatrix} \frac{1}{\sqrt{2}} & \frac{1}{\sqrt{2}} \\ \frac{1}{\sqrt{2}} & -\frac{1}{\sqrt{2}} \end{bmatrix}``
 """
 
-# ╔═╡ 16b1558d-4675-4781-8247-e0117fd07cd2
-md"""
-# Not Gate
-"""
+# ╔═╡ 6bede96f-da33-45ee-9aca-a087f2785b64
+theta_slider
 
-# ╔═╡ 1f6f4906-7d35-4791-ab9e-0dfc6672285d
-md"""
-``X = \begin{bmatrix} 0 & 1 \\ 1 & 0 \end{bmatrix}``
-"""
-
-# ╔═╡ d675961d-0529-40d3-a7f1-e9c913523960
-ψ = Qubit("|ψ\rangle", θ)
-
-# ╔═╡ c6465ddf-de8f-4f06-8976-ff62176b01d8
-qplot([ψ])
+# ╔═╡ fd159699-0e27-4c67-9150-83c92d075992
+Markdown.parse("""
+θ = $θ
+""")
 
 # ╔═╡ 6eb02f6c-30f4-4dfa-9d5b-3df2b1f6dd44
 χ = Qubit("|χ⟩", θ)
@@ -74,6 +84,24 @@ qplot([ψ])
 # ╔═╡ 3ff87c76-2df1-4447-b064-a9f24935c64b
 qplot([χ, χₕ])
 
+# ╔═╡ 16b1558d-4675-4781-8247-e0117fd07cd2
+md"""
+# Not Gate
+"""
+
+# ╔═╡ 1f6f4906-7d35-4791-ab9e-0dfc6672285d
+md"""
+``X = \begin{bmatrix} 0 & 1 \\ 1 & 0 \end{bmatrix}``
+"""
+
+# ╔═╡ 002f8667-af31-4ab5-a91d-7a9e9d626513
+theta_slider
+
+# ╔═╡ 78b731b4-281d-48ea-ba6d-e572cbe48460
+Markdown.parse("""
+θ = $θ
+""")
+
 # ╔═╡ 44d87b3e-d69e-4fbd-a066-eab41cd58037
 ϕ = Qubit("|ϕ⟩", θ)
 
@@ -82,22 +110,6 @@ xϕ = not(ϕ)
 
 # ╔═╡ 14fff96d-7658-466d-a56c-0d87ca936545
 qplot([ϕ, xϕ])
-
-# ╔═╡ 6bede96f-da33-45ee-9aca-a087f2785b64
-# ╠═╡ disabled = true
-#=╠═╡
-@bind θ PlutoUI.Slider(1:180, default=75)
-  ╠═╡ =#
-
-# ╔═╡ bd3bbcf2-52c8-47ba-802e-5191fb831d55
-# ╠═╡ disabled = true
-#=╠═╡
-#@bind t PlutoUI.Clock(0.5)
-@bind θ PlutoUI.Slider(1:180, default=75)
-  ╠═╡ =#
-
-# ╔═╡ 002f8667-af31-4ab5-a91d-7a9e9d626513
-@bind θ PlutoUI.Slider(1:180, default=75)
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1658,21 +1670,25 @@ version = "3.6.0+0"
 
 # ╔═╡ Cell order:
 # ╠═9d904942-f606-11ef-17cc-d3457a8f3467
+# ╟─bd3bbcf2-52c8-47ba-802e-5191fb831d55
 # ╟─28b42fbb-b9aa-4815-a757-10692a6e04c1
 # ╟─c9d4c55f-d06a-40f8-99db-d023632ebe17
-# ╠═bd3bbcf2-52c8-47ba-802e-5191fb831d55
+# ╟─e4070061-51d1-48a0-bdf8-d8b2dc217768
+# ╟─eb186cb3-1ca3-4fcc-a242-83452da1289e
 # ╟─d675961d-0529-40d3-a7f1-e9c913523960
 # ╟─c6465ddf-de8f-4f06-8976-ff62176b01d8
-# ╠═a63fa64a-b880-466b-8045-b2aaa97cb862
+# ╟─a63fa64a-b880-466b-8045-b2aaa97cb862
 # ╟─a8cf425f-e869-4839-93f4-2f9f06afa848
 # ╟─751b5358-b652-4989-bdb4-325ce5ebdade
 # ╟─6bede96f-da33-45ee-9aca-a087f2785b64
+# ╟─fd159699-0e27-4c67-9150-83c92d075992
 # ╟─6eb02f6c-30f4-4dfa-9d5b-3df2b1f6dd44
 # ╟─494f7a49-2dee-4a78-8215-39b232407b96
 # ╠═3ff87c76-2df1-4447-b064-a9f24935c64b
 # ╟─16b1558d-4675-4781-8247-e0117fd07cd2
 # ╟─1f6f4906-7d35-4791-ab9e-0dfc6672285d
-# ╠═002f8667-af31-4ab5-a91d-7a9e9d626513
+# ╟─002f8667-af31-4ab5-a91d-7a9e9d626513
+# ╟─78b731b4-281d-48ea-ba6d-e572cbe48460
 # ╟─44d87b3e-d69e-4fbd-a066-eab41cd58037
 # ╟─10f10618-07f3-4bd0-b70a-c7597698c87e
 # ╟─14fff96d-7658-466d-a56c-0d87ca936545
