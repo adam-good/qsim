@@ -20,9 +20,12 @@ export KET_ZERO, KET_ONE, KET_PLUS, KET_MINUS
 using .QuGates:
     hadamard,
     HADAMARD_GATE,
-    H
+    H,
+    not,
+    NOT_GATE,
+    X
 
-export hadamard
-export HADAMARD_GATE, H
+export hadamard, not
+export HADAMARD_GATE, H, NOT_GATE, X
 
 end

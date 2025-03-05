@@ -18,11 +18,17 @@ end
 
 const HADAMARD_GATE = Gate([1 1; 1 -1;] / √2)
 const H = HADAMARD_GATE
+const NOT_GATE = Gate([0 1; 1 0;])
+const X = NOT_GATE
 
 function hadamard(ψ::Qubit)
-    new_state::Vector{Real} = H.mat * ψ.vec
-    display(new_state)
-    return Qubit("H$(ψ.label)", new_state)
+    ϕ::Vector{Real} = H.mat * ψ.vec
+    return Qubit("H$(ψ.label)", ϕ)
+end
+
+function not(ψ::Qubit)
+    ϕ::Vector{Real} = X.mat * ψ.vec
+    return Qubit("X$(ψ.label)", ϕ)
 end
 
 end
