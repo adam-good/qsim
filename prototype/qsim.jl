@@ -2,6 +2,7 @@ module QSim
 
 include("qubit.jl")
 include("gate.jl")
+include("quantum_device.jl")
 
 using .Qubits:
     Qubit,
@@ -27,5 +28,10 @@ using .QuGates:
 
 export hadamard, not
 export HADAMARD_GATE, H, NOT_GATE, X
+
+using .QuDevice:
+    QuantumDevice,
+    qalloc!
+export QuantumDevice, qalloc!
 
 end
