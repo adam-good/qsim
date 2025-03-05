@@ -40,16 +40,24 @@ struct Qubit
     )
     Qubit(θ::Real) = Qubit("", θ)
     Qubit(label::String, state::Vector{<:Real}) = begin
-        θᵤ = abs(acosd(state[1]) * 2)
-        θᵥ = abs(asind(state[2]) * 2)
-        if θᵤ ≈ θᵥ
-            return new(
-                label, θᵤ, state,
-                polarToCartesian(θᵤ, BASIS_VECTORS[1], BASIS_VECTORS[2])
-            )
-        else
-            throw("Invalid matrix representation: $(θᵤ) and $(θᵥ)")
-        end
+        θᵤ = acosd(state[1]) * 2
+        θᵥ = asind(state[2]) * 2
+        # I think I'm getting ahead of myself.
+        # Once we're working with complex Qubits
+        # The different axis reflections should work better
+        # For now I think I'll just defuaut to one of the thetas
+        # if θᵤ ≈ θᵥ
+        #     return new(
+        #         label, θᵤ, state,
+        #         polarToCartesian(θᵤ, BASIS_VECTORS[1], BASIS_VECTORS[2])
+        #     )
+        # else
+        #     throw("Invalid matrix representation: $(θᵤ) and $(θᵥ)")
+        # end
+        return new(
+            label, θᵥ, state,
+            polarToCartesian(θᵥ, BASIS_VECTORS[1], BASIS_VECTORS[2])
+        )
     end
     Qubit(state::Vector{<:Real}) = Qubit("", state)
 end
@@ -63,9 +71,9 @@ function hash(q::Qubit)
 end
 
 const KET_ZERO  = Qubit("|0⟩", 0.0)
-const KET_ONE   = Qubit("|1⟩", 180.0)
 const KET_PLUS  = Qubit("|+⟩", 90.0)
-const KET_MINUS = Qubit("|-⟩", 270.0)
+const KET_ONE   = Qubit("|1⟩", 180.0)
+const KET_MINUS = Qubit("|-⟩", -90.0)
 
 function negate(ψ::Qubit)
     if     ψ == KET_ZERO
@@ -114,7 +122,7 @@ function qplot(Ψ::Vector{Qubit})
     fig = Figure(size=(1000,500))
 
     ax1 = Axis(fig[1,1], title="Standard Representation")
-    arc!(ax1, Point2f(0), 1, 0, π)
+    arc!(ax1, Point2f(0), 1, π/2, -π/2)
     xlims!(ax1, -1.0, 1.2)
     ylims!(ax1, -1.2, 1.2)
     
