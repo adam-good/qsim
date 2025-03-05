@@ -42,8 +42,8 @@ struct Qubit
     )
     Qubit(θ::Real) = Qubit("", θ)
     Qubit(label::String, state::Vector{<:Real}) = begin
-        θᵤ = acosd(state[1]) * 2
-        θᵥ = asind(state[2]) * 2
+        θᵤ = abs(acosd(state[1]) * 2)
+        θᵥ = abs(asind(state[2]) * 2)
         if θᵤ ≈ θᵥ
             return new(
                 label, θᵤ, state,
