@@ -11,6 +11,7 @@ begin
 	using Distributions
 	using StatsBase
 	using IterTools
+	using DataStructures
 	using PlutoUI
 	using .QSim
 end
@@ -31,18 +32,32 @@ md"""
 # ╔═╡ e4869aba-5d10-4696-ab4b-96548c319902
 function qrng(n::Int = 1)
 	quant_to_classic = Dict([(KET_ZERO, 0), (KET_ONE, 1)])
-	
-	device = QuantumDevice(4)
-	function sample()
-		ψ = qalloc!(device)
+	function sample(ψ::Qubit)
 		ψ = hadamard(ψ)
 		ψ = measure(ψ, KET_ZERO)
 		result = quant_to_classic[ψ]
-		qfree!(device, ψ)
 		return result
 	end
 
-	results = [sample() for i=1:n]
+	function choose_alloc_side(device::QuantumDevice, n)
+		return min(device.num_qubits, n)
+	end
+
+	
+	device = QuantumDevice(4)
+	vec_qfree! = (qubits) -> qfree!(device, qubits)
+
+	results = [-1 for i=1:n]
+	i = 1
+	while i <= n
+		alloc_size = choose_alloc_side(device, n+1-i)
+		qubits = [qalloc!(device) for i=1:alloc_size]
+		for ψ in qubits
+			results[i] = sample(ψ)
+			i = i + 1
+		end
+		vec_qfree!.(qubits)
+	end
 
 	if length(results) == 1
 		return results[1]
@@ -58,6 +73,7 @@ qrng(16)
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
 CairoMakie = "13f3f980-e62b-5c42-98c6-ff1f3baf88f0"
+DataStructures = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 IterTools = "c8e1da08-722c-5040-9ed9-7db0dc04731e"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
@@ -65,6 +81,7 @@ StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 
 [compat]
 CairoMakie = "~0.13.2"
+DataStructures = "~0.18.20"
 Distributions = "~0.25.117"
 IterTools = "~1.10.0"
 PlutoUI = "~0.7.23"
@@ -77,7 +94,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.11.3"
 manifest_format = "2.0"
-project_hash = "af63d926c818c9e01d39f694df98425f17f659cb"
+project_hash = "63dd00922273707c615afd48a3bc6a34d8a1c392"
 
 [[deps.AbstractFFTs]]
 deps = ["LinearAlgebra"]

@@ -7,6 +7,7 @@ include("quantum_device.jl")
 using .Qubits:
     Qubit,
     measure,
+    qreset,
     qplot,
     plot_prob_dist,
     KET_ZERO,
@@ -14,7 +15,7 @@ using .Qubits:
     KET_PLUS,
     KET_MINUS
 
-export negate, measure, qplot, plot_prob_dist
+export Qubit,negate, measure, qplot, plot_prob_dist
 export KET_ZERO, KET_ONE, KET_PLUS, KET_MINUS
 
 using .QuGates:

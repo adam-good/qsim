@@ -5,8 +5,6 @@ using Distributions
 using StatsBase
 # Random.seed!(8675309)
 
-export Qubit
-
 function polarToCartesian(θ::Real, base1::Vector{<:Real}, base2::Vector{<:Real})
     return cosd(θ) * base1 + sind(θ) * base2
 end
@@ -143,7 +141,7 @@ function plot_prob_dist(ψ::Qubit,t::Qubit)
     return f
 end
 
-function reset(ψ::Qubit)
+function qreset(ψ::Qubit)
     return Qubit(ψ.label, 0.0)
 end
 

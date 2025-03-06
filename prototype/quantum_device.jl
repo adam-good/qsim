@@ -3,22 +3,10 @@ include("qubit.jl")
 
 using Random
 using IterTools
+using DataStructures
 using ..Qubits:
-    Qubit
-    reset
-
-mutable struct QuantumDevice
-    N::Int
-    allocated::Int
-    Q::Dict{String, Qubit}
-    QuantumDevice(n::Int) = begin
-        labels = random_string(GREEK, n)
-        new(
-            n,0,
-            Dict( "|$l⟩" => Qubit("|$l⟩",0.0) for l in labels)
-        )
-    end
-end
+    Qubit,
+    qreset
 
 const GREEK = [
     'α', 'β', 'γ', 'δ', 'ϵ', 'ζ', 'η', 'θ', 'ι', 'κ', 'λ',
@@ -34,19 +22,29 @@ function random_string(alphabet::Vector{Char}, N::Int)
     labels = [String(p) for p in perms[1:N]]
     return labels
 end
+mutable struct QuantumDevice
+    num_qubits::Int
+    qubits::Dict{String, Qubit}
+    queue::Queue{Qubit}
+    QuantumDevice(n::Int) = begin
+        labels = random_string(GREEK, n)
+        qubits = Dict( "|$l⟩" => Qubit("|$l⟩",0.0) for l in labels)
+        queue = Queue{Qubit}(n)
+        for q in values(qubits)
+            enqueue!(queue, q)
+        end
+        new(n,qubits,queue)
+    end
+end
 
 function qalloc!(device::QuantumDevice)
-    if device.allocated >= device.N
-        throw("NO")
-    end
-    q = Qubit(0.0)
-    device.allocated = device.allocated + 1
+    q = dequeue!(device.queue)
     return q
 end
 
 function qfree!(device::QuantumDevice, q::Qubit)
-    q = nothing
-    device.allocated = device.allocated - 1
+    q = qreset(q)
+    enqueue!(device.queue, q)
 end
 
 end
