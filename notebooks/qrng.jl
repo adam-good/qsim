@@ -45,7 +45,7 @@ function qrng(device::QuantumDevice, n::Int = 1)
 	
 	vec_qfree! = (qubits) -> qfree!(device, qubits)
 
-	results = [-1 for i=1:n]
+	results = Vector{Int}(undef, n)
 	i = 1
 	while i <= n
 		alloc_size = choose_alloc_size(device, n+1-i)
