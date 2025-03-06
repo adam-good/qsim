@@ -39,17 +39,16 @@ function qrng(device::QuantumDevice, n::Int = 1)
 		return result
 	end
 
-	function choose_alloc_side(device::QuantumDevice, n)
+	function choose_alloc_size(device::QuantumDevice, n)
 		return min(device.num_qubits, n)
 	end
-
 	
 	vec_qfree! = (qubits) -> qfree!(device, qubits)
 
 	results = [-1 for i=1:n]
 	i = 1
 	while i <= n
-		alloc_size = choose_alloc_side(device, n+1-i)
+		alloc_size = choose_alloc_size(device, n+1-i)
 		qubits = [qalloc!(device) for i=1:alloc_size]
 		for ψ in qubits
 			results[i] = sample(ψ)
