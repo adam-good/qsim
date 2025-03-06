@@ -30,7 +30,7 @@ md"""
 """
 
 # ╔═╡ e4869aba-5d10-4696-ab4b-96548c319902
-function qrng(n::Int = 1)
+function qrng(device::QuantumDevice, n::Int = 1)
 	quant_to_classic = Dict([(KET_ZERO, 0), (KET_ONE, 1)])
 	function sample(ψ::Qubit)
 		ψ = hadamard(ψ)
@@ -44,7 +44,6 @@ function qrng(n::Int = 1)
 	end
 
 	
-	device = QuantumDevice(4)
 	vec_qfree! = (qubits) -> qfree!(device, qubits)
 
 	results = [-1 for i=1:n]
@@ -67,7 +66,10 @@ function qrng(n::Int = 1)
 end
 
 # ╔═╡ dc9ca605-6060-4b55-8e04-21f7e658486c
-qrng(16)
+begin
+	device = QuantumDevice(4)
+	qrng(device, 16)
+end
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
