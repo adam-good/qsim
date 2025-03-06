@@ -10,6 +10,7 @@ begin
 	using CairoMakie
 	using Distributions
 	using StatsBase
+	using IterTools
 	using PlutoUI
 	using .QSim
 end
@@ -58,12 +59,14 @@ PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
 CairoMakie = "13f3f980-e62b-5c42-98c6-ff1f3baf88f0"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
+IterTools = "c8e1da08-722c-5040-9ed9-7db0dc04731e"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 
 [compat]
 CairoMakie = "~0.13.2"
 Distributions = "~0.25.117"
+IterTools = "~1.10.0"
 PlutoUI = "~0.7.23"
 StatsBase = "~0.34.4"
 """
@@ -74,7 +77,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.11.3"
 manifest_format = "2.0"
-project_hash = "67319bec53a6c63808cc47b3a7d395194d04bc20"
+project_hash = "af63d926c818c9e01d39f694df98425f17f659cb"
 
 [[deps.AbstractFFTs]]
 deps = ["LinearAlgebra"]
