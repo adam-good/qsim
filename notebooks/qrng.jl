@@ -1,19 +1,30 @@
 ### A Pluto.jl notebook ###
-# v0.20.4
+# v0.20.13
 
 using Markdown
 using InteractiveUtils
 
 # ╔═╡ edb43700-f9e3-11ef-1c7a-a3f7e8f3adee
 begin
-	include("../prototype/qsim.jl")
 	using CairoMakie
 	using Distributions
 	using StatsBase
 	using IterTools
 	using DataStructures
 	using PlutoUI
+
+	include("../prototype/qsim.jl")
 	using .QSim
+end
+
+# ╔═╡ ed70d4b0-dcd6-4b81-864f-ab042dc4063b
+begin
+	N_qubits = 8
+	device = QuantumDevice(N_qubits)
+	quant_to_classic = Dict([
+		(KET_ZERO, 0),
+		(KET_ONE, 1)
+	])
 end
 
 # ╔═╡ bbe17d8b-1ad2-4efc-b375-1125338d2f83
@@ -31,7 +42,6 @@ md"""
 
 # ╔═╡ e4869aba-5d10-4696-ab4b-96548c319902
 function qrng(device::QuantumDevice, n::Int = 1)
-	quant_to_classic = Dict([(KET_ZERO, 0), (KET_ONE, 1)])
 	function sample(ψ::Qubit)
 		ψ = hadamard(ψ)
 		ψ = measure(ψ, KET_ZERO)
@@ -65,10 +75,85 @@ function qrng(device::QuantumDevice, n::Int = 1)
 end
 
 # ╔═╡ dc9ca605-6060-4b55-8e04-21f7e658486c
-begin
-	device = QuantumDevice(4)
-	qrng(device, 16)
+qrng(device, 16)
+
+# ╔═╡ f6a7ad41-a4c7-4625-b214-c11a554debb5
+md"""
+# Quantum Classical Encoding
+
+In order to encode classical bit into a qubit, we need to define a mapping function
+
+``\text{encode}(b) = \begin{cases} |0 \rangle \text{  if  } b = 0 \\ |1 \rangle \text{  if  } b = 1 \end{cases}``
+
+In order to decode a classical bit from a qubit, we need a function that measures the qubit such that the possible observed states map to our classical bits
+
+``\text{decode}(ψ) = \begin{cases} 0 \text{  if  } \langle 1 | ψ \rangle = | 0 \rangle \\ 1 \text{  if  } \langle 1 | ψ \rangle = | 1 \rangle \end{cases}``
+
+"""
+
+# ╔═╡ 1cae4ee7-837f-4a45-82a5-dfe4deb7071d
+function encode_classical_bits(bits::Array{Int8}, device::QuantumDevice)::Array{Qubit}
+	function instantiate_qubit(bit::Int8)
+		ψ = qalloc!(device)
+		if bit == 1
+			ψ = not(ψ)
+		end
+		return ψ
+	end
+	
+	n = length(bits)
+	if n > device.num_qubits
+		throw("Not enough qubits in device")
+	end
+	
+	return [instantiate_qubit(b) for b ∈ bits]
 end
+
+# ╔═╡ 268880bd-64eb-4f1c-bfa2-5c7dd4d79f2e
+function decode_qubits(Ψ::Array{Qubit}, device::QuantumDevice)::Array{Int8}
+	b = [quant_to_classic[measure(ψ, KET_ONE)] for ψ ∈ Ψ]
+	for ψ ∈ Ψ
+		qfree!(device, ψ)
+	end
+	return b
+end
+
+# ╔═╡ 1cb6697b-d83c-4a2a-9066-e178252191de
+begin
+	bits::Array{Int8} = [1,0,1,0]
+	Ψ = encode_classical_bits(bits, device)
+	decode_qubits(Ψ, device)
+end
+
+# ╔═╡ a5db8364-b1b6-4f82-a8a2-b836dad4c8eb
+md"""
+# BB84
+
+The BB84 Algorithm is for quantum key distribution. It requires a bitstring $a$ and a basis $b$. Given $a_i$ and $b_i$ we define quantum states $| ψ_{a_i b_i} \rangle$ such that
+
+``| ψ_{00} \rangle = | 0 \rangle``
+
+``| ψ_{10} \rangle = | 1 \rangle``
+
+``| ψ_{01} \rangle = | + \rangle``
+
+``| ψ_{11} \rangle = | - \rangle``
+
+The reciever generates their own random, secret basis $b'$ and uses $b'$ to decode the quantum states they recieved. The decoded bits will be $a'$.
+
+AFTER decoding, we find all $j$ such that $b_j \ne b'_j$ because we know that $a_j \ne a'_j$ IF $b_j \ne b'_j$.
+
+Then we repeat the process for all $a_j$
+
+Let
+- N: Key length
+
+1. ``a = \text{qrng}(N); b = \text{qrng}(N)``
+2. `` | Ψ \rangle = \bigotimes_{i=1}^N | ψ_{a_i b_i} \rangle ``
+3. ``b' = \text{qrng}(N); a' = \langle b' | Ψ \rangle``
+4. `` J = \{ j ∈ [1,N] | b_j ≠ b'_j \} ``
+5. ``
+"""
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -93,7 +178,7 @@ StatsBase = "~0.34.4"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.11.3"
+julia_version = "1.11.5"
 manifest_format = "2.0"
 project_hash = "63dd00922273707c615afd48a3bc6a34d8a1c392"
 
@@ -996,7 +1081,7 @@ version = "3.2.4+0"
 [[deps.OpenLibm_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "05823500-19ac-5b8b-9628-191a04bc5112"
-version = "0.8.1+2"
+version = "0.8.5+0"
 
 [[deps.OpenSSL_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
@@ -1633,9 +1718,15 @@ version = "3.6.0+0"
 
 # ╔═╡ Cell order:
 # ╠═edb43700-f9e3-11ef-1c7a-a3f7e8f3adee
+# ╠═ed70d4b0-dcd6-4b81-864f-ab042dc4063b
 # ╟─bbe17d8b-1ad2-4efc-b375-1125338d2f83
 # ╟─6ab4cf99-a36e-40ec-af78-3b9466515e6c
 # ╠═e4869aba-5d10-4696-ab4b-96548c319902
 # ╠═dc9ca605-6060-4b55-8e04-21f7e658486c
+# ╟─f6a7ad41-a4c7-4625-b214-c11a554debb5
+# ╟─1cae4ee7-837f-4a45-82a5-dfe4deb7071d
+# ╟─268880bd-64eb-4f1c-bfa2-5c7dd4d79f2e
+# ╠═1cb6697b-d83c-4a2a-9066-e178252191de
+# ╠═a5db8364-b1b6-4f82-a8a2-b836dad4c8eb
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
