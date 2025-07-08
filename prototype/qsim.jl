@@ -13,10 +13,12 @@ using .Qubits:
     KET_ZERO,
     KET_ONE,
     KET_PLUS,
-    KET_MINUS
+    KET_MINUS,
+    Z_BASIS,
+    X_BASIS
 
 export Qubit,negate, measure, qplot, plot_prob_dist
-export KET_ZERO, KET_ONE, KET_PLUS, KET_MINUS
+export KET_ZERO, KET_ONE, KET_PLUS, KET_MINUS, Z_BASIS, X_BASIS
 
 using .QuGates:
     hadamard,

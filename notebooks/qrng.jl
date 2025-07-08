@@ -20,10 +20,25 @@ end
 # ╔═╡ ed70d4b0-dcd6-4b81-864f-ab042dc4063b
 begin
 	N_qubits = 8
+	
 	device = QuantumDevice(N_qubits)
+
 	quant_to_classic = Dict([
 		(KET_ZERO, 0),
 		(KET_ONE, 1)
+	])
+
+	BB84_encoding_mapping = Dict([
+		( (0,0), ψ::Qubit -> ψ ),
+		( (1,0), ψ::Qubit -> not(ψ) ),
+		( (0,1), ψ::Qubit -> hadamard(ψ) ),
+		( (1,1), ψ::Qubit -> hadamard(not(ψ)) )
+	])
+	BB84_qaunt_to_classic = Dict([
+		( KET_ZERO,  0 ),
+		( KET_ONE,   1 ),
+		( KET_PLUS,  0 ),
+		( KET_MINUS, 1 ),
 	])
 end
 
@@ -92,7 +107,7 @@ In order to decode a classical bit from a qubit, we need a function that measure
 """
 
 # ╔═╡ 1cae4ee7-837f-4a45-82a5-dfe4deb7071d
-function encode_classical_bits(bits::Array{Int8}, device::QuantumDevice)::Array{Qubit}
+function bits_to_qubits(bits::Array{Int8}, device::QuantumDevice)::Array{Qubit}
 	function instantiate_qubit(bit::Int8)
 		ψ = qalloc!(device)
 		if bit == 1
@@ -109,8 +124,8 @@ function encode_classical_bits(bits::Array{Int8}, device::QuantumDevice)::Array{
 	return [instantiate_qubit(b) for b ∈ bits]
 end
 
-# ╔═╡ 268880bd-64eb-4f1c-bfa2-5c7dd4d79f2e
-function decode_qubits(Ψ::Array{Qubit}, device::QuantumDevice)::Array{Int8}
+# ╔═╡ f07537ab-3368-45ca-8f06-54bfc2d68647
+function qubits_to_bits(Ψ::Array{Qubit}, device::QuantumDevice)::Array{Int8}
 	b = [quant_to_classic[measure(ψ, KET_ONE)] for ψ ∈ Ψ]
 	for ψ ∈ Ψ
 		qfree!(device, ψ)
@@ -121,8 +136,8 @@ end
 # ╔═╡ 1cb6697b-d83c-4a2a-9066-e178252191de
 begin
 	bits::Array{Int8} = [1,0,1,0]
-	Ψ = encode_classical_bits(bits, device)
-	decode_qubits(Ψ, device)
+	Ψ = bits_to_qubits(bits, device)
+	qubits_to_bits(Ψ, device)
 end
 
 # ╔═╡ a5db8364-b1b6-4f82-a8a2-b836dad4c8eb
@@ -152,8 +167,52 @@ Let
 2. `` | Ψ \rangle = \bigotimes_{i=1}^N | ψ_{a_i b_i} \rangle ``
 3. ``b' = \text{qrng}(N); a' = \langle b' | Ψ \rangle``
 4. `` J = \{ j ∈ [1,N] | b_j ≠ b'_j \} ``
-5. ``
+5. 
 """
+
+# ╔═╡ d5b9588b-c758-4ba2-9c7f-747cff09bfde
+function BB84_encode(device::QuantumDevice, bit::Int, basis::Int)::Qubit
+	ψ = qalloc!(device)
+	preparation = BB84_encoding_mapping[(bit,basis)]
+	return preparation(ψ)
+end
+
+# ╔═╡ 5363e89c-45b9-48ce-a5e1-d95f70571e12
+function BB84_decode(device::QuantumDevice, ψ::Qubit)::Tuple{Int, Int}
+	basises = Dict([
+		(0, Z_BASIS),
+		(1, X_BASIS)
+	])
+	basis_bit = qrng(device,1)
+	basis = basises[basis_bit]
+
+	ϕ = measure(ψ, basis[0])
+	result = (BB84_qaunt_to_classic[ϕ], basis_bit)
+
+	qfree!(device,ψ)
+	return result
+end
+
+# ╔═╡ 87c1f0fa-9dc1-4fcc-b659-e181707846ec
+begin
+	N = 4
+	key = qrng(device, N)
+	basis = qrng(device, N)
+
+	for i = 1:N
+		match = false
+		while match == false
+			ψ = BB84_encode(device, key[i], basis[i])
+			# Beep Boop Communicate Across Quantume Network Beep Bop Boop
+			key_prime, basis_prime = BB84_decode(device, ψ)
+			if basis_prime == basis[i]
+				match = true
+			end
+		end
+	end
+
+	
+end
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1725,8 +1784,11 @@ version = "3.6.0+0"
 # ╠═dc9ca605-6060-4b55-8e04-21f7e658486c
 # ╟─f6a7ad41-a4c7-4625-b214-c11a554debb5
 # ╟─1cae4ee7-837f-4a45-82a5-dfe4deb7071d
-# ╟─268880bd-64eb-4f1c-bfa2-5c7dd4d79f2e
+# ╟─f07537ab-3368-45ca-8f06-54bfc2d68647
 # ╠═1cb6697b-d83c-4a2a-9066-e178252191de
-# ╠═a5db8364-b1b6-4f82-a8a2-b836dad4c8eb
+# ╟─a5db8364-b1b6-4f82-a8a2-b836dad4c8eb
+# ╠═d5b9588b-c758-4ba2-9c7f-747cff09bfde
+# ╠═5363e89c-45b9-48ce-a5e1-d95f70571e12
+# ╠═87c1f0fa-9dc1-4fcc-b659-e181707846ec
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002

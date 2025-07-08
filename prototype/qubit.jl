@@ -71,7 +71,15 @@ end
 const KET_ZERO  = Qubit("|0⟩", 0.0)
 const KET_PLUS  = Qubit("|+⟩", 90.0)
 const KET_ONE   = Qubit("|1⟩", 180.0)
-const KET_MINUS = Qubit("|-⟩", -90.0)
+const KET_MINUS = Qubit("|-⟩", 270.0)
+const Z_BASIS = Dict([
+		(0, KET_ZERO),
+		(1, KET_ONE)
+	])
+const X_BASIS = Dict([
+		(0, KET_PLUS),
+		(1, KET_MINUS)
+	])
 
 function calculate_measure_probability(ψ::Qubit, t::Qubit)
     proj = project(ψ.vec, t.vec)
@@ -79,13 +87,13 @@ function calculate_measure_probability(ψ::Qubit, t::Qubit)
     return prob
 end
 
-function measure(ψ::Qubit, t::Qubit)
+function measure(ψ::Qubit, t::Qubit)::Qubit
     p = calculate_measure_probability(ψ,t)
     r = rand(Uniform(0.0, 1.0))
     if p > r
         return t
     else
-        return Qubit((t.θ + 180) % 360)
+        return Qubit(ψ.label, (t.θ + 180) % 360)
     end
 end
 
