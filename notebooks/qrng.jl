@@ -6,7 +6,7 @@ using InteractiveUtils
 
 # ╔═╡ edb43700-f9e3-11ef-1c7a-a3f7e8f3adee
 begin
-	include("../prototype/qsim.jl")
+	include("../QsimPrototype/src/qsim.jl")
 	using CairoMakie
 	using Distributions
 	using StatsBase

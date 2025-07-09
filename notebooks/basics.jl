@@ -18,7 +18,7 @@ end
 
 # ╔═╡ 9d904942-f606-11ef-17cc-d3457a8f3467
 begin
-	include("../prototype/qsim.jl")
+	include("../QsimPrototype/src/qsim.jl")
 	using CairoMakie
 	using IterTools
 	using Distributions
