@@ -1,4 +1,4 @@
-name = "Prototype"
+name = "QsimPrototype"
 uuid = "c2f22b0a-2b00-4404-9c20-1fd82c6ea006"
 authors = ["Adam Good <dev.adamgood@gmail.com>"]
 version = "0.1.0"
