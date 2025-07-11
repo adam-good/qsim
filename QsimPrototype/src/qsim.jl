@@ -1,5 +1,6 @@
 module QSim
 
+include("quantum_state.jl")
 include("qubit.jl")
 include("gate.jl")
 include("quantum_device.jl")

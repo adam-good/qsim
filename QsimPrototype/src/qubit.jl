@@ -5,6 +5,15 @@ using Distributions
 using StatsBase
 # Random.seed!(8675309)
 
+include("quantum_state.jl")
+using ..QuStates:
+    QuantumState,
+    KET_ZERO_STATE,
+    KET_ONE_STATE,
+    KET_PLUS_STATE,
+    KET_MINUS_STATE,
+    bloch_vec
+
 function polarToCartesian(θ::Real, base1::Vector{<:Real}, base2::Vector{<:Real})
     return cosd(θ) * base1 + sind(θ) * base2
 end
@@ -22,79 +31,72 @@ function project(a::Vector{<:Real}, b::Vector{<:Real})
     return (dot_prod(a,b) / dot_prod(b,b)) .* b
 end
 
-const BASIS_VECTORS = [
-    [1.0; 0.0;],
-    [0.0; 1.0;],
-]
-
 struct Qubit
     label::String
-    θ::Real
-    vec::Vector{Real}
-    display_vec::Vector{Real}
-    Qubit(label::String, θ::Real) = new(label, θ,
-        polarToCartesian(θ/2, BASIS_VECTORS[1], BASIS_VECTORS[2]),
-        polarToCartesian(θ, BASIS_VECTORS[1], BASIS_VECTORS[2])
-    )
-    Qubit(θ::Real) = Qubit("", θ)
-    Qubit(label::String, state::Vector{<:Real}) = begin
-        θᵤ = acosd(state[1]) * 2
-        θᵥ = asind(state[2]) * 2
-        # I think I'm getting ahead of myself.
-        # Once we're working with complex Qubits
-        # The different axis reflections should work better
-        # For now I think I'll just defuaut to one of the thetas
-        # if θᵤ ≈ θᵥ
-        #     return new(
-        #         label, θᵤ, state,
-        #         polarToCartesian(θᵤ, BASIS_VECTORS[1], BASIS_VECTORS[2])
-        #     )
-        # else
-        #     throw("Invalid matrix representation: $(θᵤ) and $(θᵥ)")
-        # end
+    state::QuantumState
+    Qubit(label::String, α::Real, β::Real) = begin
         return new(
-            label, θᵥ, state,
-            polarToCartesian(θᵥ, BASIS_VECTORS[1], BASIS_VECTORS[2])
+            label,
+            QuantumState(α, β)
         )
     end
-    Qubit(state::Vector{<:Real}) = Qubit("", state)
+    Qubit(label::String, state::QuantumState) = begin
+        return Qubit(label, state.α, state.β)
+    end
+    # FIXME: This is straight up wrong.
+    Qubit(label::String, θ::Real) = begin
+        throw("Not Implemented")
+        α = cosd(θ); β = sind(θ)
+        return Qubit(label, α, β)
+    end
+    Qubit(label::String, ψ::Qubit) = begin
+        return Qubit(label, ψ.state)
+    end
 end
 
-import Base.hash, Base.isequal
-function isequal(x::Qubit, y::Qubit)
-    return x.θ ≈ y.θ
+Base.:(==)(a::Qubit, b::Qubit) = begin
+    return a.state == b.state
 end
-function hash(q::Qubit)
-    return hash(q.θ,)
+Base.hash(q::Qubit) = begin
+    return Base.hash(q.state)
 end
 
-const KET_ZERO  = Qubit("|0⟩", 0.0)
-const KET_PLUS  = Qubit("|+⟩", 90.0)
-const KET_ONE   = Qubit("|1⟩", 180.0)
-const KET_MINUS = Qubit("|-⟩", -90.0)
+const KET_ZERO  = Qubit("|0⟩", KET_ZERO_STATE)
+const KET_ONE   = Qubit("|1⟩", KET_ONE_STATE)
+const KET_PLUS  = Qubit("|+⟩", KET_PLUS_STATE)
+const KET_MINUS = Qubit("|-⟩", KET_MINUS_STATE)
 
-function calculate_measure_probability(ψ::Qubit, t::Qubit)
-    proj = project(ψ.vec, t.vec)
+function calculate_measure_probability(ψ::Qubit, t::QuantumState)
+    proj = project(ψ.state.vec, t.vec)
     prob = magnitude(proj) ^ 2
     return prob
 end
 
-function measure(ψ::Qubit, t::Qubit)
-    p = calculate_measure_probability(ψ,t)
+function measure(ψ::Qubit, target_state::QuantumState)
+    p = calculate_measure_probability(ψ,target_state)
     r = rand(Uniform(0.0, 1.0))
     if p > r
-        return t
+        return Qubit(ψ.label, target_state)
     else
-        return Qubit((t.θ + 180) % 360)
+        # TODO: Target State should have an axis so we can just grab 
+        #       the oppisite state from that
+        # new_state = [target_state[2]; target_state[1];]
+        new_state = QuantumState(target_state.β, target_state.α)
+        return Qubit(ψ.label, new_state)
     end
+end
+
+function measure(ψ::Qubit, target_qubit::Qubit)
+    return measure(ψ, target_qubit.state)
 end
 
 function qplot(Ψ::Vector{Qubit})
     function plot_qubit(ψ::Qubit, realAxs::Axis, dispAxs::Axis; color::String)
-        x = ψ.vec[1]
-        y = ψ.vec[2]
-        disp_x = ψ.display_vec[1]
-        disp_y = ψ.display_vec[2]
+        x = ψ.state.vec[1]
+        y = ψ.state.vec[2]
+        display_vec = bloch_vec(ψ.state)
+        disp_x = display_vec[1]
+        disp_y = display_vec[2]
 
         lines!(realAxs, [0.0, x], [0.0, y], label=ψ.label, color=color)
         text!(realAxs, x, y; text=ψ.label, fontsize=20)
@@ -142,7 +144,7 @@ function plot_prob_dist(ψ::Qubit,t::Qubit)
 end
 
 function qreset(ψ::Qubit)
-    return Qubit(ψ.label, 0.0)
+    return Qubit(ψ.label, 1.0, 0.0)
 end
 
 end
