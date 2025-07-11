@@ -1,4 +1,5 @@
 module QuDevice
+include("quantum_state.jl")
 include("qubit.jl")
 
 using Random
@@ -28,7 +29,7 @@ mutable struct QuantumDevice
     queue::Queue{Qubit}
     QuantumDevice(n::Int) = begin
         labels = random_string(GREEK, n)
-        qubits = Dict( "|$l⟩" => Qubit("|$l⟩",0.0) for l in labels)
+        qubits = Dict( "|$l⟩" => Qubit("|$l⟩",1.0, 0.0) for l in labels)
         queue = Queue{Qubit}(n)
         for q in values(qubits)
             enqueue!(queue, q)

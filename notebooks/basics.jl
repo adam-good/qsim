@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.20.4
+# v0.20.13
 
 using Markdown
 using InteractiveUtils
@@ -7,7 +7,7 @@ using InteractiveUtils
 # This Pluto notebook uses @bind for interactivity. When running this notebook outside of Pluto, the following 'mock version' of @bind gives bound variables a default value (instead of an error).
 macro bind(def, element)
     #! format: off
-    quote
+    return quote
         local iv = try Base.loaded_modules[Base.PkgId(Base.UUID("6e696c72-6542-2067-7265-42206c756150"), "AbstractPlutoDingetjes")].Bonds.initial_value catch; b -> missing; end
         local el = $(esc(element))
         global $(esc(def)) = Core.applicable(Base.get, el) ? Base.get(el) : iv(el)
@@ -18,18 +18,20 @@ end
 
 # ╔═╡ 9d904942-f606-11ef-17cc-d3457a8f3467
 begin
-	include("../QsimPrototype/src/qsim.jl")
 	using CairoMakie
 	using IterTools
 	using Distributions
+	using DataStructures
 	using StatsBase
 	using PlutoUI
+
+	include("../QsimPrototype/src/qsim.jl")
 	using .QSim
 end
 
 # ╔═╡ bd3bbcf2-52c8-47ba-802e-5191fb831d55
 #@bind t PlutoUI.Clock(0.5)
-theta_slider = @bind θ PlutoUI.Slider(1:180, default=75);
+theta_slider = @bind θ PlutoUI.Slider(-45:90, default=45);
 
 # ╔═╡ 28b42fbb-b9aa-4815-a757-10692a6e04c1
 md"""
@@ -50,7 +52,7 @@ Markdown.parse("""
 """)
 
 # ╔═╡ d675961d-0529-40d3-a7f1-e9c913523960
-ψ = Qubit("|ψ\rangle", θ)
+ψ = Qubit("|ψ⟩", θ)
 
 # ╔═╡ c6465ddf-de8f-4f06-8976-ff62176b01d8
 qplot([ψ])
@@ -116,6 +118,7 @@ qplot([ϕ, xϕ])
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
 CairoMakie = "13f3f980-e62b-5c42-98c6-ff1f3baf88f0"
+DataStructures = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 IterTools = "c8e1da08-722c-5040-9ed9-7db0dc04731e"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
@@ -123,6 +126,7 @@ StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 
 [compat]
 CairoMakie = "~0.13.2"
+DataStructures = "~0.18.22"
 Distributions = "~0.25.117"
 IterTools = "~1.10.0"
 PlutoUI = "~0.7.23"
@@ -133,9 +137,9 @@ StatsBase = "~0.34.4"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.11.3"
+julia_version = "1.11.5"
 manifest_format = "2.0"
-project_hash = "af63d926c818c9e01d39f694df98425f17f659cb"
+project_hash = "7d993cfd586f2330ff6a632db186760f4dc7512f"
 
 [[deps.AbstractFFTs]]
 deps = ["LinearAlgebra"]
@@ -342,9 +346,9 @@ version = "1.16.0"
 
 [[deps.DataStructures]]
 deps = ["Compat", "InteractiveUtils", "OrderedCollections"]
-git-tree-sha1 = "1d0a14036acb104d9e89698bd408f63ab58cdc82"
+git-tree-sha1 = "4e1fe97fdaed23e9dc21d4d664bea76b65fc50a0"
 uuid = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
-version = "0.18.20"
+version = "0.18.22"
 
 [[deps.DataValueInterfaces]]
 git-tree-sha1 = "bfc1187b79289637fa0ef6d4436ebdfe6905cbd6"
@@ -1036,7 +1040,7 @@ version = "3.2.4+0"
 [[deps.OpenLibm_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "05823500-19ac-5b8b-9628-191a04bc5112"
-version = "0.8.1+2"
+version = "0.8.5+0"
 
 [[deps.OpenSSL_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
@@ -1673,12 +1677,12 @@ version = "3.6.0+0"
 
 # ╔═╡ Cell order:
 # ╠═9d904942-f606-11ef-17cc-d3457a8f3467
-# ╟─bd3bbcf2-52c8-47ba-802e-5191fb831d55
+# ╠═bd3bbcf2-52c8-47ba-802e-5191fb831d55
 # ╟─28b42fbb-b9aa-4815-a757-10692a6e04c1
 # ╟─c9d4c55f-d06a-40f8-99db-d023632ebe17
 # ╟─e4070061-51d1-48a0-bdf8-d8b2dc217768
 # ╟─eb186cb3-1ca3-4fcc-a242-83452da1289e
-# ╟─d675961d-0529-40d3-a7f1-e9c913523960
+# ╠═d675961d-0529-40d3-a7f1-e9c913523960
 # ╟─c6465ddf-de8f-4f06-8976-ff62176b01d8
 # ╟─a63fa64a-b880-466b-8045-b2aaa97cb862
 # ╟─a8cf425f-e869-4839-93f4-2f9f06afa848
@@ -1687,10 +1691,10 @@ version = "3.6.0+0"
 # ╟─fd159699-0e27-4c67-9150-83c92d075992
 # ╟─6eb02f6c-30f4-4dfa-9d5b-3df2b1f6dd44
 # ╟─494f7a49-2dee-4a78-8215-39b232407b96
-# ╠═3ff87c76-2df1-4447-b064-a9f24935c64b
+# ╟─3ff87c76-2df1-4447-b064-a9f24935c64b
 # ╟─16b1558d-4675-4781-8247-e0117fd07cd2
 # ╟─1f6f4906-7d35-4791-ab9e-0dfc6672285d
-# ╟─002f8667-af31-4ab5-a91d-7a9e9d626513
+# ╠═002f8667-af31-4ab5-a91d-7a9e9d626513
 # ╟─78b731b4-281d-48ea-ba6d-e572cbe48460
 # ╟─44d87b3e-d69e-4fbd-a066-eab41cd58037
 # ╟─10f10618-07f3-4bd0-b70a-c7597698c87e
