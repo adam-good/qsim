@@ -14,10 +14,14 @@ using ..QuStates:
     KET_MINUS_STATE,
     bloch_vec
 
+# TODO: I should create a utility to represent the angles in different vector fields
+#       - Standard
+#       - Bloch
 function polarToCartesian(θ::Real, base1::Vector{<:Real}, base2::Vector{<:Real})
     return cosd(θ) * base1 + sind(θ) * base2
 end
 
+# TODO: I should move some of these linear algebra functions to a utility module
 function dot_prod(a::Vector{<:Real}, b::Vector{<:Real})
     return a' * b
 end
@@ -90,6 +94,7 @@ function measure(ψ::Qubit, target_qubit::Qubit)
     return measure(ψ, target_qubit.state)
 end
 
+# TODO: The plotting functionality can also be seperated
 function qplot(Ψ::Vector{Qubit})
     function plot_qubit(ψ::Qubit, realAxs::Axis, dispAxs::Axis; color::String)
         x = ψ.state.vec[1]

@@ -37,6 +37,10 @@ Base.hash(q::QuantumState) = begin
     return Base.hash(q.vec)
 end
 
+function angle(state::QuantumState)
+    
+end
+
 function bloch_vec(state::QuantumState)
     θ = (360 + 2*asind(state.vec[2])) % 360
     return [cosd(θ); sind(θ)]
