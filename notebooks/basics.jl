@@ -137,7 +137,7 @@ StatsBase = "~0.34.4"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.11.5"
+julia_version = "1.11.6"
 manifest_format = "2.0"
 project_hash = "7d993cfd586f2330ff6a632db186760f4dc7512f"
 
@@ -1682,7 +1682,7 @@ version = "3.6.0+0"
 # ╟─c9d4c55f-d06a-40f8-99db-d023632ebe17
 # ╟─e4070061-51d1-48a0-bdf8-d8b2dc217768
 # ╟─eb186cb3-1ca3-4fcc-a242-83452da1289e
-# ╠═d675961d-0529-40d3-a7f1-e9c913523960
+# ╟─d675961d-0529-40d3-a7f1-e9c913523960
 # ╟─c6465ddf-de8f-4f06-8976-ff62176b01d8
 # ╟─a63fa64a-b880-466b-8045-b2aaa97cb862
 # ╟─a8cf425f-e869-4839-93f4-2f9f06afa848
@@ -1690,11 +1690,11 @@ version = "3.6.0+0"
 # ╟─6bede96f-da33-45ee-9aca-a087f2785b64
 # ╟─fd159699-0e27-4c67-9150-83c92d075992
 # ╟─6eb02f6c-30f4-4dfa-9d5b-3df2b1f6dd44
-# ╟─494f7a49-2dee-4a78-8215-39b232407b96
+# ╠═494f7a49-2dee-4a78-8215-39b232407b96
 # ╟─3ff87c76-2df1-4447-b064-a9f24935c64b
 # ╟─16b1558d-4675-4781-8247-e0117fd07cd2
 # ╟─1f6f4906-7d35-4791-ab9e-0dfc6672285d
-# ╠═002f8667-af31-4ab5-a91d-7a9e9d626513
+# ╟─002f8667-af31-4ab5-a91d-7a9e9d626513
 # ╟─78b731b4-281d-48ea-ba6d-e572cbe48460
 # ╟─44d87b3e-d69e-4fbd-a066-eab41cd58037
 # ╟─10f10618-07f3-4bd0-b70a-c7597698c87e
