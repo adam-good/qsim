@@ -21,17 +21,18 @@ begin
 	using CairoMakie
 	using IterTools
 	using Distributions
+	using DataStructures
 	using StatsBase
 	using DataStructures
 	using PlutoUI
-	
-	include("../prototype/qsim.jl")
+
+	include("../QsimPrototype/src/qsim.jl")
 	using .QSim
 end
 
 # ╔═╡ bd3bbcf2-52c8-47ba-802e-5191fb831d55
 #@bind t PlutoUI.Clock(0.5)
-theta_slider = @bind θ PlutoUI.Slider(1:180, default=75);
+theta_slider = @bind θ PlutoUI.Slider(-45:90, default=45);
 
 # ╔═╡ 28b42fbb-b9aa-4815-a757-10692a6e04c1
 md"""
@@ -137,7 +138,7 @@ StatsBase = "~0.34.4"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.11.5"
+julia_version = "1.11.6"
 manifest_format = "2.0"
 project_hash = "7d993cfd586f2330ff6a632db186760f4dc7512f"
 
@@ -1677,7 +1678,7 @@ version = "3.6.0+0"
 
 # ╔═╡ Cell order:
 # ╠═9d904942-f606-11ef-17cc-d3457a8f3467
-# ╟─bd3bbcf2-52c8-47ba-802e-5191fb831d55
+# ╠═bd3bbcf2-52c8-47ba-802e-5191fb831d55
 # ╟─28b42fbb-b9aa-4815-a757-10692a6e04c1
 # ╟─c9d4c55f-d06a-40f8-99db-d023632ebe17
 # ╟─e4070061-51d1-48a0-bdf8-d8b2dc217768
@@ -1691,8 +1692,8 @@ version = "3.6.0+0"
 # ╟─6bede96f-da33-45ee-9aca-a087f2785b64
 # ╟─fd159699-0e27-4c67-9150-83c92d075992
 # ╟─6eb02f6c-30f4-4dfa-9d5b-3df2b1f6dd44
-# ╟─494f7a49-2dee-4a78-8215-39b232407b96
-# ╠═3ff87c76-2df1-4447-b064-a9f24935c64b
+# ╠═494f7a49-2dee-4a78-8215-39b232407b96
+# ╟─3ff87c76-2df1-4447-b064-a9f24935c64b
 # ╟─16b1558d-4675-4781-8247-e0117fd07cd2
 # ╟─1f6f4906-7d35-4791-ab9e-0dfc6672285d
 # ╟─002f8667-af31-4ab5-a91d-7a9e9d626513

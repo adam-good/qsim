@@ -1,9 +1,8 @@
 module QuGates
-include("qubit.jl")
-
 using LinearAlgebra: I
-using ..Qubits:
-    Qubit
+
+using ..QuStates: QuantumState
+using ..Qubits: Qubit
 
 struct Gate
     mat::Matrix{Real}
@@ -21,14 +20,28 @@ const H = HADAMARD_GATE
 const NOT_GATE = Gate([0 1; 1 0;])
 const X = NOT_GATE
 
-function hadamard(ψ::Qubit)
+function hadamard(ψ::QuantumState)
     ϕ::Vector{Real} = H.mat * ψ.vec
-    return Qubit("H$(ψ.label)", ϕ)
+    return QuantumState(ϕ)
+end
+
+function hadamard(ψ::Qubit)
+    return Qubit(
+        "H$(ψ.label)",
+        hadamard(ψ.state)
+    )
+end
+
+function not(ψ::QuantumState)
+    ϕ::Vector{Real} = X.mat * ψ.vec
+    return QuantumState(ϕ)
 end
 
 function not(ψ::Qubit)
-    ϕ::Vector{Real} = X.mat * ψ.vec
-    return Qubit("X$(ψ.label)", ϕ)
+    return Qubit(
+        "X$(ψ.label)",
+        not(ψ.state)
+    )
 end
 
 end
