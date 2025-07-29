@@ -1,6 +1,4 @@
 module QuDevice
-include("quantum_state.jl")
-include("qubit.jl")
 
 using Random
 using IterTools

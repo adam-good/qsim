@@ -1,9 +1,6 @@
 module QuGates
 using LinearAlgebra: I
 
-include("quantum_state.jl")
-include("qubit.jl")
-
 using ..QuStates: QuantumState
 using ..Qubits: Qubit
 

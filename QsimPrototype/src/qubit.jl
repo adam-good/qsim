@@ -5,35 +5,18 @@ using Distributions
 using StatsBase
 # Random.seed!(8675309)
 
-include("quantum_state.jl")
+include("utils.jl")
+using .Utils:
+    dot_prod,
+    magnitude,
+    project
+
 using ..QuStates:
     QuantumState,
     KET_ZERO_STATE,
     KET_ONE_STATE,
     KET_PLUS_STATE,
-    KET_MINUS_STATE,
-    bloch_vec
-
-# TODO: I should create a utility to represent the angles in different vector fields
-#       - Standard
-#       - Bloch
-function polarToCartesian(θ::Real, base1::Vector{<:Real}, base2::Vector{<:Real})
-    return cosd(θ) * base1 + sind(θ) * base2
-end
-
-# TODO: I should move some of these linear algebra functions to a utility module
-function dot_prod(a::Vector{<:Real}, b::Vector{<:Real})
-    return a' * b
-end
-
-function magnitude(v::Vector{<:Real})
-    return sqrt(sum(v.^2))
-end
-
-# Project vector a onto vector b
-function project(a::Vector{<:Real}, b::Vector{<:Real})
-    return (dot_prod(a,b) / dot_prod(b,b)) .* b
-end
+    KET_MINUS_STATE
 
 struct Qubit
     label::String
@@ -47,9 +30,7 @@ struct Qubit
     Qubit(label::String, state::QuantumState) = begin
         return Qubit(label, state.α, state.β)
     end
-    # FIXME: This is straight up wrong.
     Qubit(label::String, θ::Real) = begin
-        throw("Not Implemented")
         α = cosd(θ); β = sind(θ)
         return Qubit(label, α, β)
     end
@@ -97,11 +78,8 @@ end
 # TODO: The plotting functionality can also be seperated
 function qplot(Ψ::Vector{Qubit})
     function plot_qubit(ψ::Qubit, realAxs::Axis, dispAxs::Axis; color::String)
-        x = ψ.state.vec[1]
-        y = ψ.state.vec[2]
-        display_vec = bloch_vec(ψ.state)
-        disp_x = display_vec[1]
-        disp_y = display_vec[2]
+        x,y = ψ.state.vec
+        disp_x,disp_y = ψ.state.bloch_vec
 
         lines!(realAxs, [0.0, x], [0.0, y], label=ψ.label, color=color)
         text!(realAxs, x, y; text=ψ.label, fontsize=20)
