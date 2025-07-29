@@ -32,7 +32,7 @@ const KET_PLUS_STATE = QuantumState(1/sqrt(2), 1/sqrt(2))
 const KET_MINUS_STATE = QuantumState(1/sqrt(2), -1/sqrt(2))
 
 Base.:(==)(a::QuantumState, b::QuantumState) = begin
-    return get_vec(a) ≈ get_vec(b)
+    return a.vec ≈ b.vec
 end
 Base.hash(q::QuantumState) = begin
     return Base.hash(q.vec)
