@@ -5,34 +5,18 @@ using Distributions
 using StatsBase
 # Random.seed!(8675309)
 
-include("quantum_state.jl")
+include("utils.jl")
+using .Utils:
+    dot_prod,
+    magnitude,
+    project
+
 using ..QuStates:
     QuantumState,
     KET_ZERO_STATE,
     KET_ONE_STATE,
     KET_PLUS_STATE,
     KET_MINUS_STATE
-
-# TODO: I should create a utility to represent the angles in different vector fields
-#       - Standard
-#       - Bloch
-function polarToCartesian(θ::Real, base1::Vector{<:Real}, base2::Vector{<:Real})
-    return cosd(θ) * base1 + sind(θ) * base2
-end
-
-# TODO: I should move some of these linear algebra functions to a utility module
-function dot_prod(a::Vector{<:Real}, b::Vector{<:Real})
-    return a' * b
-end
-
-function magnitude(v::Vector{<:Real})
-    return sqrt(sum(v.^2))
-end
-
-# Project vector a onto vector b
-function project(a::Vector{<:Real}, b::Vector{<:Real})
-    return (dot_prod(a,b) / dot_prod(b,b)) .* b
-end
 
 struct Qubit
     label::String
