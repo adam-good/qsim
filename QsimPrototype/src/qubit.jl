@@ -50,6 +50,8 @@ const KET_ZERO  = Qubit("|0⟩", KET_ZERO_STATE)
 const KET_ONE   = Qubit("|1⟩", KET_ONE_STATE)
 const KET_PLUS  = Qubit("|+⟩", KET_PLUS_STATE)
 const KET_MINUS = Qubit("|-⟩", KET_MINUS_STATE)
+const Z_BASIS = [KET_ZERO_STATE, KET_ONE_STATE]
+const X_BASIS = [KET_PLUS_STATE, KET_MINUS_STATE]
 
 function calculate_measure_probability(ψ::Qubit, t::QuantumState)
     proj = project(ψ.state.vec, t.vec)
@@ -67,7 +69,7 @@ function measure(ψ::Qubit, target_state::QuantumState)
         #       the oppisite state from that
         # new_state = [target_state[2]; target_state[1];]
         new_state = QuantumState(target_state.β, target_state.α)
-        return Qubit(ψ.label, new_state)
+        return Qubit("M$(ψ.label)", new_state)
     end
 end
 
@@ -128,6 +130,10 @@ end
 
 function qreset(ψ::Qubit)
     return Qubit(ψ.label, 1.0, 0.0)
+end
+
+Base.show(io::IO, qubit::Qubit) = begin
+    print(io, "Qubit{$(qubit.label), $(qubit.state)}")
 end
 
 end

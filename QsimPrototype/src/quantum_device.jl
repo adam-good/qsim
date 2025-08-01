@@ -38,6 +38,7 @@ end
 
 function qalloc!(device::QuantumDevice)
     q = dequeue!(device.queue)
+    q = qreset(q)
     return q
 end
 

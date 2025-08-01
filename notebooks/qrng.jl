@@ -185,31 +185,71 @@ function BB84_decode(device::QuantumDevice, ψ::Qubit)::Tuple{Int, Int}
 	basis_bit = qrng(device,1)
 	basis = basises[basis_bit]
 
-	ϕ = measure(ψ, basis[0])
-	result = (BB84_qaunt_to_classic[ϕ], basis_bit)
+	#println(ψ)
+	#println(basis[1])
+	
+	
+	ψ = measure(ψ, basis[1])
+	result = (BB84_qaunt_to_classic[ψ], basis_bit)
 
+	#println(ψ)
+	#println("=================\n")
+	
 	qfree!(device,ψ)
 	return result
 end
 
-# ╔═╡ 87c1f0fa-9dc1-4fcc-b659-e181707846ec
+# ╔═╡ bfb6dbf6-32a1-44f0-a3b3-096a94429205
 begin
-	N = 4
+	N = 8
 	key = qrng(device, N)
-	basis = qrng(device, N)
+	recv_key = Vector{Int}(undef, N)
+	
+	auth_chnl_1 = Channel(1)
+	auth_chnl_2 = Channel(1)
+	qubit_chnl = Channel(1)
 
-	for i = 1:N
+	for (idx,k) in enumerate(key)
 		match = false
-		while match == false
-			ψ = BB84_encode(device, key[i], basis[i])
-			# Beep Boop Communicate Across Quantume Network Beep Bop Boop
-			key_prime, basis_prime = BB84_decode(device, ψ)
-			if basis_prime == basis[i]
-				match = true
+		while !match
+			# Send Qubit With Key Encoded
+			# ===== Sender =========================
+			basis = qrng(device, 1)
+			ψ = BB84_encode(device, k, basis)
+			put!(qubit_chnl, ψ)
+			# ======================================
+
+			# Recieve Qubit and Decode
+			# ============== Reciever ==============
+			ψ′ = take!(qubit_chnl)
+			k′, basis′ = BB84_decode(device, ψ′)
+			# ======================================
+
+			# Verify Basis W/ Sender
+			# =============== Reciever =============
+			put!(auth_chnl_1, basis′)
+			# =======================================
+
+			# =============== Sender ================
+			val = take!(auth_chnl_1)
+			if (val == basis)
+				put!(auth_chnl_2, true)
+			else
+				put!(auth_chnl_2, false)
 			end
+			# ======================================
+
+			# =============== Reciever =============
+			match = take!(auth_chnl_2)
+			if match
+				recv_key[idx] = k′
+			end
+			# ======================================
 		end
 	end
 
+	println(key)
+	println(recv_key)
 	
 end
 
@@ -1788,6 +1828,6 @@ version = "3.6.0+0"
 # ╟─a5db8364-b1b6-4f82-a8a2-b836dad4c8eb
 # ╠═d5b9588b-c758-4ba2-9c7f-747cff09bfde
 # ╠═5363e89c-45b9-48ce-a5e1-d95f70571e12
-# ╠═87c1f0fa-9dc1-4fcc-b659-e181707846ec
+# ╠═bfb6dbf6-32a1-44f0-a3b3-096a94429205
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
