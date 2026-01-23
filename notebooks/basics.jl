@@ -23,6 +23,7 @@ begin
 	using Distributions
 	using DataStructures
 	using StatsBase
+	using DataStructures
 	using PlutoUI
 
 	include("../QsimPrototype/src/qsim.jl")
@@ -1682,7 +1683,7 @@ version = "3.6.0+0"
 # ╟─c9d4c55f-d06a-40f8-99db-d023632ebe17
 # ╟─e4070061-51d1-48a0-bdf8-d8b2dc217768
 # ╟─eb186cb3-1ca3-4fcc-a242-83452da1289e
-# ╟─d675961d-0529-40d3-a7f1-e9c913523960
+# ╠═d675961d-0529-40d3-a7f1-e9c913523960
 # ╟─c6465ddf-de8f-4f06-8976-ff62176b01d8
 # ╟─a63fa64a-b880-466b-8045-b2aaa97cb862
 # ╟─a8cf425f-e869-4839-93f4-2f9f06afa848

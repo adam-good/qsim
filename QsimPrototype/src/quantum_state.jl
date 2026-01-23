@@ -38,6 +38,8 @@ Base.hash(q::QuantumState) = begin
     return Base.hash(q.vec)
 end
 
+Base.show(io::IO, state::QuantumState) = begin
+    print(io, "QState{$(round(state.α, digits=2)),$(round(state.β, digits=2)),$(round(state.θ, digits=2))}")
 end
 
-
+end
