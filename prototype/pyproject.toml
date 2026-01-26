@@ -1,0 +1,15 @@
+[project]
+name = "prototype"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "jedi-language-server>=0.46.0",
+    "python-lsp-server>=1.14.0",
+    "ruff>=0.14.14",
+    "ty>=0.0.13",
+]
