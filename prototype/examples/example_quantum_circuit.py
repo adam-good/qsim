@@ -1,7 +1,7 @@
 # prototype/examples/example_quantum_circuit.py
 
-from prototype.quantum.gate import HGate, CNOTGate
-from prototype.quantum.circuit import QuantumCircuit
+from quantum.gate import HGate, CNOTGate
+from quantum.circuit import QuantumCircuit
 
 def main():
     # Create a quantum circuit with 2 qubits

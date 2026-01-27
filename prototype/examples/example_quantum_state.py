@@ -1,7 +1,6 @@
 # prototype/examples/example_quantum_state.py
 
-from prototype.quantum.qubit import Qubit
-from prototype.quantum.quantum_state import QuantumState
+from quantum.qubit import Qubit, QuantumState
 import numpy as np
 
 def main():

@@ -1,6 +1,6 @@
 # prototype/examples/example_qubit_measurement.py
 
-from prototype.quantum.qubit import Qubit
+from quantum.qubit import Qubit
 
 def main():
     # Create a qubit in the initial state |0>
