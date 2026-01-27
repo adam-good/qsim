@@ -1,6 +1,6 @@
 import numpy as np
-from .quantum_state import QuantumState
 from .qubit import Qubit
+from ..quantum_state import QuantumState  # Import QuantumState from quantum_state.py
 
 class QuantumCircuit:
     def __init__(self, num_qubits):
