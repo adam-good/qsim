@@ -28,43 +28,43 @@ class TestQuantumState(unittest.TestCase):
 
     def test_quantumestate_angles(self):
         ket0 = QuantumState(np.array([1.0, 0.0]))
-        outcome = ket0.to_angles()
+        outcome = ket0.angle
         target = 0.0
         np.testing.assert_equal(outcome, target)
 
         ket1 = QuantumState(np.array([0.0, 1.0]))
-        outcome = ket1.to_angles()
+        outcome = ket1.angle
         target = 90.0
         np.testing.assert_equal(outcome, target)
 
         ket_plus = QuantumState(np.array([1.0, 1.0]) / np.sqrt(2))
-        outcome = ket_plus.to_angles()
+        outcome = ket_plus.angle
         target = 45.0
         np.testing.assert_equal(outcome, target)
 
         ket_minus = QuantumState(np.array([1.0, -1.0]) / np.sqrt(2))
-        outcome = ket_minus.to_angles()
+        outcome = ket_minus.angle
         target = 360.0 - 45.0
         np.testing.assert_equal(outcome, target)
 
     def test_quantumstate_bloch_angles(self):
         ket0 = QuantumState(np.array([1.0, 0.0]))
-        outcome = ket0.to_bloch_angles()
+        outcome = ket0.bloch_angles
         target = 0.0
         np.testing.assert_equal(outcome, target)
 
         ket1 = QuantumState(np.array([0.0, 1.0]))
-        outcome = ket1.to_bloch_angles()
+        outcome = ket1.bloch_angles
         target = 180.0
         np.testing.assert_equal(outcome, target)
 
         ket_plus = QuantumState(np.array([1.0, 1.0]) / np.sqrt(2))
-        outcome = ket_plus.to_bloch_angles()
+        outcome = ket_plus.bloch_angles
         target = 90.0
         np.testing.assert_equal(outcome, target)
 
         ket_minus = QuantumState(np.array([1.0, -1.0]) / np.sqrt(2))
-        outcome = ket_minus.to_bloch_angles()
+        outcome = ket_minus.bloch_angles
         target = 270
         np.testing.assert_equal(outcome, target)
 
