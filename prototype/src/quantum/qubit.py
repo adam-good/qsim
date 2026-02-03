@@ -1,4 +1,5 @@
 import numpy as np
+from utils.math import vec2d_to_angle
 
 class QuantumState:
     def __init__(self, state=np.array([1.0, 0.0])):
@@ -7,9 +8,17 @@ class QuantumState:
     def to_vector(self):
         return self.state
 
+    def x(self):
+        return self.state[0]
+
+    def y(self):
+        return self.state[1]
+
     def to_angles(self):
-        angles = np.angle(self.state)
-        return angles
+        return vec2d_to_angle(self.x(), self.y())
+
+    def to_bloch_angles(self):
+        return vec2d_to_angle(self.x(), self.y(), lambda x: 2*x)
 
     def to_probability_distribution(self):
         probabilities = np.abs(self.state) ** 2
