@@ -1,12 +1,12 @@
 import numpy as np
 
-def rad2deg(theta):
-    return theta * 180/np.pi
+def rad2deg(theta: float) -> float:
+    return theta * 180 / np.pi
 
-def deg2rad(theta):
-    return theta * np.pi/180
+def deg2rad(theta: float) -> float:
+    return theta * np.pi / 180
 
-def vec2d_to_angle(x, y, transform_fn=lambda x: x):
+def vec2d_to_angle(x: float, y: float, transform_fn: callable = lambda x: x) -> float:
     angle = np.atan2(y, x)
     angle = transform_fn(angle)
     angle = rad2deg(angle)
