@@ -1,3 +1,4 @@
+from quantum.gate import hgate
 import dataclasses
 import numpy as np
 from utils.math import vec2d_to_angle
@@ -7,7 +8,7 @@ def _ket0_state_factory():
 
 @dataclasses.dataclass(frozen=True)
 class QuantumState:
-    state: np.ndarray = dataclasses.field(default_factory=_ket0_state_factory)
+    state_vec: np.ndarray = dataclasses.field(default_factory=_ket0_state_factory)
 
     def __post__init__(self):
         # TODO: Implement Proper Errors
@@ -21,15 +22,15 @@ class QuantumState:
             return False
 
     def to_vector(self) -> np.ndarray:
-        return self.state
+        return self.state_vec
 
     @property
     def _x(self) -> float:
-        return self.state[0]
+        return self.state_vec[0]
 
     @property
     def _y(self) -> float:
-        return self.state[1]
+        return self.state_vec[1]
 
     @property
     def angle(self) -> float:
@@ -41,7 +42,7 @@ class QuantumState:
 
     @property
     def probability_distribution(self) -> np.ndarray:
-        probabilities = np.abs(self.state) ** 2
+        probabilities = np.abs(self.state_vec) ** 2
         return probabilities
 
 
@@ -60,3 +61,13 @@ class Qubit:
         # Collapse the wavefunction and return a classical bit
         self._collapse()
         return self.state
+
+    def hadamard(self) -> Qubit:
+        vector = self.state.to_vector()
+        state_vec = hgate(vector)
+        new_state = QuantumState(state_vec)
+        self.state = new_state
+        return self
+
+    #def not(self) -> Qubit:
+        

@@ -90,12 +90,12 @@ class TestQubit(unittest.TestCase):
         target = QuantumState(np.array([1,0]))
         ket0 = Qubit(target)
         outcome = ket0.measure()
-        np.testing.assert_array_almost_equal(outcome.state, target.state)
+        np.testing.assert_array_almost_equal(outcome.state_vec, target.state_vec)
 
         target = QuantumState(np.array([0,1]))
         ket1 = Qubit(target)
         outcome = ket1.measure()
-        np.testing.assert_array_almost_equal(outcome.state, target.state)
+        np.testing.assert_array_almost_equal(outcome.state_vec, target.state_vec)
 
 if __name__ == "__main__":
     unittest.main()
