@@ -1,4 +1,4 @@
-from quantum.gate import hgate
+from quantum.gate import hgate, XGate, xgate
 import dataclasses
 import numpy as np
 from utils.math import vec2d_to_angle
@@ -69,5 +69,10 @@ class Qubit:
         self.state = new_state
         return self
 
-    #def not(self) -> Qubit:
+    def negate(self) -> Qubit:
+        vector = self.state.to_vector()
+        state_vec = xgate(vector)
+        new_state = QuantumState(state_vec)
+        self.state = new_state
+        return self
         
