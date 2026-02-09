@@ -1,14 +1,35 @@
+import dataclasses
 import numpy as np
 from utils.math import vec2d_to_angle
 
+def _ket0_state_factory():
+    return np.array([1.0, 0.0])
+
+@dataclasses.dataclass(frozen=True)
 class QuantumState:
-    def __init__(self, state: np.ndarray = np.array([1.0, 0.0])):
-        self._x = state[0]
-        self._y = state[1]
-        self.state = state
+    state: np.ndarray = dataclasses.field(default_factory=_ket0_state_factory)
+
+    def __post__init__(self):
+        # TODO: Implement Proper Errors
+        if not self.is_valid():
+            raise Exception("Invalid Quantum State")
+
+    def is_valid(self) -> bool:
+        if self._x ** 2 + self._y ** 2 == 1.0:
+            return True
+        else:
+            return False
 
     def to_vector(self) -> np.ndarray:
         return self.state
+
+    @property
+    def _x(self) -> float:
+        return self.state[0]
+
+    @property
+    def _y(self) -> float:
+        return self.state[1]
 
     @property
     def angle(self) -> float:
