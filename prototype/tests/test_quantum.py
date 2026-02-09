@@ -68,6 +68,22 @@ class TestQuantumState(unittest.TestCase):
         target = 270
         np.testing.assert_equal(outcome, target)
 
+    def test_quantumstate_probability_distribution(self):
+        ket0 = QuantumState(np.array([1.0, 0.0]))
+        outcome = ket0.probability_distribution
+        target = np.array([1.0, 0.0])
+        np.testing.assert_array_almost_equal(outcome, target)
+
+        ket1 = QuantumState(np.array([0.0, 1.0]))
+        outcome = ket1.probability_distribution
+        target = np.array([0.0, 1.0])
+        np.testing.assert_array_almost_equal(outcome, target)
+
+        psi = QuantumState(np.array([1.0, 1.0]) / np.sqrt(2))
+        outcome = psi.probability_distribution
+        target = np.array([0.5,0.5])
+        np.testing.assert_array_almost_equal(outcome, target)
+
 # class TestQubit(unittest.TestCase):
   
 #     def test_qubit_measure(self):
