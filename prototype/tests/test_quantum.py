@@ -84,12 +84,18 @@ class TestQuantumState(unittest.TestCase):
         target = np.array([0.5,0.5])
         np.testing.assert_array_almost_equal(outcome, target)
 
-# class TestQubit(unittest.TestCase):
+class TestQubit(unittest.TestCase):
   
-#     def test_qubit_measure(self):
-#         qubit = Qubit()
-#         outcome = qubit.measure()
-#         self.assertIn(outcome, [0, 1])
+    def test_qubit_measure(self):
+        target = QuantumState(np.array([1,0]))
+        ket0 = Qubit(target)
+        outcome = ket0.measure()
+        np.testing.assert_array_almost_equal(outcome.state, target.state)
+
+        target = QuantumState(np.array([0,1]))
+        ket1 = Qubit(target)
+        outcome = ket1.measure()
+        np.testing.assert_array_almost_equal(outcome.state, target.state)
 
 if __name__ == "__main__":
     unittest.main()

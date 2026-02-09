@@ -28,9 +28,14 @@ class Qubit:
     def __init__(self, state: QuantumState = QuantumState()):
         self.state = state
 
-    def measure(self) -> int:
+    def _collapse(self):
+        probabilities = self.state.probability_distribution
+        outcome_idx = np.random.choice([0,1], p=probabilities)
+        new_state = np.zeros(shape=(2,))
+        new_state[outcome_idx] = 1.0
+        self.state = QuantumState(new_state)
+
+    def measure(self) -> QuantumState:
         # Collapse the wavefunction and return a classical bit
-        probabilities = np.abs(self.state.to_vector()) ** 2
-        outcome = np.random.choice([0, 1], p=probabilities)
-        self.state = QuantumState(np.array([int(outcome == 0), int(outcome == 1)]))
-        return outcome
+        self._collapse()
+        return self.state
