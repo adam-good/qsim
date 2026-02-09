@@ -1,23 +1,23 @@
 import unittest
 import numpy as np
-#from quantum.gate import HGate, CNOTGate
+from quantum.gate import HGate, XGate
 from quantum.qubit import Qubit, QuantumState
 
-# class TestHGate(unittest.TestCase):
-#     def test_h_gate(self):
-#         h_gate = HGate()
-#         qubits = np.array([1.0, 0.0])
-#         result = h_gate(qubits)
-#         expected_result = np.array([1/np.sqrt(2), 1/np.sqrt(2)])
-#         np.testing.assert_almost_equal(result, expected_result)
+class TestHGate(unittest.TestCase):
+    def test_h_gate(self):
+        h_gate = HGate()
+        qubit = Qubit()
+        result = h_gate(qubit)
+        expected_result = np.array([1, 1]) / np.sqrt(2)
+        np.testing.assert_almost_equal(result, expected_result)
 
-# class TestCNOTGate(unittest.TestCase):
-#     def test_cnot_gate(self):
-#         cnot_gate = CNOTGate()
-#         qubits = np.array([1.0, 0.0, 0.0, 0.0])
-#         result = cnot_gate(qubits)
-#         expected_result = np.array([1.0, 0.0, 0.0, 0.0])
-#         np.testing.assert_almost_equal(result, expected_result)
+class TestXGate(unittest.TestCase):
+    def test_cnot_gate(self):
+        cnot_gate = XGate()
+        qubits = Qubit()
+        result = cnot_gate(qubits)
+        expected_result = np.array([0.0, 1.0])
+        np.testing.assert_almost_equal(result, expected_result)
 
 class TestQuantumState(unittest.TestCase):
     def test_quantumstate_to_vector(self):
