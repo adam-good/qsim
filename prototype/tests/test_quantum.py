@@ -24,7 +24,7 @@ class TestQuantumState(unittest.TestCase):
     def test_quantumstate_to_vector(self):
         vec = np.array([np.pi, 2*np.pi])
         state = QuantumState(vec)
-        outcome = state.to_vector
+        outcome = state.vector
         np.testing.assert_array_equal(outcome, vec)
 
     def test_quantumestate_angles(self):
@@ -55,7 +55,7 @@ class TestQuantumState(unittest.TestCase):
         targets = (0.0, 180.0, 90.0, 270.0)
         for vec, target in zip(vectors, targets):
             psi = QuantumState(vec)
-            outcome = psi.bloch_angles
+            outcome = psi.bloch_angle
             np.testing.assert_equal(outcome, target)
 
     def test_quantumstate_probability_distribution(self):
