@@ -23,7 +23,7 @@ class TestQuantumState(unittest.TestCase):
     def test_quantumstate_to_vector(self):
         vec = np.array([np.pi, 2*np.pi])
         state = QuantumState(vec)
-        outcome = state.to_vector()
+        outcome = state.to_vector
         np.testing.assert_array_equal(outcome, vec)
 
     def test_quantumestate_angles(self):

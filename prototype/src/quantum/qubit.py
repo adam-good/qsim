@@ -1,4 +1,4 @@
-from quantum.gate import hgate, xgate
+from utils.gates import hgate, xgate
 import dataclasses
 import numpy as np
 from utils.math import vec2d_to_angle
