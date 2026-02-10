@@ -48,7 +48,7 @@ class QuantumState:
     @property
     def probability_distribution(self) -> q_vector:
         probabilities: q_vector = np.abs(self.state_vec) ** 2
-        return probabilities
+        return probabilities  
 
 
 class Qubit:

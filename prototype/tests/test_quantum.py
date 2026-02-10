@@ -1,3 +1,4 @@
+from numpy.ma.testutils import assert_equal
 import unittest
 import numpy as np
 from quantum.gate import HGate, XGate
@@ -75,6 +76,11 @@ class TestQuantumState(unittest.TestCase):
             psi = QuantumState(vec)
             outcome = psi.probability_distribution
             np.testing.assert_array_almost_equal(outcome, target)
+
+    def test_quantumstate_eq(self):
+        psi = QuantumState(np.array([1.0,0.0]))
+        omega = QuantumState(np.array([1.0,0.0]))
+        assert_equal(psi == omega, True)
 
 class TestQubit(unittest.TestCase):
   
