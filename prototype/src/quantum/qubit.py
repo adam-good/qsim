@@ -63,8 +63,20 @@ class QuantumState:
 
 
 class Qubit:
-    def __init__(self, state: QuantumState = QuantumState()):
-        self.state = state
+    def __init__(self, state: QuantumState | list[float] | np.typing.NDArray[np.float64] = QuantumState()):
+        if isinstance(state, QuantumState):
+            self._from_quantumstate(state)
+        elif isinstance(state, list):
+            self._from_list(state)
+        elif isinstance(state, np.typing.NDArray[np.float64]):
+            self._from_ndarr(state)
+
+    def _from_quantumstate(self, state: QuantumState):
+        self.state: QuantumState = state
+    def _from_list(self, vec_list: list):
+        self.state: QuantumState = QuantumState(np.array(vec_list))
+    def _from_ndarr(self, vec: np.typing.NDArray[np.float64]):
+        self.state: QuantumState = QuantumState(vec)
 
     def _collapse(self):
         probabilities: q_vector = self.state.probability_distribution
