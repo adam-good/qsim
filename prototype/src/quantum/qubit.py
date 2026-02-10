@@ -1,4 +1,3 @@
-from numpy.f2py.auxfuncs import throw_error
 from utils.gates import hgate, xgate
 import dataclasses
 import numpy as np
