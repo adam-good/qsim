@@ -24,7 +24,7 @@ class QuantumState:
             return False
 
     @property
-    def to_vector(self) -> q_vector:
+    def vector(self) -> q_vector:
         return self.state_vec
 
     @property
@@ -41,14 +41,25 @@ class QuantumState:
         return np.float64(angle)
 
     @property
-    def bloch_angles(self) -> np.float64:
+    def bloch_angle(self) -> np.float64:
         angle = vec2d_to_angle(self._x, self._y, lambda x: 2 * x)
         return np.float64(angle)
 
     @property
     def probability_distribution(self) -> q_vector:
         probabilities: q_vector = np.abs(self.state_vec) ** 2
-        return probabilities  
+        return probabilities
+
+    def __repr__(self) -> str:
+        theta_char = "\N{GREEK SMALL LETTER THETA}"
+        bloch_char = "\N{GREEK SMALL LETTER BETA}"
+        return (
+            f"QState["
+                    f"vec: {self.vector}, "
+                    f"{theta_char}: {self.angle}, "
+                    f"{bloch_char}: {self.bloch_angle}, "   
+                    f"P: {self.probability_distribution}]"
+                )
 
 
 class Qubit:
@@ -68,14 +79,14 @@ class Qubit:
         return self.state
 
     def hadamard(self) -> Qubit:
-        vector = self.state.to_vector
+        vector = self.state.vector
         state_vec = hgate(vector)
         new_state = QuantumState(state_vec)
         self.state = new_state
         return self
 
     def negate(self) -> Qubit:
-        vector = self.state.to_vector
+        vector = self.state.vector
         state_vec: q_vector = xgate(vector)
         new_state = QuantumState(state_vec)
         self.state = new_state
@@ -83,4 +94,6 @@ class Qubit:
 
     def __eq__(self, other) -> bool:
         return self.state == other.state
-        
+
+    def __repr__(self) -> str:
+        return f"QBit({self.state.vector})"
