@@ -80,4 +80,7 @@ class Qubit:
         new_state = QuantumState(state_vec)
         self.state = new_state
         return self
+
+    def __eq__(self, other) -> bool:
+        return self.state == other.state
         
