@@ -12,6 +12,17 @@ class Gate:
         qubit.state = QuantumState(new_state)
         return new_state
 
+    def __matmul__(self, other: Gate | Qubit | QuantumState) -> Gate | QuantumState:
+        if isinstance(other, Gate):
+            return Gate(self.matrix @ other.matrix)
+        elif isinstance(other, Qubit):
+            state = QuantumState(self.matrix @ other.state.vector)
+            other.state = state
+            return state
+        elif isinstance(other, QuantumState):
+            return QuantumState(self.matrix @ other.vector)
+              
+
 class HGate(Gate):
     def __init__(self):
         super().__init__(H_GATE)
