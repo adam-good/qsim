@@ -1,27 +1,13 @@
-from black.trans import is_valid_index_factory
 from quantum.qubit import Qubit, QuantumState
-from utils.gates import H_GATE, X_GATE
+from utils.gates import H_GATE, X_GATE, is_unitary
 import numpy as np
 import numpy.typing as npt
 
 class Gate:
     def __init__(self, matrix: npt.NDArray[np.float64]):
-        if not self._is_valid(matrix):
+        if not is_unitary(matrix):
             raise Exception("Invalid Gate! Matrix Not Unitary")
-        self.matrix = matrix
-
-    def _is_valid(self,matrix: npt.NDArray[np.float64]) -> bool:
-        def is_square(matrix: npt.NDArray) -> bool:
-            return len(matrix.shape) == 2 and matrix.shape[0] == matrix.shape[1]
-
-        if not is_square(matrix):
-            return False
-                
-        identity = np.identity(matrix.shape[0])
-        # TODO: Add the conjugate part when we upgrade to complex numbers
-        conj_transpose = matrix.transpose()
-
-        return np.allclose(matrix @ conj_transpose, identity)
+        self.matrix = matrix          
     
     def __call__(self, qubit: Qubit) -> np.ndarray:
         new_state = self.matrix @ qubit.state.vector
