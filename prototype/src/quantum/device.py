@@ -1,6 +1,7 @@
+from typing import Iterator
 from decorator import contextmanager
 from enum import Enum
-from src.quantum.qubit import Qubit
+from quantum.qubit import Qubit
 import quantum.qubit as q
 
 class AllocState(Enum):
@@ -39,12 +40,12 @@ class QuantumDevice():
             if qubit is d_qubit.qubit:
                 d_qubit.dealloc()
         else:
-            raise Exception("WOOP WOOP !Foriegn Qubit Detected! WOOP WOOP!")
+            raise Exception("WOOP WOOP !Foriegn Qubit Detected! WOOP WOOP")
 
     @contextmanager
-    def qalloc(self):
-        qubit = self._alloc()
+    def qalloc(self) -> Iterator[Qubit]:
         try:
+            qubit = self._alloc()
             yield qubit
         finally:
             self._dealloc(qubit)
