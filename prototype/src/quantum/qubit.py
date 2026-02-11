@@ -23,9 +23,6 @@ class QuantumState:
         else:
             return False
 
-    @property
-    def vector(self) -> q_vector:
-        return self.state_vec
 
     @property
     def _x(self) -> np.float64:
@@ -34,6 +31,15 @@ class QuantumState:
     @property
     def _y(self) -> np.float64:
         return self.state_vec[1]
+
+    @property
+    def vector(self) -> q_vector:
+        return self.state_vec
+
+    @property
+    def bloch_vector(self) -> q_vector:
+        angle = np.deg2rad(self.bloch_angle)
+        return np.array([np.cos(angle), np.sin(angle)])
 
     @property
     def angle(self) -> np.float64:
