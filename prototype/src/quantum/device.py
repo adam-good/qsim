@@ -1,3 +1,4 @@
+from decorator import contextmanager
 from enum import Enum
 from src.quantum.qubit import Qubit
 import quantum.qubit as q
@@ -26,16 +27,25 @@ class QuantumDevice():
         self.n_qubits = n
         self.qubits = [DeviceQubit() for _ in range(n)]
         
-    def alloc(self) -> Qubit:
+    def _alloc(self) -> Qubit:
         for d_qubit in self.qubits:
             if d_qubit.status == AllocState.FREE:
                 return d_qubit.alloc()
         else:
             raise Exception("You're out of Qubits, Buddy!")
 
-    def dealloc(self, qubit: q.Qubit):
+    def _dealloc(self, qubit: q.Qubit):
         for d_qubit in self.qubits:
             if qubit is d_qubit.qubit:
                 d_qubit.dealloc()
         else:
             raise Exception("WOOP WOOP !Foriegn Qubit Detected! WOOP WOOP!")
+
+    @contextmanager
+    def qalloc(self):
+        qubit = self._alloc()
+        try:
+            yield qubit
+        finally:
+            self._dealloc(qubit)
+            
