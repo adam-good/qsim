@@ -1,4 +1,3 @@
-from wcwidth import width
 import matplotlib.pyplot as plt
 import quantum.qubit as q
 
