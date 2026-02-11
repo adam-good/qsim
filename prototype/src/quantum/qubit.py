@@ -68,6 +68,12 @@ class QuantumState:
                 )
 
 
+
+KET_0 = QuantumState(np.array([1,0]))
+KET_1 = QuantumState(np.array([0,1]))
+KET_PLUS = QuantumState(np.array([1,1]) / np.sqrt(2))
+KET_MINUS = QuantumState(np.array([1,-1]) / np.sqrt(2))
+
 class Qubit:
     def __init__(self, state: QuantumState | list[float] | np.typing.NDArray[np.float64] = QuantumState()):
         if isinstance(state, QuantumState):
