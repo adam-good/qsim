@@ -1,6 +1,6 @@
-from utils.gates import hgate, xgate
 import dataclasses
 import numpy as np
+from utils.gates import hgate, xgate
 from utils.math import vec2d_to_angle
 
 type q_vector = np.typing.NDArray[np.float64]
