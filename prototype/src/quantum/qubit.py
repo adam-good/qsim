@@ -56,6 +56,9 @@ class QuantumState:
         probabilities: q_vector = np.abs(self.state_vec) ** 2
         return probabilities
 
+    def __eq__(self, other) -> bool:
+        return (self.vector == other.vector).all()
+
     def __repr__(self) -> str:
         theta_char = "\N{GREEK SMALL LETTER THETA}"
         bloch_char = "\N{GREEK SMALL LETTER BETA}"
@@ -120,4 +123,4 @@ class Qubit:
         return self.state == other.state
 
     def __repr__(self) -> str:
-        return f"QBit({self.state.vector})"
+        return f"{self.id} QBit({self.state.vector})"

@@ -39,8 +39,9 @@ class QuantumDevice():
         for d_qubit in self.qubits:
             if qubit is d_qubit.qubit:
                 d_qubit.dealloc()
-        else:
-            raise Exception("WOOP WOOP !Foriegn Qubit Detected! WOOP WOOP")
+                break
+            else:
+                raise Exception("WOOP WOOP !Foriegn Qubit Detected! WOOP WOOP")
 
     @contextmanager
     def qalloc(self) -> Iterator[Qubit]:
