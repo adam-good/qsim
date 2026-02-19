@@ -19,7 +19,7 @@ def main():
             raise Exception("Invalid Quantum State in Bitmap")
 
     device = QuantumDevice(4)
-    qrng(device, bitmap)
+    print([qrng(device, bitmap) for _ in range(16)])
         
 
 if __name__ == "__main__":
