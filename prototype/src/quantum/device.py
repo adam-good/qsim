@@ -1,3 +1,5 @@
+from string import ascii_lowercase
+import typing
 from typing import Iterator
 from decorator import contextmanager
 from enum import Enum
@@ -9,8 +11,10 @@ class AllocState(Enum):
     FREE = 2    
 
 class DeviceQubit():
-    def __init__(self):
-        self.qubit = q.Qubit()
+    def __init__(self, id: str | None = None, log: typing.IO | None = None):
+        self.id = id
+        self.log = log
+        self.qubit = q.Qubit(id=id, log=log)
         self.status = AllocState.FREE
 
     def alloc(self) -> q.Qubit:
@@ -20,13 +24,14 @@ class DeviceQubit():
     def dealloc(self):
         # TODO: Should I reset here?
         del self.qubit
-        self.qubit = q.Qubit()
+        self.qubit = q.Qubit(id=self.id, log=self.log)
         self.status = AllocState.FREE
 
 class QuantumDevice():
-    def __init__(self, n: int):
+    def __init__(self, n: int, var_names: list[str] = list(ascii_lowercase), log: typing.IO | None = None):
         self.n_qubits = n
-        self.qubits = [DeviceQubit() for _ in range(n)]
+        self.log = log
+        self.qubits = [DeviceQubit(id=var_names[i], log=self.log) for i in range(n)]
         
     def _alloc(self) -> Qubit:
         for d_qubit in self.qubits:

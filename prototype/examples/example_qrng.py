@@ -1,6 +1,7 @@
 from typing import Callable, IO
 from quantum.qubit import Qubit, QuantumState, KET_0, KET_1
 from quantum.device import QuantumDevice
+from quantum.viz import open_csv
 
 def qrng(device: QuantumDevice, bitmap: Callable[[QuantumState], int], logging: IO | None = None) -> int:
     psi: Qubit # Yo why doesn't type hinting work!
@@ -23,9 +24,10 @@ def main():
             raise Exception("Invalid Quantum State in Bitmap")
 
 
-    device = QuantumDevice(4)
-    with open("output/data.csv", "w") as datafile:
-        result = [qrng(device, bitmap, datafile) for _ in range(16)]
+
+    with open_csv('./output/data.csv') as datafile:
+        device = QuantumDevice(4, log=datafile)
+        result = [qrng(device, bitmap) for _ in range(16)]
     print(result)
         
 

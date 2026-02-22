@@ -1,3 +1,4 @@
+import typing
 import matplotlib.pyplot as plt
 import quantum.qubit as q
 import numpy as np
@@ -31,3 +32,8 @@ def plot(psi: list[q.Qubit] | dict[str, q.Qubit], bloch=True):
     
     plt.show()
 
+QSIM_CSV_HEADER: str = "id,x,y\n"
+def open_csv(name: str) -> typing.IO:
+    f = open(name, "w")
+    f.write(QSIM_CSV_HEADER)
+    return f
