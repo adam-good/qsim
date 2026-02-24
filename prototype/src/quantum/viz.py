@@ -1,8 +1,29 @@
+from src.quantum.qubit import QuantumState
 from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 import matplotlib.animation as anim
 import quantum.qubit as q
 import numpy as np
+
+class VizQubit():
+    def __init__(self, qubit: q.Qubit):
+        self.label: str = qubit.id
+        self.history: list[q.QuantumState] = [qubit.state]
+        self.current_state: q.QuantumState = qubit.state
+
+    def plot(self, ax: plt.Axes) -> plt.Line2D:
+        x,y = self._get_coords()
+        line, = ax.plot([0, x], [0, y], linestyle='dashed', label=self.label)
+        return line
+
+    
+    def _get_coords(self, bloch=True) -> tuple[np.float64, np.float64]:
+        if bloch:
+            vec = self.current_state.bloch_vector
+        else:
+            vec = self.current_state.vector
+        return (vec[0], vec[1])
+        
 
 def plot(psi: list[q.QuantumState] | dict[str, q.QuantumState], bloch=True):
     def get_coords(state: q.QuantumState) -> tuple[np.float64, np.float64]:
