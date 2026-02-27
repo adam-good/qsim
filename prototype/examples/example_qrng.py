@@ -1,7 +1,9 @@
+from quantum.viz import animate_state_timeseries
 from typing import Callable, IO
-from quantum.qubit import Qubit, QuantumState, KET_0, KET_1
+from quantum.qubit import Qubit
+from quantum.state import QuantumState, KET_0, KET_1
 from quantum.device import QuantumDevice
-from quantum.viz import open_csv
+from utils.data import open_csv
 
 def qrng(device: QuantumDevice, bitmap: Callable[[QuantumState], int], logging: IO | None = None) -> int:
     psi: Qubit # Yo why doesn't type hinting work!
@@ -26,10 +28,12 @@ def main():
 
 
     with open_csv('./output/data.csv') as datafile:
-        device = QuantumDevice(4, log=datafile)
+        device = QuantumDevice(4, log=datafile, visualize=True)
         result = [qrng(device, bitmap) for _ in range(16)]
+#        anim = animate_state_timeseries(device.qubits[0].qubit.viz.history, device.qubits[0].qubit.label)
+        anim = device.generate_animation()
+        anim.save("output/qrng.mp4", writer="ffmpeg")
     print(result)
-        
 
 if __name__ == "__main__":
     main()

@@ -1,3 +1,5 @@
+from quantum.state import QuantumState
+import quantum.viz as viz
 from string import ascii_lowercase
 import typing
 from typing import Iterator
@@ -11,28 +13,36 @@ class AllocState(Enum):
     FREE = 2    
 
 class DeviceQubit():
-    def __init__(self, id: str | None = None, log: typing.IO | None = None):
-        self.id = id
+    def __init__(self, label: str | None = None, log: typing.IO | None = None, visualize: bool = False):
+        self._label: str | None = label
         self.log = log
-        self.qubit = q.Qubit(id=id, log=log)
+        self.qubit: Qubit = q.Qubit(label=label, log=log, visulize=visualize)
         self.status = AllocState.FREE
+        self.visualize = visualize
+
+    @property
+    def label(self) -> str:
+        return self._label if self._label else ""
 
     def alloc(self) -> q.Qubit:
         self.status = AllocState.ALLOCATED
         return self.qubit
 
     def dealloc(self):
-        # TODO: Should I reset here?
-        del self.qubit
-        self.qubit = q.Qubit(id=self.id, log=self.log)
+        self.qubit = self.qubit.reset()
         self.status = AllocState.FREE
 
 class QuantumDevice():
-    def __init__(self, n: int, var_names: list[str] = list(ascii_lowercase), log: typing.IO | None = None):
+    def __init__(self, n: int, var_names: list[str] = list(ascii_lowercase), log: typing.IO | None = None, visualize: bool = False):
         self.n_qubits = n
         self.log = log
-        self.qubits = [DeviceQubit(id=var_names[i], log=self.log) for i in range(n)]
-        
+        self.qubits: list[DeviceQubit] = [DeviceQubit(label=var_names[i], log=self.log, visualize=visualize) for i in range(n)]
+
+    def generate_animation(self):
+        data: dict[str, list[QuantumState]] = {dqubit.label:dqubit.qubit.viz.history for dqubit in self.qubits if dqubit.qubit.viz}
+        return viz.animate_state_timeseries(data, bloch=False)
+
+
     def _alloc(self) -> Qubit:
         for d_qubit in self.qubits:
             if d_qubit.status == AllocState.FREE:
