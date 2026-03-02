@@ -4,29 +4,12 @@ from quantum.state import QuantumState, KET_0, KET_1
 from quantum.device import QuantumDevice
 from utils.data import open_csv
 
-def qrng(n: int, device: QuantumDevice, bitmap: Callable[[QuantumState], int], logging: IO | None = None) -> list[int]:
-    data: list[int] = n*[0]
-    psi: Qubit
-    i: int = 0
-    for psi in device.qalloc():
+def qrng(device: QuantumDevice, bitmap: Callable[[QuantumState], int]) -> int:
+    psi: Qubit # Yo why doesn't type hinting work!
+    with device.qalloc() as psi:
         psi.hadamard()
-        if logging:
-            logging.write(psi._to_csv_form())
         measurement = psi.measure()
-        if logging:
-            logging.write(psi._to_csv_form())
-        data[i] = bitmap(measurement)
-        i = i + 1
-    
-    # psi: Qubit # Yo why doesn't type hinting work!
-    # with device.qalloc() as psi:
-    #     psi.hadamard()
-    #     if logging:
-    #         logging.write(psi.to_csv_form())
-    #     measurement = psi.measure()
-    #     if logging:
-    #         logging.write(psi.to_csv_form())
-    # return bitmap(measurement)
+    return bitmap(measurement)
 
 def main():
     def bitmap(x: QuantumState) -> int:
