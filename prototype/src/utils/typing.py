@@ -1,3 +1,4 @@
 import numpy as np
 
-type q_vector = np.typing.NDArray[np.float64]
+scalar = np.float64
+qvec = np.typing.NDArray[scalar]
