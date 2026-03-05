@@ -2,7 +2,7 @@ from quantum.state import QuantumState
 import quantum.viz as viz
 from string import ascii_lowercase
 import typing
-from typing import Iterator
+from typing import Generator
 from decorator import contextmanager
 from enum import Enum
 from quantum.qubit import Qubit
@@ -58,8 +58,8 @@ class QuantumDevice():
             else:
                 raise Exception("WOOP WOOP !Foriegn Qubit Detected! WOOP WOOP")
 
-    @contextmanager
-    def qalloc(self) -> Iterator[Qubit]:
+    #@contextmanager
+    def qalloc(self) -> Generator[Qubit]:
         try:
             qubit = self._alloc()
             yield qubit

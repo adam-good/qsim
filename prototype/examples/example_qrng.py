@@ -1,15 +1,18 @@
-from typing import Callable, IO
+from typing import Callable
 from quantum.qubit import Qubit
 from quantum.state import QuantumState, KET_0, KET_1
 from quantum.device import QuantumDevice
 from utils.data import open_csv
 
-def qrng(device: QuantumDevice, bitmap: Callable[[QuantumState], int]) -> int:
-    psi: Qubit # Yo why doesn't type hinting work!
-    with device.qalloc() as psi:
+def qrng(n: int, device: QuantumDevice, bitmap: Callable[[QuantumState], int]) -> int:
+    for psi in device.qalloc():
         psi.hadamard()
-        measurement = psi.measure()
-    return bitmap(measurement)
+        measure
+    # psi: Qubit # Yo why doesn't type hinting work!
+    # with device.qalloc() as psi:
+    #     psi.hadamard()
+    #     measurement = psi.measure()
+    # return bitmap(measurement)
 
 def main():
     def bitmap(x: QuantumState) -> int:
@@ -20,10 +23,11 @@ def main():
         else:
             raise Exception("Invalid Quantum State in Bitmap")
 
+    n_qubits = 4
+
     with open_csv('./output/data.csv') as datafile:
-        device = QuantumDevice(4, log=datafile, visualize=True)
-        result = [qrng(device, bitmap) for _ in range(16)]
-#        anim = animate_state_timeseries(device.qubits[0].qubit.viz.history, device.qubits[0].qubit.label)
+        device = QuantumDevice(n_qubits, log=datafile, visualize=True)
+        result = qrng(16, device, bitmap) #[qrng(device, bitmap) for _ in range(64)]
         anim = device.generate_animation()
         anim.save("output/qrng.mp4", writer="ffmpeg")
     print(result)
