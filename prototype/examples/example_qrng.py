@@ -24,13 +24,11 @@ def main():
         else:
             raise Exception("Invalid Quantum State in Bitmap")
 
-
-
     with open_csv('./output/data.csv') as datafile:
         device = QuantumDevice(4, log=datafile, visualize=True)
         result = [qrng(device, bitmap) for _ in range(16)]
         anim = device.generate_animation()
-        anim.save("output/qrng.mp4", writer="ffmpeg")
+        anim.save("output/qrng.mp4", writer='ffmpeg')
     print(result)
 
 if __name__ == "__main__":
