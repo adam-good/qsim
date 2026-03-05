@@ -26,7 +26,7 @@ def main():
             raise Exception("Invalid Quantum State in Bitmap")
 
     with open_csv('./output/data.csv') as datafile:
-        device = QuantumDevice(4, log=datafile, visualize=True)
+        device = QuantumDevice(4, log=datafile)
         result = [qrng(device, bitmap) for _ in range(16)]
         visualizer = Visualizer()
         anim = visualizer.generate_animation(device.history)

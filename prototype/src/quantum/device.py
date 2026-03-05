@@ -30,7 +30,7 @@ class DeviceQubit():
         self.status = AllocState.FREE
 
 class QuantumDevice():
-    def __init__(self, n: int, var_names: list[str] = list(ascii_lowercase), log: typing.IO | None = None, visualize: bool = False):
+    def __init__(self, n: int, var_names: list[str] = list(ascii_lowercase), log: typing.IO | None = None):
         self.n_qubits = n
         self.log = log
         self.qubits: list[DeviceQubit] = [DeviceQubit(label=var_names[i], log=self.log) for i in range(n)]
