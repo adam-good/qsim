@@ -1,3 +1,4 @@
+from quantum.viz import Visualizer
 from typing import Callable, IO
 from quantum.qubit import Qubit
 from quantum.state import QuantumState, KET_0, KET_1
@@ -27,7 +28,8 @@ def main():
     with open_csv('./output/data.csv') as datafile:
         device = QuantumDevice(4, log=datafile, visualize=True)
         result = [qrng(device, bitmap) for _ in range(16)]
-        anim = device.generate_animation()
+        visualizer = Visualizer()
+        anim = visualizer.generate_animation(device.history)
         anim.save("output/qrng.mp4", writer='ffmpeg')
     print(result)
 
