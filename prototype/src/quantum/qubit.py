@@ -1,7 +1,5 @@
 import numpy as np
-import typing
 from quantum.state import QuantumState, KET_0
-from quantum.viz import VizQubit
 from utils.gates import hgate, xgate
 from utils.typing import q_vector
 
@@ -9,10 +7,10 @@ class Qubit:
     def __init__(self,
                  state: QuantumState | list[float] | np.typing.NDArray[np.float64] = QuantumState(),
                  label: str | None = "\u03C8",
-                 log: typing.IO | None = None,
-                 visulize: bool = False):
+                 log: bool = False):
         self.label = f"\u007C{label}\u27E9"
         self.log = log
+        self.history: list[QuantumState] = []
 
         if isinstance(state, QuantumState):
             self._from_quantumstate(state)
@@ -20,8 +18,6 @@ class Qubit:
             self._from_list(state)
         elif isinstance(state, np.typing.NDArray[np.float64]):
             self._from_ndarr(state)
-
-        self.viz = VizQubit(self.label, self.state) if visulize else None
 
     def _from_quantumstate(self, state: QuantumState):
         self.state: QuantumState = state
@@ -39,15 +35,10 @@ class Qubit:
 
     def _log(self):
         if self.log:
-            self.log.write(self._to_csv_form())
-
-    def _viz(self):
-        if self.viz:
-            self.viz.history.append(self.state)
+            self.history.append(self.state)
 
     def _update(self):
         self._log()
-        self._viz()
 
     def reset(self) -> Qubit:
         self.state = KET_0
