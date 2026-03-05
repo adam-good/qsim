@@ -1,6 +1,6 @@
 import numpy as np
 import quantum.state as qstate
-from utils.typing import vector, scalar
+from utils.typing import vector
 
 
 def collapse(psi: qstate.state) -> qstate.state:
