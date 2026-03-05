@@ -1,12 +1,19 @@
-from typing import Callable
-from quantum.qubit import Qubit, QuantumState, KET_0, KET_1
+from quantum.viz import Visualizer
+from typing import Callable, IO
+from quantum.qubit import Qubit
+from quantum.state import QuantumState, KET_0, KET_1
 from quantum.device import QuantumDevice
+from utils.data import open_csv
 
-def qrng(device: QuantumDevice, bitmap: Callable[[QuantumState], int]) -> int:
+def qrng(device: QuantumDevice, bitmap: Callable[[QuantumState], int], logging: IO | None = None) -> int:
     psi: Qubit # Yo why doesn't type hinting work!
     with device.qalloc() as psi:
         psi.hadamard()
+        if logging:
+            logging.write(psi.to_csv_form())
         measurement = psi.measure()
+        if logging:
+            logging.write(psi.to_csv_form())
     return bitmap(measurement)
 
 def main():
@@ -18,9 +25,13 @@ def main():
         else:
             raise Exception("Invalid Quantum State in Bitmap")
 
-    device = QuantumDevice(4)
-    print([qrng(device, bitmap) for _ in range(16)])
-        
+    with open_csv('./output/data.csv') as datafile:
+        device = QuantumDevice(4, log=datafile)
+        result = [qrng(device, bitmap) for _ in range(16)]
+        visualizer = Visualizer()
+        anim = visualizer.generate_animation(device.history)
+        anim.save("output/qrng.mp4", writer='ffmpeg')
+    print(result)
 
 if __name__ == "__main__":
     main()
