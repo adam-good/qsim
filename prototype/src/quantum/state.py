@@ -1,76 +1,43 @@
-import dataclasses
 import numpy as np
-from utils.math import vec2d_to_angle
-from utils.typing import q_vector
+from utils.math import vec2d_to_angle, deg2rad
+from utils.typing import vector, scalar
 
-def _ket0_state_factory() -> q_vector:
-    return np.array([1.0, 0.0])
+type qstate = vector
 
-@dataclasses.dataclass(frozen=True)
-class QuantumState:
-    state_vec: q_vector = dataclasses.field(default_factory=_ket0_state_factory)
+def ket0() -> qstate:
+    return np.array([1., 0.])
+def ket1() -> qstate:
+    return np.array([0., 1.])
+def ket_plus() -> qstate:
+    return np.array([1.,1.] / np.sqrt(2))
+def key_minus() -> qstate:
+    return np.array([1.,-1.] / np.sqrt(2))
 
-    def __post__init__(self):
-        # TODO: Implement Proper Errors
-        if not self.is_valid():
-            raise Exception("Invalid Quantum State")
+def _x(psi: qstate) -> scalar:
+    return psi[0]
 
-    def is_valid(self) -> bool:
-        if self._x ** 2 + self._y ** 2 == 1.0:
-            return True
-        else:
-            return False
+def _y(psi: qstate) -> scalar:
+    return psi[1]
 
+def is_valid(psi: qstate) -> bool:
+    return _x(psi)**2 + _y(psi)**2 == 1.0
 
-    @property
-    def _x(self) -> np.float64:
-        return self.state_vec[0]
+def angle(psi: qstate) -> scalar:
+    return vec2d_to_angle(_x(psi), _y(psi))
 
-    @property
-    def _y(self) -> np.float64:
-        return self.state_vec[1]
+def bloch_angle(psi: qstate) -> scalar:
+    return vec2d_to_angle(_x(psi), _y(psi),
+                          lambda x: 2 * x)
 
-    @property
-    def vector(self) -> q_vector:
-        return self.state_vec
+# NOTE: This might not be necessary anymore
+# Kinda redundant and all
+def to_vector(psi: qstate) -> vector:
+    return psi
 
-    @property
-    def bloch_vector(self) -> q_vector:
-        angle = np.deg2rad(self.bloch_angle)
-        return np.array([np.cos(angle), np.sin(angle)])
+def to_bloch_vector(psi: qstate) -> vector:
+    angle = deg2rad(bloch_angle(psi))
+    return vector([np.cos(angle), np.sin(angle)])
 
-    @property
-    def angle(self) -> np.float64:
-        angle = vec2d_to_angle(self._x, self._y)
-        return np.float64(angle)
+def probability_distribution(psi: qstate) -> vector:
+    return np.abs(psi) ** 2
 
-    @property
-    def bloch_angle(self) -> np.float64:
-        angle = vec2d_to_angle(self._x, self._y, lambda x: 2 * x)
-        return np.float64(angle)
-
-    @property
-    def probability_distribution(self) -> q_vector:
-        probabilities: q_vector = np.abs(self.state_vec) ** 2
-        return probabilities
-
-    def __eq__(self, other) -> bool:
-        return (self.vector == other.vector).all()
-
-    def __repr__(self) -> str:
-        theta_char = "\N{GREEK SMALL LETTER THETA}"
-        bloch_char = "\N{GREEK SMALL LETTER BETA}"
-        return (
-            f"QState["
-                    f"vec: {self.vector}, "
-                    f"{theta_char}: {self.angle}, "
-                    f"{bloch_char}: {self.bloch_angle}, "   
-                    f"P: {self.probability_distribution}]"
-                )
-
-
-
-KET_0 = QuantumState(np.array([1,0]))
-KET_1 = QuantumState(np.array([0,1]))
-KET_PLUS = QuantumState(np.array([1,1]) / np.sqrt(2))
-KET_MINUS = QuantumState(np.array([1,-1]) / np.sqrt(2))
