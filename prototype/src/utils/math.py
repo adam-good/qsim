@@ -1,5 +1,5 @@
-from typing import Callable
 import numpy as np
+from typing import Callable
 from utils.typing import scalar
 
 def rad2deg(theta: scalar) -> scalar:
@@ -14,4 +14,4 @@ def vec2d_to_angle(x: scalar, y: scalar, transform_fn: Callable[[scalar], scalar
     angle = rad2deg(angle)
     while angle < 0 or angle > 360:
         angle = (angle + 360) % 360
-    return scalar(angle)
+    return scalar(angle)       
