@@ -16,7 +16,7 @@ class DeviceQubit():
     def __init__(self, label: str | None = None, log: typing.IO | None = None, visualize: bool = False):
         self._label: str | None = label
         self.log = log
-        self.qubit: Qubit = q.Qubit(label=label, log=log, visulize=visualize)
+        self.qubit: Qubit = q.Qubit(label=label, log=True if log else False)
         self.status = AllocState.FREE
         self.visualize = visualize
 
@@ -39,7 +39,7 @@ class QuantumDevice():
         self.qubits: list[DeviceQubit] = [DeviceQubit(label=var_names[i], log=self.log, visualize=visualize) for i in range(n)]
 
     def generate_animation(self):
-        data: dict[str, list[QuantumState]] = {dqubit.label:dqubit.qubit.viz.history for dqubit in self.qubits if dqubit.qubit.viz}
+        data: dict[str, list[QuantumState]] = {dqubit.label:dqubit.qubit.history for dqubit in self.qubits}
         return viz.animate_state_timeseries(data, bloch=False)
 
 

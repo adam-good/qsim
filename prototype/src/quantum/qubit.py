@@ -10,7 +10,7 @@ class Qubit:
                  log: bool = False):
         self.label = f"\u007C{label}\u27E9"
         self.log = log
-        self.history: list[QuantumState] = []
+        self.history: list[QuantumState] = [] if log else None
 
         if isinstance(state, QuantumState):
             self._from_quantumstate(state)
