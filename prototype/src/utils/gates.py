@@ -1,7 +1,6 @@
 from utils.typing import matrix
 import quantum.state as qstate
 import numpy as np
-import numpy.typing as npt
 
 type qgate = matrix
 
