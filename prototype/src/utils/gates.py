@@ -5,41 +5,40 @@ import numpy.typing as npt
 
 type qgate = matrix
 
-def _apply_gate(psi: qstate.state, gate: qgate) -> qstate.state:
-    if not _is_unitary(gate):
-        raise Exception("Gate Must be a Unitary Matrix")
-
+def apply_gate(psi: qstate.state, gate: qgate, check_unitary: bool = True) -> qstate.state:
+    if check_unitary and not _is_unitary(gate):
+        raise Exception("Gate is Not Unitary")
     return gate @ psi
 
 def hadamard(psi: qstate.state) -> qstate.state:
-    gate = np.matrix(
+    gate: qgate = np.matrix(
         [[1,1],
         [1,-1]]
-    ) / np.sqrt(2)
-    return gate @ psi
+    ) / np.sqrt(2)   
+    return apply_gate(psi, gate, check_unitary=False)
 
 def xgate(psi: qstate.state) -> qstate.state:
     gate = np.matrix(
         [[0,1],
         1,0]
     )
-    return gate @ psi
+    return apply_gate(psi, gate, check_unitary=False)
 
 def negate(psi: qstate.state) -> qstate.state:
     return xgate(psi)
 
 
-def _is_square(matrix: npt.NDArray) -> bool:
-    return len(matrix.shape) == 2 and matrix.shape[0] == matrix.shape[1]
+def _is_square(mat: matrix) -> bool:
+    return len(mat.shape) == 2 and mat.shape[0] == mat.shape[1]
 
-def _is_unitary(matrix: npt.NDArray) -> bool:
-        if not _is_square(matrix):
+def _is_unitary(mat: matrix) -> bool:
+        if not _is_square(mat):
             return False
                 
-        identity = np.identity(matrix.shape[0])
+        identity = np.identity(mat.shape[0])
         # TODO: Add the conjugate part when we upgrade to complex numbers
-        conj_transpose = matrix.transpose()
+        conj_transpose = mat.transpose()
 
-        return np.allclose(matrix @ conj_transpose, identity)
+        return np.allclose(mat @ conj_transpose, identity)
     
 
