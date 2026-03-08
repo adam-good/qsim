@@ -25,7 +25,7 @@ class QuantumDevice(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def _dealloc(self, psi: Qubit) -> Qubit:
+    def _dealloc(self, psi: Qubit):
         pass
 
     @contextmanager
