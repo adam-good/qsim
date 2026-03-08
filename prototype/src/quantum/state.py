@@ -41,3 +41,8 @@ def to_bloch_vector(psi: state) -> vector:
 def probability_distribution(psi: state) -> vector:
     return np.abs(psi) ** 2
 
+def collapse(psi: state) -> state:
+    probabilities: vector = probability_distribution(psi)
+    random_idx = np.random.choice([0,1], p=probabilities)
+    result_states = [ket0, ket1]
+    return result_states[random_idx]()
