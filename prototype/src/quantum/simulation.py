@@ -1,19 +1,24 @@
-import numpy as np
+from quantum.device import Qubit, QuantumDevice
 import quantum.state as qstate
-from utils.typing import vector
+import quantum.gate as qgate
 
-
-def collapse(psi: qstate.state) -> qstate.state:
-    probabilities: vector = qstate.probability_distribution(psi)
-    random_idx = np.random.choice([0,1], p=probabilities)
-    result_states = [qstate.ket0, qstate.ket1]
-    return result_states[random_idx]()
-
-def measure(psi: qstate.state) -> qstate.state:
-    return collapse(psi)
+class SimQubit(Qubit):
+    def __init__(self):
+        self.reset()
     
-def reset(_psi: qstate.state) -> qstate.state:
-    return qstate.ket0()
+    def reset(self) -> SimQubit:
+        self.state = qstate.ket0()
+        return self
 
-def init() -> qstate.state:
-    return qstate.ket0()
+    def measure(self) -> tuple[SimQubit, qstate.state]:
+        self.state = qstate.collapse(self.state)
+        return (self, self.state)
+
+    def hadamard(self) -> Qubit:
+        self.state = qgate.hadamard(self.state)
+        return self
+
+    def negate(self) -> Qubit:
+        self.state = qgate.negate(self.state)
+        return self
+
