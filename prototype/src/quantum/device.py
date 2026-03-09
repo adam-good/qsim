@@ -4,7 +4,7 @@ import quantum.state as qstate
 
 class Qubit(metaclass=ABCMeta):
     @abstractmethod
-    def measure(self) -> tuple[Qubit, qstate.state]:
+    def measure(self) -> tuple[Qubit, qstate.QState]:
         pass
 
     @abstractmethod
