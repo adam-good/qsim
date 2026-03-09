@@ -1,17 +1,27 @@
 import numpy as np
 from utils.math import vec2d_to_angle, deg2rad
 from utils.typing import vector, scalar
+from enum import Enum
 
 type state = vector
 
-def ket0() -> state:
-    return np.array([1., 0.])
-def ket1() -> state:
-    return np.array([0., 1.])
-def ket_plus() -> state:
-    return np.array([1.,1.] / np.sqrt(2))
-def key_minus() -> state:
-    return np.array([1.,-1.] / np.sqrt(2))
+class Basis(Enum):
+    KET0 = 0
+    KET1 = 1
+    KETPLUS = 2
+    KETMINUS = 3
+
+BASE_STATES: dict[Basis, state] = {
+    Basis.KET0:np.array([1.,0.]),
+    Basis.KET1:np.array([0.,1.]),
+    Basis.KETPLUS:np.array([1.,1.]) / np.sqrt(2),
+    Basis.KETMINUS:np.array([1.,-1.]) / np.sqrt(2)
+}
+
+KET0: state = BASE_STATES[Basis.KET0]
+KET1: state = BASE_STATES[Basis.KET1]
+KETPLUS: state = BASE_STATES[Basis.KETPLUS]
+KETMINUS: state = BASE_STATES[Basis.KETMINUS]
 
 def _x(psi: state) -> scalar:
     return psi[0]
@@ -44,5 +54,5 @@ def probability_distribution(psi: state) -> vector:
 def collapse(psi: state) -> state:
     probabilities: vector = probability_distribution(psi)
     random_idx = np.random.choice([0,1], p=probabilities)
-    result_states = [ket0, ket1]
-    return result_states[random_idx]()
+    result_states = [KET0, KET1]
+    return result_states[random_idx]
