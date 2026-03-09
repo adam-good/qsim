@@ -1,8 +1,4 @@
-from quantum.viz import Visualizer
-from utils.data import open_csv
-
 from quantum.simulation import SimDevice as QDevice
-
 import quantum.state as qstate
 
 def qrng(device: QDevice, bitmap: dict[qstate.QState, int]) -> int:
@@ -13,8 +9,8 @@ def qrng(device: QDevice, bitmap: dict[qstate.QState, int]) -> int:
 
 def main():
     bitmap = {
-        qstate.KET0:0,
-        qstate.KET1:1
+        qstate.angle(qstate.KET0):0,
+        qstate.angle(qstate.KET1):1,
     }
     device = QDevice(4)
     result = [qrng(device, bitmap) for _ in range(16)]
