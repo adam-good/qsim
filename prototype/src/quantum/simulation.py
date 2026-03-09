@@ -1,3 +1,4 @@
+from decorator import contextmanager
 import quantum.device as qdev
 import quantum.state as qstate
 import quantum.gate as qgate
@@ -7,10 +8,10 @@ class SimQubit(qdev.Qubit):
         self.reset()
     
     def reset(self) -> SimQubit:
-        self.state = qstate.KET0
+        self.state = qstate.reset(self.state)
         return self
 
-    def measure(self) -> tuple[SimQubit, qstate.state]:
+    def measure(self) -> tuple[SimQubit, qstate.QState]:
         self.state = qstate.collapse(self.state)
         return (self, self.state)
 
@@ -47,4 +48,11 @@ class SimDevice(qdev.QuantumDevice):
         self.alloc_tracker[i] = False
         self.qubits[i] = psi
 
-    
+    @contextmanager
+    def alloc(self):
+        qubit = self._alloc()
+        try:
+            yield qubit
+        finally:
+            qubit.reset()
+            self._dealloc(qubit)
