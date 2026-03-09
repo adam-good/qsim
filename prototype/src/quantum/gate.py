@@ -1,36 +1,36 @@
-from utils.typing import matrix
+import utils.typing as types
 import quantum.state as qstate
 import numpy as np
 
-type qgate = matrix
+type QGate = types.Matrix
 
-def apply_gate(psi: qstate.state, gate: qgate, check_unitary: bool = True) -> qstate.state:
+def apply_gate(psi: qstate.QState, gate: QGate, check_unitary: bool = True) -> qstate.QState:
     if check_unitary and not _is_unitary(gate):
         raise Exception("Gate is Not Unitary")
     return gate @ psi
 
-def hadamard(psi: qstate.state) -> qstate.state:
-    gate: qgate = np.matrix(
+def hadamard(psi: qstate.QState) -> qstate.QState:
+    gate: QGate = types.to_matrix(
         [[1,1],
         [1,-1]]
     ) / np.sqrt(2)   
     return apply_gate(psi, gate, check_unitary=False)
 
-def xgate(psi: qstate.state) -> qstate.state:
-    gate = np.matrix(
+def xgate(psi: qstate.QState) -> qstate.QState:
+    gate = types.to_matrix(
         [[0,1],
         1,0]
     )
     return apply_gate(psi, gate, check_unitary=False)
 
-def negate(psi: qstate.state) -> qstate.state:
+def negate(psi: qstate.QState) -> qstate.QState:
     return xgate(psi)
 
 
-def _is_square(mat: matrix) -> bool:
+def _is_square(mat: types.Matrix) -> bool:
     return len(mat.shape) == 2 and mat.shape[0] == mat.shape[1]
 
-def _is_unitary(mat: matrix) -> bool:
+def _is_unitary(mat: types.Matrix) -> bool:
         if not _is_square(mat):
             return False
                 
