@@ -1,8 +1,8 @@
-from typing import Annotated, Literal, TypeAlias
+from typing import Annotated, Literal, TypeAlias, Any
 import numpy as np
 import numpy.typing as npt
 
-Scalar: TypeAlias = npt.DTypeLike[np.float64]
+Scalar: TypeAlias = np.floating[Any]
 Vector: TypeAlias = Annotated[npt.NDArray[Scalar], Literal[2]]
 Matrix: TypeAlias = Annotated[npt.NDArray[Scalar], Literal['M', 'N']]
 
