@@ -7,7 +7,7 @@ class SimQubit(qdev.Qubit):
         self.reset()
     
     def reset(self) -> SimQubit:
-        self.state = qstate.ket0()
+        self.state = qstate.KET0
         return self
 
     def measure(self) -> tuple[SimQubit, qstate.state]:
