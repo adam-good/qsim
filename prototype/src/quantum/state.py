@@ -56,3 +56,6 @@ def collapse(psi: QState) -> QState:
     random_idx = np.random.choice([0,1], p=probabilities)
     result_states = [KET0, KET1]
     return result_states[random_idx]
+
+def reset(_psi: QState) -> QState:
+    return KET0
