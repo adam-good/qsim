@@ -1,3 +1,4 @@
+from typing import Iterator
 from decorator import contextmanager
 import quantum.device as qdev
 import quantum.state as qstate
@@ -49,7 +50,7 @@ class SimDevice(qdev.QuantumDevice):
         self.qubits[i] = psi
 
     @contextmanager
-    def alloc(self):
+    def alloc(self) -> Iterator[Qubit]:
         qubit = self._alloc()
         try:
             yield qubit
