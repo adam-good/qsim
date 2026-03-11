@@ -4,22 +4,22 @@ from dataclasses import dataclass
 Scalar: TypeAlias = float
 
 @dataclass(frozen=True)
-class Vector2:
+class Vector:
     raw_data: Tuple[Scalar, ...]
 
-    def _elementwise_op(self, other: Vector2, op: Callable[[Scalar, Scalar], Scalar]) -> Vector2:
-        return Vector2( tuple(op(x,y) for (x,y) in zip(self.raw_data, other.raw_data)) )
+    def _elementwise_op(self, other: Vector, op: Callable[[Scalar, Scalar], Scalar]) -> Vector:
+        return Vector( tuple(op(x,y) for (x,y) in zip(self.raw_data, other.raw_data)) )
 
-    def __add__(self, other: Vector2) -> Vector2:
+    def __add__(self, other: Vector) -> Vector:
         return self._elementwise_op(other, lambda x,y: x+y)
 
-    def __sub__(self, other: Vector2) -> Vector2:
+    def __sub__(self, other: Vector) -> Vector:
         return self._elementwise_op(other, lambda x,y: x-y)
     
-    def __mul__(self, other: Vector2) -> Vector2:
+    def __mul__(self, other: Vector) -> Vector:
         return self._elementwise_op(other, lambda x,y: x*y)
     
-    def __div__(self, other: Vector2) -> Vector2:
+    def __div__(self, other: Vector) -> Vector:
          return self._elementwise_op(other, lambda x,y: x/y)
 
 @dataclass(frozen=True)
