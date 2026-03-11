@@ -20,7 +20,13 @@ class Vector:
         return self._elementwise_op(other, lambda x,y: x*y)
     
     def __div__(self, other: Vector) -> Vector:
-         return self._elementwise_op(other, lambda x,y: x/y)
+        return self._elementwise_op(other, lambda x,y: x/y)
+
+    def __pow__(self, other: Scalar) -> Vector:
+        return Vector(tuple(x ** other for x in self.raw_data))
+
+    def __getitem__(self, i: int) -> Scalar:
+        return self.raw_data[i]
 
 @dataclass(frozen=True)
 class Matrix:
