@@ -1,42 +1,64 @@
-# from typing import Annotated, Literal, TypeAlias, Any
-# import numpy as np
-# import numpy.typing as npt
-
-# Scalar: TypeAlias = np.floating[Any]
-# Vector: TypeAlias = Annotated[npt.NDArray[Scalar], Literal[2]]
-# Matrix: TypeAlias = Annotated[npt.NDArray[Scalar], Literal['M', 'N']]
-
-# def to_scalar(x: int | float | np.floating[Any]) -> Scalar:
-#     return np.float64(x)
-
-# def to_vector(x: npt.ArrayLike) -> Vector:
-#     arr = np.asarray(x, dtype=Scalar)
-#     if arr.ndim != 1:
-#         raise Exception("Incorrect Array Shape for Vector")
-#     return arr
-
-# def to_matrix(x: npt.ArrayLike) -> Matrix:
-#     arr = np.asarray(x, dtype=Scalar)
-#     if arr.ndim != 2:
-#         raise Exception("Incorrect Array Shape for Matrix")
-#     return arr
-from typing import TypeAlias, NamedTuple, Tuple
+from typing import TypeAlias, Tuple, Callable
 from dataclasses import dataclass
 
 Scalar: TypeAlias = float
 
-class Vector2(NamedTuple):
-    x: Scalar
-    y: Scalar
+@dataclass(frozen=True)
+class Vector2:
+    raw_data: Tuple[Scalar, ...]
 
-#@dataclass(frozen=True)
-class Matrix(NamedTuple):
+    def _elementwise_op(self, other: Vector2, op: Callable[[Scalar, Scalar], Scalar]) -> Vector2:
+        return Vector2( tuple(op(x,y) for (x,y) in zip(self.raw_data, other.raw_data)) )
+
+    def __add__(self, other: Vector2) -> Vector2:
+        return self._elementwise_op(other, lambda x,y: x+y)
+
+    def __sub__(self, other: Vector2) -> Vector2:
+        return self._elementwise_op(other, lambda x,y: x-y)
+    
+    def __mul__(self, other: Vector2) -> Vector2:
+        return self._elementwise_op(other, lambda x,y: x*y)
+    
+    def __div__(self, other: Vector2) -> Vector2:
+         return self._elementwise_op(other, lambda x,y: x/y)
+
+@dataclass(frozen=True)
+class Matrix:
     raw_data: Tuple[Tuple[Scalar, ...], ...] # 2D Tuple so it's efficient
 
     @property
     def shape(self) -> Tuple[int,int]:
         return (len(self.raw_data), len(self.raw_data[0])) if self.raw_data else (0,0)
 
+    def _elementwise_op(self, other: Matrix, op: Callable[[Scalar, Scalar], Scalar]) -> Matrix:
+        raw_data = tuple(
+            tuple(op(a,b) for (a,b) in row)
+            for row in zip(self.raw_data, other.raw_data)
+        )
+        return Matrix(raw_data)
+
+
+    def _dotprod(w: Tuple[Scalar], v: Tuple[Scalar]) -> Scalar:
+        return sum(a*b for (a,b) in zip(w,v))
+
     def __add__(self, other: Matrix) -> Matrix:
-        data = tuple(tuple())
-        return Matrix(data)
+        return self._elementwise_op(other, lambda x,y: x+y)
+
+    
+    def __sub__(self, other: Matrix) -> Matrix:
+        return self._elementwise_op(other, lambda x,y: x-y)
+
+    
+    def __mul__(self, other: Matrix) -> Matrix:
+        return self._elementwise_op(other, lambda x,y: x*y)
+
+    
+    def __div__(self, other: Matrix) -> Matrix:
+        return self._elementwise_op(other, lambda x,y: x/y)
+
+    def __matmul__(self, other: Matrix) -> Matrix:
+        raw_data = tuple(
+            tuple(Matrix._dotprod(a,b) for (a,b) in row)
+            for row in zip(self.raw_data, other.raw_data)
+        )
+        return Matrix(raw_data)
