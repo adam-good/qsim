@@ -6,6 +6,9 @@ Scalar: TypeAlias = np.floating[Any]
 Vector: TypeAlias = Annotated[npt.NDArray[Scalar], Literal[2]]
 Matrix: TypeAlias = Annotated[npt.NDArray[Scalar], Literal['M', 'N']]
 
+def to_scalar(x: int | float | np.floating[Any]) -> Scalar:
+    return np.float64(x)
+
 def to_vector(x: npt.ArrayLike) -> Vector:
     arr = np.asarray(x, dtype=Scalar)
     if arr.ndim != 1:
