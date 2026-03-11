@@ -57,5 +57,5 @@ def collapse(psi: QState) -> QState:
     result_states = [KET0, KET1]
     return result_states[random_idx]
 
-def reset(_psi: QState) -> QState:
+def reset(_psi: QState | None = None) -> QState:
     return KET0
