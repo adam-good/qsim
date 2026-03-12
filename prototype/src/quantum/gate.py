@@ -34,7 +34,7 @@ def _is_unitary(mat: types.Matrix) -> bool:
         if not _is_square(mat):
             return False
                 
-        identity = np.identity(mat.shape[0])
+        identity = types.Matrix.identity(mat.shape[0])
         # TODO: Add the conjugate part when we upgrade to complex numbers
         conj_transpose = mat.transpose
 

@@ -58,6 +58,12 @@ class Matrix:
     def transpose(self) -> Matrix:
         return Matrix(tuple(zip(*self.raw_data)))
 
+    def identity(size: int) -> Matrix:
+        return Matrix(tuple(
+            tuple(1 if i==j else 0 for i in range(size))
+            for j in range(size))
+        )
+        
     def _elementwise_op(self, other: Matrix, op: Callable[[Scalar, Scalar], Scalar]) -> Matrix:
         raw_data = tuple(
             tuple(op(a,b) for (a,b) in row)
