@@ -1,3 +1,4 @@
+import math
 from typing import TypeAlias, Tuple, Callable, Iterator, overload
 from dataclasses import dataclass
 
@@ -63,6 +64,9 @@ class Matrix:
             tuple(1 if i==j else 0 for i in range(size))
             for j in range(size))
         )
+    
+    def _flatten(self) -> Tuple[Scalar, ...]:
+        return tuple(x for row in self.raw_data for x in row)
         
     def _elementwise_op(self, other: Matrix, op: Callable[[Scalar, Scalar], Scalar]) -> Matrix:
         raw_data = tuple(
@@ -120,3 +124,14 @@ class Matrix:
             return Matrix._matvec_mul(self, other)
         else:
             raise NotImplementedError("Not Implemented For Type")
+
+    def __eq__(self, other: object) -> bool:
+        if isinstance(other, Matrix):
+            for (a,b) in zip(self._flatten(), other._flatten()):
+                if not math.isclose(a,b):
+                    return False
+            return True
+        else:
+            raise NotImplementedError()
+        
+        

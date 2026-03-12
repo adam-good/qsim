@@ -38,6 +38,6 @@ def _is_unitary(mat: types.Matrix) -> bool:
         # TODO: Add the conjugate part when we upgrade to complex numbers
         conj_transpose = mat.transpose
 
-        return np.allclose(mat @ conj_transpose, identity)
+        return mat @ conj_transpose == identity
     
 
