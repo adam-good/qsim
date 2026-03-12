@@ -36,7 +36,7 @@ def _is_unitary(mat: types.Matrix) -> bool:
                 
         identity = np.identity(mat.shape[0])
         # TODO: Add the conjugate part when we upgrade to complex numbers
-        conj_transpose = mat.transpose()
+        conj_transpose = mat.transpose
 
         return np.allclose(mat @ conj_transpose, identity)
     

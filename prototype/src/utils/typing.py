@@ -54,6 +54,10 @@ class Matrix:
     def col_vectors(self) -> Tuple[Vector, ...]:
         return tuple(Vector(c) for c in self.raw_data)
 
+    @property
+    def transpose(self) -> Matrix:
+        return Matrix(tuple(zip(*self.raw_data)))
+
     def _elementwise_op(self, other: Matrix, op: Callable[[Scalar, Scalar], Scalar]) -> Matrix:
         raw_data = tuple(
             tuple(op(a,b) for (a,b) in row)
