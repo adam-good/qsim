@@ -1,4 +1,4 @@
-from typing import TypeAlias, Tuple, Callable, Iterator
+from typing import TypeAlias, Tuple, Callable, Iterator, overload
 from dataclasses import dataclass
 
 Scalar: TypeAlias = float
@@ -95,11 +95,18 @@ class Matrix:
     def __div__(self, other: Matrix) -> Matrix:
         return self._elementwise_op(other, lambda x,y: x/y)
 
+    @overload
+    def __matmul__(self, other: Vector) -> Vector:
+        ...
+
+    @overload
+    def __matmul__(self, other: Matrix) -> Matrix:
+        ...
+
     def __matmul__(self, other: Matrix | Vector) -> Matrix | Vector:
         if isinstance(other, Matrix):
             return Matrix._matmat_mul(self, other)
         elif isinstance(other, Vector):
             return Matrix._matvec_mul(self, other)
         else:
-            raise Exception("Invalid Type for Matmul")
-
+            raise NotImplementedError("Not Implemented For Type")
