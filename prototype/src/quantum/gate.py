@@ -10,16 +10,16 @@ def apply_gate(psi: qstate.QState, gate: QGate, check_unitary: bool = True) -> q
     return gate @ psi
 
 def hadamard(psi: qstate.QState) -> qstate.QState:
-    gate: QGate = types.to_matrix(
-        [[1,1],
-        [1,-1]]
+    gate: QGate = types.Matrix(
+        ((1,1),
+        (1,-1))
     ) / np.sqrt(2)   
     return apply_gate(psi, gate, check_unitary=False)
 
 def xgate(psi: qstate.QState) -> qstate.QState:
-    gate = types.to_matrix(
-        [[0,1],
-        1,0]
+    gate: QGate = types.Matrix(
+        ((0,1),
+         (1,0))
     )
     return apply_gate(psi, gate, check_unitary=False)
 
