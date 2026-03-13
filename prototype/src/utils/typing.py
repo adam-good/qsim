@@ -91,20 +91,23 @@ class Matrix:
     def _scalar_sub(matrix: Matrix, scalar: Scalar) -> Matrix:
         return Matrix._elementwise_scalar_op(matrix, scalar, lambda a,b: a-b)
 
-    def _scalar_mul(self, scalar: Scalar) -> Matrix:
-        return self._elementwise_scalar_op(scalar, lambda a,b: a*b)
+    def _scalar_mul(matrix: Matrix, scalar: Scalar) -> Matrix:
+        return Matrix._elementwise_scalar_op(matrix, scalar, lambda a,b: a*b)
 
-    def _matrix_add(self, matrix: Matrix) -> Matrix:
-        return self._elementwise_op(matrix, lambda a,b: a+b)
+    def _scalar_div(matrix: Matrix, scalar: Scalar) -> Matrix:
+        return Matrix._elementwise_scalar_op(matrix, scalar, lambda a,b: a/b)
 
-    def _matrix_sub(self, matrix: Matrix) -> Matrix:
-        return self._elementwise_op(matrix, lambda a,b: a-b)
+    def _matrix_add(matrix_a: Matrix, matrix_b: Matrix) -> Matrix:
+        return Matrix._elementwise_op(matrix_a, matrix_b, lambda a,b: a+b)
+
+    def _matrix_sub(matrix_a: Matrix, matrix_b: Matrix) -> Matrix:
+        return Matrix._elementwise_op(matrix_a, matrix_b, lambda a,b: a-b)
 
     def _matrix_sub(self, matrix: Matrix) -> Matrix:
         return self._elementwise_op(matrix, lambda a,b: a*b)
 
-    def _matrix_div(a: Matrix, b: Matrix) -> Matrix:
-        return Matrix._elementwise_op(a, b, lambda a,b: a/b)
+    def _matrix_div(matrix_a: Matrix, matrix_b: Matrix) -> Matrix:
+        return Matrix._elementwise_op(matrix_a, matrix_b, lambda a,b: a/b)
 
     def _vector_matmul(matrix: Matrix, vector: Vector) -> Vector:
         rows, cols = matrix.shape
@@ -158,7 +161,7 @@ class Matrix:
         else:
             raise NotImplementedError()
 
-    def __sub__(self, other: Matrix) -> Matrix:
+    def __sub__(self, other: Matrix | Scalar) -> Matrix:
         return self._elementwise_op(other, lambda x,y: x-y)
 
     
