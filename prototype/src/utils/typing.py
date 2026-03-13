@@ -84,23 +84,20 @@ class Matrix:
     def _scalar_add(self, scalar: Scalar) -> Matrix:
         return self._elementwise_scalar_op(scalar, lambda a,b: a+b)
 
-    def _matrix_add(self, matrix: Matrix) -> Matrix:
-        return self._elementwise_op(matrix, lambda a,b: a+b)
-
     def _scalar_sub(self, scalar: Scalar) -> Matrix:
         return self._elementwise_scalar_op(scalar, lambda a,b: a-b)
-
-    def _matrix_sub(self, matrix: Matrix) -> Matrix:
-        return self._elementwise_op(matrix, lambda a,b: a-b)
 
     def _scalar_mul(self, scalar: Scalar) -> Matrix:
         return self._elementwise_scalar_op(scalar, lambda a,b: a*b)
 
+    def _matrix_add(self, matrix: Matrix) -> Matrix:
+        return self._elementwise_op(matrix, lambda a,b: a+b)
+
+    def _matrix_sub(self, matrix: Matrix) -> Matrix:
+        return self._elementwise_op(matrix, lambda a,b: a-b)
+
     def _matrix_sub(self, matrix: Matrix) -> Matrix:
         return self._elementwise_op(matrix, lambda a,b: a*b)
-
-    def _scalar_div(self, scalar: Scalar) -> Matrix:
-        return self._elementwise_scalar_op(scalar, lambda a,b: a/b)
 
     def _matrix_div(self, matrix: Matrix) -> Matrix:
         return self._elementwise_op(matrix, lambda a,b: a/b)
