@@ -103,7 +103,7 @@ class Matrix:
     def _matrix_sub(matrix_a: Matrix, matrix_b: Matrix) -> Matrix:
         return Matrix._elementwise_op(matrix_a, matrix_b, lambda a,b: a-b)
 
-    def _matrix_sub(self, matrix: Matrix) -> Matrix:
+    def _matrix_mul(self, matrix: Matrix) -> Matrix:
         return self._elementwise_op(matrix, lambda a,b: a*b)
 
     def _matrix_div(matrix_a: Matrix, matrix_b: Matrix) -> Matrix:
@@ -155,23 +155,36 @@ class Matrix:
     ###
     def __add__(self, other: Matrix | Scalar) -> Matrix:
         if isinstance(other, Matrix):
-            return self._matrix_add(other)
+            return Matrix._matrix_add(self, other)
         elif isinstance(other, Scalar):
-            return self._scalar_add(other)
+            return Matrix._scalar_add(self, other)
         else:
             raise NotImplementedError()
 
     def __sub__(self, other: Matrix | Scalar) -> Matrix:
-        return self._elementwise_op(other, lambda x,y: x-y)
-
+        if isinstance(other, Matrix):
+            return Matrix._matrix_sub(self, other)
+        elif isinstance(other, Scalar):
+            return Matrix._scalar_sub(self, other)
+        else:
+            raise NotImplementedError()
     
     def __mul__(self, other: Matrix) -> Matrix:
-        return self._elementwise_op(other, lambda x,y: x*y)
+        if isinstance(other, Matrix):
+            return Matrix._matrix_mul(self, other)
+        elif isinstance(other, Scalar):
+            return Matrix._scalar_mul(self, other)
+        else:
+            raise NotImplementedError()
 
     
     def __div__(self, other: Matrix) -> Matrix:
-        return self._elementwise_op(other, lambda x,y: x/y)
-
+        if isinstance(other, Matrix):
+            return Matrix._matrix_div(self, other)
+        elif isinstance(other, Scalar):
+            return Matrix._scalar_div(self, other)
+        else:
+            raise NotImplementedError()
 
     def __matmul__(self, other: Matrix | Vector) -> Matrix | Vector:
         if isinstance(other, Matrix):
