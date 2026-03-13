@@ -69,23 +69,23 @@ class Matrix:
     def _flatten(self) -> Tuple[Scalar, ...]:
         return tuple(x for row in self.raw_data for x in row)
         
-    def _elementwise_op(self, other: Matrix, op: Callable[[Scalar, Scalar], Scalar]) -> Matrix:
+    def _elementwise_op(matrix_a: Matrix, matrix_b: Matrix, op: Callable[[Scalar, Scalar], Scalar]) -> Matrix:
         return Matrix(tuple(
             tuple(op(a,b) for (a,b) in row)
-            for row in zip(self.raw_data, other.raw_data)
+            for row in zip(matrix_a.raw_data, matrix_b.raw_data)
         ))
 
-    def _elementwise_scalar_op(self, scalar: Scalar, op: Callable[[Scalar, Scalar], Scalar]) -> Matrix:
+    def _elementwise_scalar_op(matrix: Matrix, scalar: Scalar, op: Callable[[Scalar, Scalar], Scalar]) -> Matrix:
         return Matrix(tuple(
             tuple(op(a, scalar) for a in row)
-            for row in self.raw_data
+            for row in matrix.raw_data
         ))
 
-    def _scalar_add(self, scalar: Scalar) -> Matrix:
-        return self._elementwise_scalar_op(scalar, lambda a,b: a+b)
+    def _scalar_add(matrix: Matrix, scalar: Scalar) -> Matrix:
+        return Matrix._elementwise_scalar_op(matrix, scalar, lambda a,b: a+b)
 
-    def _scalar_sub(self, scalar: Scalar) -> Matrix:
-        return self._elementwise_scalar_op(scalar, lambda a,b: a-b)
+    def _scalar_sub(matrix: Matrix, scalar: Scalar) -> Matrix:
+        return Matrix._elementwise_scalar_op(matrix, scalar, lambda a,b: a-b)
 
     def _scalar_mul(self, scalar: Scalar) -> Matrix:
         return self._elementwise_scalar_op(scalar, lambda a,b: a*b)
@@ -99,10 +99,9 @@ class Matrix:
     def _matrix_sub(self, matrix: Matrix) -> Matrix:
         return self._elementwise_op(matrix, lambda a,b: a*b)
 
-    def _matrix_div(self, matrix: Matrix) -> Matrix:
-        return self._elementwise_op(matrix, lambda a,b: a/b)
+    def _matrix_div(a: Matrix, b: Matrix) -> Matrix:
+        return Matrix._elementwise_op(a, b, lambda a,b: a/b)
 
-    
     def _vector_matmul(matrix: Matrix, vector: Vector) -> Vector:
         rows, cols = matrix.shape
         if rows != len(vector):
