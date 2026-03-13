@@ -74,6 +74,12 @@ class Matrix:
             for row in zip(self.raw_data, other.raw_data)
         )
         return Matrix(raw_data)
+
+    def _elementwise_scalar_op(self, scalar: Scalar, op: Callable[[Scalar, Scalar], Scalar]) -> Matrix:
+        return Matrix(tuple(
+            tuple(op(a, scalar) for a in row)
+            for row in self.raw_data
+        ))
      
     def _matvec_mul(matrix: Matrix, vector: Vector) -> Vector:
         rows, cols = matrix.shape
