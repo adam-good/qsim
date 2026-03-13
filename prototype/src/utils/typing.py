@@ -80,25 +80,6 @@ class Matrix:
             tuple(op(a, scalar) for a in row)
             for row in self.raw_data
         ))
-     
-    def _matvec_mul(matrix: Matrix, vector: Vector) -> Vector:
-        rows, cols = matrix.shape
-        if rows != len(vector):
-            raise Exception("MatVecMul incompatiable sizes")
-        raw_data = tuple(
-            Vector.dotprod(row, vector) for row in matrix.row_vectors
-        )
-        return Vector(raw_data)
-
-    def _matmat_mul(a: Matrix, b: Matrix) -> Matrix:
-        a_rows, a_cols = a.shape
-        b_rows, b_cols = b.shape
-        if a_cols != b_rows:
-            raise Exception("MatMatMul Incomatible Matrix Shapes")
-        raw_data = tuple(
-            tuple(Vector.dotprod(w,v) for w in a.row_vectors) for v in b.col_vectors
-        )
-        return Matrix(raw_data)
 
     def _scalar_add(self, scalar: Scalar) -> Matrix:
         return self._elementwise_scalar_op(scalar, lambda a,b: a+b)
@@ -131,19 +112,34 @@ class Matrix:
     def __div__(self, other: Matrix) -> Matrix:
         return self._elementwise_op(other, lambda x,y: x/y)
 
-    @overload
-    def __matmul__(self, other: Vector) -> Vector:
-        ...
+
+    def _vector_matmul(matrix: Matrix, vector: Vector) -> Vector:
+        rows, cols = matrix.shape
+        if rows != len(vector):
+            raise Exception("MatVecMul incompatiable sizes")
+        return Vector(tuple(
+            Vector.dotprod(row, vector) for row in matrix.row_vectors
+        ))
+
+    def _matrix_matmul(a: Matrix, b: Matrix) -> Matrix:
+        a_rows, a_cols = a.shape
+        b_rows, b_cols = b.shape
+        if a_cols != b_rows:
+            raise Exception("Matrix Matmul Incomatible Matrix Shapes")
+        return Matrix(tuple(
+            tuple(Vector.dotprod(w,v) for w in a.row_vectors) for v in b.col_vectors
+        ))
 
     @overload
-    def __matmul__(self, other: Matrix) -> Matrix:
-        ...
+    def __matmul__(self, other: Vector) -> Vector: ...
+    @overload
+    def __matmul__(self, other: Matrix) -> Matrix: ...
 
     def __matmul__(self, other: Matrix | Vector) -> Matrix | Vector:
         if isinstance(other, Matrix):
-            return Matrix._matmat_mul(self, other)
+            return Matrix._matrix_matmul(self, other)
         elif isinstance(other, Vector):
-            return Matrix._matvec_mul(self, other)
+            return Matrix._vector_matmul(self, other)
         else:
             raise NotImplementedError("Not Implemented For Type")
 
