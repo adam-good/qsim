@@ -1,4 +1,3 @@
-from cattr import override
 import math
 from typing import TypeAlias, Tuple, Callable, Iterator, overload
 from dataclasses import dataclass
@@ -142,9 +141,9 @@ class Matrix:
     @overload
     def __mul__(self, other: Matrix) -> Matrix: ...
     @overload
-    def __div__(self, other: Scalar) -> Matrix: ...
+    def __truediv__(self, other: Scalar) -> Matrix: ...
     @overload
-    def __div__(self, other: Matrix) -> Matrix: ...
+    def __truediv__(self, other: Matrix) -> Matrix: ...
     @overload
     def __matmul__(self, other: Vector) -> Vector: ...
     @overload
@@ -178,7 +177,7 @@ class Matrix:
             raise NotImplementedError()
 
     
-    def __div__(self, other: Matrix) -> Matrix:
+    def __truediv__(self, other: Matrix) -> Matrix:
         if isinstance(other, Matrix):
             return Matrix._matrix_div(self, other)
         elif isinstance(other, Scalar):
