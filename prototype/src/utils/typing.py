@@ -87,6 +87,24 @@ class Matrix:
     def _matrix_add(self, matrix: Matrix) -> Matrix:
         return self._elementwise_op(matrix, lambda a,b: a+b)
 
+    
+    def _vector_matmul(matrix: Matrix, vector: Vector) -> Vector:
+        rows, cols = matrix.shape
+        if rows != len(vector):
+            raise Exception("MatVecMul incompatiable sizes")
+        return Vector(tuple(
+            Vector.dotprod(row, vector) for row in matrix.row_vectors
+        ))
+
+    def _matrix_matmul(a: Matrix, b: Matrix) -> Matrix:
+        a_rows, a_cols = a.shape
+        b_rows, b_cols = b.shape
+        if a_cols != b_rows:
+            raise Exception("Matrix Matmul Incomatible Matrix Shapes")
+        return Matrix(tuple(
+            tuple(Vector.dotprod(w,v) for w in a.row_vectors) for v in b.col_vectors
+        ))
+
     @overload
     def __add__(self, other: Scalar) -> Matrix: ...
     @overload
@@ -111,24 +129,6 @@ class Matrix:
     
     def __div__(self, other: Matrix) -> Matrix:
         return self._elementwise_op(other, lambda x,y: x/y)
-
-
-    def _vector_matmul(matrix: Matrix, vector: Vector) -> Vector:
-        rows, cols = matrix.shape
-        if rows != len(vector):
-            raise Exception("MatVecMul incompatiable sizes")
-        return Vector(tuple(
-            Vector.dotprod(row, vector) for row in matrix.row_vectors
-        ))
-
-    def _matrix_matmul(a: Matrix, b: Matrix) -> Matrix:
-        a_rows, a_cols = a.shape
-        b_rows, b_cols = b.shape
-        if a_cols != b_rows:
-            raise Exception("Matrix Matmul Incomatible Matrix Shapes")
-        return Matrix(tuple(
-            tuple(Vector.dotprod(w,v) for w in a.row_vectors) for v in b.col_vectors
-        ))
 
     @overload
     def __matmul__(self, other: Vector) -> Vector: ...
