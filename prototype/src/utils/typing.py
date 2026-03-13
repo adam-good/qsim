@@ -1,3 +1,4 @@
+from cattr import override
 import math
 from typing import TypeAlias, Tuple, Callable, Iterator, overload
 from dataclasses import dataclass
@@ -99,8 +100,24 @@ class Matrix:
         )
         return Matrix(raw_data)
 
-    def __add__(self, other: Matrix) -> Matrix:
-        return self._elementwise_op(other, lambda x,y: x+y)
+    def _scalar_add(self, scalar: Scalar) -> Matrix:
+        return self._elementwise_scalar_op(scalar, lambda a,b: a+b)
+
+    def _matrix_add(self, matrix: Matrix) -> Matrix:
+        return self._elementwise_op(matrix, lambda a,b: a+b)
+
+    @overload
+    def __add__(self, other: Scalar) -> Matrix: ...
+    @overload
+    def __add__(self, other: Matrix) -> Matrix: ...
+
+    def __add__(self, other: Matrix | Scalar) -> Matrix:
+        if isinstance(other, Matrix):
+            return self._matrix_add(other)
+        elif isinstance(other, Scalar):
+            return self._scalar_add(other)
+        else:
+            raise NotImplementedError()
 
     
     def __sub__(self, other: Matrix) -> Matrix:
