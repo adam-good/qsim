@@ -69,11 +69,10 @@ class Matrix:
         return tuple(x for row in self.raw_data for x in row)
         
     def _elementwise_op(self, other: Matrix, op: Callable[[Scalar, Scalar], Scalar]) -> Matrix:
-        raw_data = tuple(
+        return Matrix(tuple(
             tuple(op(a,b) for (a,b) in row)
             for row in zip(self.raw_data, other.raw_data)
-        )
-        return Matrix(raw_data)
+        ))
 
     def _elementwise_scalar_op(self, scalar: Scalar, op: Callable[[Scalar, Scalar], Scalar]) -> Matrix:
         return Matrix(tuple(
