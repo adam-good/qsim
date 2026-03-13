@@ -68,6 +68,10 @@ class Matrix:
     
     def _flatten(self) -> Tuple[Scalar, ...]:
         return tuple(x for row in self.raw_data for x in row)
+
+    ###
+    # Private Math Functions
+    ###
         
     def _elementwise_op(matrix_a: Matrix, matrix_b: Matrix, op: Callable[[Scalar, Scalar], Scalar]) -> Matrix:
         return Matrix(tuple(
@@ -119,11 +123,33 @@ class Matrix:
             tuple(Vector.dotprod(w,v) for w in a.row_vectors) for v in b.col_vectors
         ))
 
+    ###
+    # Math Overloads
+    ###
     @overload
     def __add__(self, other: Scalar) -> Matrix: ...
     @overload
     def __add__(self, other: Matrix) -> Matrix: ...
+    @overload
+    def __sub__(self, other: Scalar) -> Matrix: ...
+    @overload
+    def __sub__(self, other: Matrix) -> Matrix: ...
+    @overload
+    def __mul__(self, other: Scalar) -> Matrix: ...
+    @overload
+    def __mul__(self, other: Matrix) -> Matrix: ...
+    @overload
+    def __div__(self, other: Scalar) -> Matrix: ...
+    @overload
+    def __div__(self, other: Matrix) -> Matrix: ...
+    @overload
+    def __matmul__(self, other: Vector) -> Vector: ...
+    @overload
+    def __matmul__(self, other: Matrix) -> Matrix: ...
 
+    ###
+    # Concrete Operator Overload Implemetations
+    ###
     def __add__(self, other: Matrix | Scalar) -> Matrix:
         if isinstance(other, Matrix):
             return self._matrix_add(other)
@@ -132,7 +158,6 @@ class Matrix:
         else:
             raise NotImplementedError()
 
-    
     def __sub__(self, other: Matrix) -> Matrix:
         return self._elementwise_op(other, lambda x,y: x-y)
 
@@ -144,10 +169,6 @@ class Matrix:
     def __div__(self, other: Matrix) -> Matrix:
         return self._elementwise_op(other, lambda x,y: x/y)
 
-    @overload
-    def __matmul__(self, other: Vector) -> Vector: ...
-    @overload
-    def __matmul__(self, other: Matrix) -> Matrix: ...
 
     def __matmul__(self, other: Matrix | Vector) -> Matrix | Vector:
         if isinstance(other, Matrix):
