@@ -74,8 +74,8 @@ class Matrix:
         
     def _elementwise_op(matrix_a: Matrix, matrix_b: Matrix, op: Callable[[Scalar, Scalar], Scalar]) -> Matrix:
         return Matrix(tuple(
-            tuple(op(a,b) for (a,b) in row)
-            for row in zip(matrix_a.raw_data, matrix_b.raw_data)
+            tuple(op(a,b) for (a,b) in zip(row_a, row_b))
+            for row_a,row_b in zip(matrix_a.raw_data, matrix_b.raw_data)
         ))
 
     def _elementwise_scalar_op(matrix: Matrix, scalar: Scalar, op: Callable[[Scalar, Scalar], Scalar]) -> Matrix:
