@@ -20,7 +20,7 @@ class Vector:
     def __mul__(self, other: Vector) -> Vector:
         return self._elementwise_op(other, lambda x,y: x*y)
     
-    def __div__(self, other: Vector) -> Vector:
+    def __truediv__(self, other: Vector) -> Vector:
         return self._elementwise_op(other, lambda x,y: x/y)
 
     def __pow__(self, other: Scalar) -> Vector:
