@@ -3,7 +3,7 @@ import utils.typing as types
 from utils.math import vec2d_to_angle, deg2rad
 from enum import Enum
 
-type QState = types.Vector
+QState = types.Vector
 
 class Basis(Enum):
     KET0 = 0
@@ -12,10 +12,10 @@ class Basis(Enum):
     KETMINUS = 3
 
 BASE_STATES: dict[Basis, QState] = {
-    Basis.KET0:np.array([1.,0.]),
-    Basis.KET1:np.array([0.,1.]),
-    Basis.KETPLUS:np.array([1.,1.]) / np.sqrt(2),
-    Basis.KETMINUS:np.array([1.,-1.]) / np.sqrt(2)
+    Basis.KET0 : QState((1.,0.)),
+    Basis.KET1 : QState((0., 1.)),
+    Basis.KETPLUS: QState((1.,1.)) / np.sqrt(2),
+    Basis.KETMINUS: QState((1.,-1.)) / np.sqrt(2)
 }
 
 KET0: QState = BASE_STATES[Basis.KET0]
@@ -46,14 +46,14 @@ def to_vector(psi: QState) -> types.Vector:
 
 def to_bloch_vector(psi: QState) -> types.Vector:
     angle = deg2rad(bloch_angle(psi))
-    return types.to_vector([np.cos(angle), np.sin(angle)])
+    return types.Vector((np.cos(angle), np.sin(angle)))
 
 def probability_distribution(psi: QState) -> types.Vector:
-    return np.abs(psi) ** 2
+    return psi ** 2
 
 def collapse(psi: QState) -> QState:
     probabilities: types.Vector = probability_distribution(psi)
-    random_idx = np.random.choice([0,1], p=probabilities)
+    random_idx = np.random.choice([0,1], p=probabilities.raw_data)
     result_states = [KET0, KET1]
     return result_states[random_idx]
 

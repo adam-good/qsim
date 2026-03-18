@@ -5,8 +5,8 @@ import quantum.state as qstate
 import quantum.gate as qgate
 
 class SimQubit(qdev.Qubit):
-    def __init__(self):
-        self.reset()
+    def __init__(self, init_state: qstate.QState = qstate.KET0):
+        self.state = init_state
     
     def reset(self) -> SimQubit:
         self.state = qstate.reset(self.state)
