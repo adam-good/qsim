@@ -102,6 +102,36 @@ class TestMatrix(unittest.TestCase):
         result = m1 / m2
         self.assertEqual(result, target)
 
+    def test_vector_matmul(self):
+        mat = Matrix( ((2,2),(2,2)) )
+        vec = Vector( (3,3) )
+        target = Vector( (12,12) )
+        result = mat @ vec
+        self.assertEqual(result, target)
+
+    def test_matrix_matmul(self):
+        m1 = Matrix( ((2,2),(2,2)) )
+        m2 = Matrix( ((3,3),(3,3)) )
+        target = Matrix( ((12,12),(12,12)) )
+        result = m1 @ m2
+        self.assertEqual(result, target)
+
+    def test_vector_matmul_errshape(self):
+        mat = Matrix( ((2,2),(2,2)) )
+        vec = Vector( (3,3,3) )
+        self.assertRaises(Exception, Matrix._vector_matmul, mat,vec)
+
+    def test_matrix_matmul_errshape(self):
+        m1 = Matrix( ((2,2),(2,2)) )
+        m2 = Matrix( ((3,3),(3,3),(3,3)) )
+        self.assertRaises(Exception, Matrix._matrix_matmul, m1, m2)
+
+    def test_matrix_matmul_shape(self):
+        m1 = Matrix( ((2,2),(2,2)) )
+        m2 = Matrix( ((3,3,3),(3,3,3)))
+        result = m1 @ m2
+        self.assertEqual(result.shape, (2,3))
+
 # class TestMathUtils(unittest.TestCase):
 #     def test_rad2deg(self):
 #         inputs = [0, pi/2, pi, 3*pi/2]
