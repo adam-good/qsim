@@ -1,4 +1,4 @@
-from utils.typing import Vector
+from utils.typing import Vector, Matrix
 import unittest
 
 class TestVector(unittest.TestCase):
@@ -43,6 +43,64 @@ class TestVector(unittest.TestCase):
         target = 11
         result = Vector.dotprod(v1,v2)
         self.assertEqual(result,target)
+
+class TestMatrix(unittest.TestCase):
+    def test_scalar_add(self):
+        matrix = Matrix( ((1,2),(3,4)) )
+        scalar = 2.
+        target = Matrix( ((3,4),(5,6)) )
+        result = matrix+scalar
+        self.assertEqual(result, target)
+
+    def test_scalar_sub(self):
+        matrix = Matrix( ((1,2),(3,4)) )
+        scalar = 2.
+        target = Matrix( ((-1,0),(1,2)) )
+        result = matrix - scalar
+        self.assertEqual(result, target)
+
+    def test_scalar_mul(self):
+        matrix = Matrix( ((1,2),(3,4)) )
+        scalar = 2.
+        target = Matrix( ((2,4),(6,8)) )
+        result = matrix * scalar
+        self.assertEqual(result, target)
+
+    def test_scalar_div(self):
+        matrix = Matrix( ((1,2),(3,4)) )
+        scalar = 2.
+        target = Matrix( ((1/2,2/2),(3/2,4/2)) )
+        result = matrix / scalar
+        self.assertEqual(result, target)
+
+    def test_elementwise_add(self):
+        m1 = Matrix( ((3,3),(3,3)) )
+        m2 = Matrix( ((2,2),(2,2)))
+        target = Matrix( ((5,5),(5,5)) )
+        result = m1+m2
+        self.assertEqual(result, target)
+
+    def test_elementwise_sub(self):
+        m1 = Matrix( ((3,3),(3,3)) )
+        m2 = Matrix( ((2,2),(2,2)) )
+        target = Matrix( ((1,1),(1,1)) )
+        result = m1 - m2
+        self.assertEqual(result, target)
+
+    def test_elementwise_mul(self):
+        m1 = Matrix( ((3,3),(3,3)) )
+        m2 = Matrix( ((2,2),(2,2)) )
+        target = Matrix( ((6,6),(6,6)) )
+        result = m1 * m2
+        self.assertEqual(result, target)
+
+    
+    def test_elementwise_div(self):
+        m1 = Matrix( ((3,3),(3,3)) )
+        m2 = Matrix( ((2,2),(2,2)) )
+        target = Matrix( ((3/2,3/2),(3/2,3/2)) )
+        result = m1 / m2
+        self.assertEqual(result, target)
 
 # class TestMathUtils(unittest.TestCase):
 #     def test_rad2deg(self):
