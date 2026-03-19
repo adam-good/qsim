@@ -4,28 +4,57 @@ from math import pi
 import unittest
 
 class TestVector(unittest.TestCase):
-    def test_add(self):
+    def test_scalar_add(self):
+        vector = Vector((1,2))
+        scalar = 2.
+        target = Vector((3,4))
+        result = vector + scalar
+        self.assertEqual(result, target)
+
+    def test_vector_add(self):
         v1 = Vector((1,2))
         v2 = Vector((3,4))
         target = Vector((4,6))
         result = v1+v2
         self.assertEqual(result, target)
 
-    def test_sub(self):
+    def test_scalar_sub(self):
+        vector = Vector((1,2))
+        scalar = 2.
+        target = Vector((-1,0))
+        result = vector - scalar
+        self.assertEqual(result, target)
+        
+    def test_vector_sub(self):
         v1 = Vector((1,2))
         v2 = Vector((3,4))
         target = Vector((-2, -2))
         result = v1-v2
         self.assertEqual(result, target)
 
-    def test_mul(self):
+    def test_scalar_mul(self):
+        vector = Vector((1,2))
+        scalar = 2.
+        target = Vector((2,4))
+        result = vector * scalar
+        self.assertEqual(result, target)
+        
+    def test_vector_mul(self):
         v1 = Vector((1,2))
         v2 = Vector((3,4))
         target = Vector((3,8))
         result = v1*v2
         self.assertEqual(result, target)
 
-    def test_div(self):
+
+    def test_scalar_div(self):
+        vector = Vector((1,2))
+        scalar = 2.
+        target = Vector((1/2,2/2))
+        result = vector / scalar
+        self.assertEqual(result, target)
+
+    def test_vector_div(self):
         v1 = Vector((1,2))
         v2 = Vector((3,4))
         target = Vector((1/3, 2/4))
@@ -200,4 +229,4 @@ class TestMathUtils(unittest.TestCase):
         targets = [0, 90, 180, 270]
         outputs = [math.vec2d_to_angle(x,y) for (x,y) in inputs]
         for (output, target) in zip(outputs, targets):
-            self.assertEqual(output, target)      
+            self.assertEqual(output, target)
