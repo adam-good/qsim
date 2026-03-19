@@ -166,41 +166,41 @@ class TestMatrixProperties(unittest.TestCase):
     def test_matrix_row_vectors(self):
         matrix = Matrix( ((1,2),(3,4)))
         target = (Vector((1,2)), Vector((3,4)))
-        result = matrix.row_vectors
+        result = matrix.row_vectors()
         self.assertEqual(result, target)
 
     def test_matrix_col_vectors(self):
         matrix = Matrix( ((1,2),(3,4)) )
         target = (Vector((1,3)), Vector((2,4)))
-        result = matrix.col_vectors
+        result = matrix.col_vectors()
         self.assertEqual(result, target)
 
     def test_matrix_transpose(self):
         matrix = Matrix( ((1,2,3), (4,5,6)) )
         target = Matrix( ((1,4),(2,5),(3,6)) )
-        result = matrix.transpose
+        result = matrix.transpose()
         self.assertEqual(result, target)
 
     def test_matrix_is_square(self):
         matrix = Matrix( ((1,2),(3,4)) )
         target = True
-        result = matrix.is_square
+        result = matrix.is_square()
         self.assertEqual(result, target)
 
         matrix = Matrix( ((1,2,3),(4,5,6)) )
         target = False
-        result = matrix.is_square
+        result = matrix.is_square()
         self.assertEqual(result, target)
 
     def test_matrix_is_unitary(self):
         matrix = Matrix( ((1,0),(0,1)) )
         target = True
-        result = matrix.is_unitary
+        result = matrix.is_unitary()
         self.assertEqual(result,target)
 
         matrix = Matrix( ((1,1),(1,-1)) )
         target = False
-        result = matrix.is_unitary
+        result = matrix.is_unitary()
         self.assertEqual(result, target) 
 
 
