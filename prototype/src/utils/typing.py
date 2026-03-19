@@ -47,12 +47,12 @@ class Matrix:
         return (len(self.raw_data), len(self.raw_data[0])) if self.raw_data else (0,0)
 
     @property
-    def row_vectors(self) -> Tuple[Vector, ...]:
+    def col_vectors(self) -> Tuple[Vector, ...]:
         transpose  = tuple(zip(*self.raw_data))
         return tuple(Vector(c) for c in transpose)
 
     @property
-    def col_vectors(self) -> Tuple[Vector, ...]:
+    def row_vectors(self) -> Tuple[Vector, ...]:
         return tuple(Vector(c) for c in self.raw_data)
 
     @property
@@ -122,7 +122,7 @@ class Matrix:
         if a_cols != b_rows:
             raise Exception("Matrix Matmul Incomatible Matrix Shapes")
         return Matrix(tuple(
-            tuple(Vector.dotprod(w,v) for w in a.row_vectors) for v in b.col_vectors
+            tuple(Vector.dotprod(w,v) for v in b.col_vectors) for w in a.row_vectors
         ))
 
     ###
