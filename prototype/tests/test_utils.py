@@ -152,6 +152,29 @@ class TestMatrixProperties(unittest.TestCase):
         result = matrix.transpose
         self.assertEqual(result, target)
 
+    def test_matrix_is_square(self):
+        matrix = Matrix( ((1,2),(3,4)) )
+        target = True
+        result = matrix.is_square
+        self.assertEqual(result, target)
+
+        matrix = Matrix( ((1,2,3),(4,5,6)) )
+        target = False
+        result = matrix.is_square
+        self.assertEqual(result, target)
+
+    def test_matrix_is_unitary(self):
+        matrix = Matrix( ((1,0),(0,1)) )
+        target = True
+        result = matrix.is_unitary
+        self.assertEqual(result,target)
+
+        matrix = Matrix( ((1,1),(1,-1)) )
+        target = False
+        result = matrix.is_unitary
+        self.assertEqual(result, target) 
+
+
 class TestMathUtils(unittest.TestCase):
     def test_rad2deg(self):
         inputs = [0, pi/2, pi, 3*pi/2]
@@ -177,28 +200,4 @@ class TestMathUtils(unittest.TestCase):
         targets = [0, 90, 180, 270]
         outputs = [math.vec2d_to_angle(x,y) for (x,y) in inputs]
         for (output, target) in zip(outputs, targets):
-            self.assertEqual(output, target)
-
-# class TestGateUtils(unittest.TestCase):
-#     def test_is_square(self):
-#         input = np.array([[1,2],[3,4]])
-#         target = True
-#         output = matrices.is_square(input)
-#         self.assertEqual(output, target)
-
-#         input = np.array([[1,2,3],[4,5,6]])
-#         target = False
-#         output = matrices.is_square(input)
-#         self.assertEqual(output, target)
-
-#     def test_is_unitary(self):
-#        input = np.array([[1,1],[1,-1]]) / np.sqrt(2)
-#        target = True
-#        output = matrices.is_unitary(input)
-#        self.assertEqual(output, target)
-
-#        input = np.array([[1,1],[1,-1]])
-#        target = False
-#        output = matrices.is_unitary(input)
-#        self.assertEqual(output, target)
-       
+            self.assertEqual(output, target)      

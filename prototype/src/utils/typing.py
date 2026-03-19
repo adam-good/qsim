@@ -59,6 +59,19 @@ class Matrix:
     def transpose(self) -> Matrix:
         return Matrix(tuple(zip(*self.raw_data)))
 
+    @property
+    def is_square(self) -> bool:
+        rows, cols = self.shape
+        return rows == cols
+
+    @property
+    def is_unitary(self) -> bool:
+        if not self.is_square:
+            return False      
+        identity = Matrix.identity(self.shape[0])
+        transpose = self.transpose
+        # TODO: This needs to be the conjugate transpose with complex
+        return self @ transpose == identity and transpose @ self == identity 
     def identity(size: int) -> Matrix:
         return Matrix(tuple(
             tuple(1 if i==j else 0 for i in range(size))
