@@ -43,33 +43,37 @@ class Matrix:
     raw_data: Tuple[Tuple[Scalar, ...], ...] # 2D Tuple so it's efficient
 
     @property
-    def shape(self) -> Tuple[int,int]:
-        return (len(self.raw_data), len(self.raw_data[0])) if self.raw_data else (0,0)
+    def n_rows(self) -> int:
+        return len(self.raw_data) if self.raw_data else 0
 
     @property
+    def n_cols(self) -> int:
+        return len(self.raw_data[0]) if self.raw_data else 0
+
+    @property
+    def shape(self) -> Tuple[int,int]:
+        #return (len(self.raw_data), len(self.raw_data[0])) if self.raw_data else (0,0)
+        return (self.n_rows, self.n_cols)
+
     def col_vectors(self) -> Tuple[Vector, ...]:
         transpose  = tuple(zip(*self.raw_data))
         return tuple(Vector(c) for c in transpose)
 
-    @property
     def row_vectors(self) -> Tuple[Vector, ...]:
         return tuple(Vector(c) for c in self.raw_data)
 
-    @property
     def transpose(self) -> Matrix:
         return Matrix(tuple(zip(*self.raw_data)))
 
-    @property
     def is_square(self) -> bool:
         rows, cols = self.shape
         return rows == cols
 
-    @property
     def is_unitary(self) -> bool:
         if not self.is_square:
             return False      
-        identity = Matrix.identity(self.shape[0])
-        transpose = self.transpose
+        identity = Matrix.identity(self.n_rows)
+        transpose = self.transpose()
         # TODO: This needs to be the conjugate transpose with complex
         return self @ transpose == identity and transpose @ self == identity 
     def identity(size: int) -> Matrix:
@@ -126,7 +130,7 @@ class Matrix:
         if rows != len(vector):
             raise Exception("MatVecMul incompatiable sizes")
         return Vector(tuple(
-            Vector.dotprod(row, vector) for row in matrix.row_vectors
+            Vector.dotprod(row, vector) for row in matrix.row_vectors()
         ))
 
     def _matrix_matmul(a: Matrix, b: Matrix) -> Matrix:
@@ -135,7 +139,7 @@ class Matrix:
         if a_cols != b_rows:
             raise Exception("Matrix Matmul Incomatible Matrix Shapes")
         return Matrix(tuple(
-            tuple(Vector.dotprod(w,v) for v in b.col_vectors) for w in a.row_vectors
+            tuple(Vector.dotprod(w,v) for v in b.col_vectors()) for w in a.row_vectors()
         ))
 
     ###
