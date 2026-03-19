@@ -8,20 +8,85 @@ Scalar: TypeAlias = float
 class Vector:
     raw_data: Tuple[Scalar, ...]
 
+
     def _elementwise_op(self, other: Vector, op: Callable[[Scalar, Scalar], Scalar]) -> Vector:
         return Vector( tuple(op(x,y) for (x,y) in zip(self.raw_data, other.raw_data)) )
 
-    def __add__(self, other: Vector) -> Vector:
+    def _elementwise_scalar_op(self, other: Scalar, op: Callable[[Scalar, Scalar], Scalar]) -> Vector:
+        return Vector( tuple(op(x, other) for x in self.raw_data))
+
+    def _scalar_add(self, other: Scalar) -> Vector:
+        return self._elementwise_scalar_op(other, lambda x,y: x+y)
+    def _vector_add(self, other: Vector) -> Vector:
         return self._elementwise_op(other, lambda x,y: x+y)
+    def _scalar_sub(self, other: Scalar) -> Vector:
+        return self._elementwise_scalar_op(other, lambda x,y: x-y)
+    def _vector_sub(self, other: Vector) -> Vector:
+        return self._elementwise_op(other, lambda x,y: x-y)
+    def _scalar_mul(self, other: Scalar) -> Vector:
+        return self._elementwise_scalar_op(other, lambda x,y: x*y)
+    def _vector_mul(self, other: Vector) -> Vector:
+        return self._elementwise_op(other, lambda x,y: x*y)
+    def _scalar_div(self, other: Scalar) -> Vector:
+        return self._elementwise_scalar_op(other, lambda x,y: x/y)
+    def _vector_div(self, other: Vector) -> Vector:
+        return self._elementwise_op(other, lambda x,y: x/y)
+
+    ###
+    # Function Overloads
+    ###
+    @overload
+    def __add__(self, other: Scalar) -> Vector: ...
+    @overload
+    def __add__(self, other: Vector) -> Vector: ...
+    @overload
+    def __sub__(self, other: Scalar) -> Vector: ...
+    @overload
+    def __sub__(self, other: Vector) -> Vector: ...
+    @overload
+    def __mul__(self, other: Scalar) -> Vector: ...
+    @overload
+    def __mul__(self, other: Vector) -> Vector: ...
+    @overload
+    def __truediv__(self, other: Scalar) -> Vector: ...
+    @overload
+    def __truediv__(self, other: Vector) -> Vector: ...
+
+
+    ###
+    # Concrete Definitions
+    ###
+    def __add__(self, other: Scalar | Vector) -> Vector:
+        if isinstance(other, Scalar):
+            return self._scalar_add(other)
+        elif isinstance(other, Vector):
+            return self._vector_add(other)
+        else:
+            raise NotImplementedError()
 
     def __sub__(self, other: Vector) -> Vector:
-        return self._elementwise_op(other, lambda x,y: x-y)
+        if isinstance(other, Scalar):
+            return self._scalar_sub(other)
+        elif isinstance(other, Vector):
+            return self._vector_sub(other)
+        else:
+            raise NotImplementedError()
     
     def __mul__(self, other: Vector) -> Vector:
-        return self._elementwise_op(other, lambda x,y: x*y)
+        if isinstance(other, Scalar):
+            return self._scalar_mul(other)
+        elif isinstance(other, Vector):
+            return self._vector_mul(other)
+        else:
+            raise NotImplementedError()
     
-    def __div__(self, other: Vector) -> Vector:
-        return self._elementwise_op(other, lambda x,y: x/y)
+    def __truediv__(self, other: Vector) -> Vector:
+        if isinstance(other, Scalar):
+            return self._scalar_div(other)
+        elif isinstance(other, Vector):
+            return self._vector_div(other)
+        else:
+            raise NotImplementedError()
 
     def __pow__(self, other: Scalar) -> Vector:
         return Vector(tuple(x ** other for x in self.raw_data))
@@ -43,22 +108,39 @@ class Matrix:
     raw_data: Tuple[Tuple[Scalar, ...], ...] # 2D Tuple so it's efficient
 
     @property
-    def shape(self) -> Tuple[int,int]:
-        return (len(self.raw_data), len(self.raw_data[0])) if self.raw_data else (0,0)
+    def n_rows(self) -> int:
+        return len(self.raw_data) if self.raw_data else 0
 
     @property
-    def row_vectors(self) -> Tuple[Vector, ...]:
+    def n_cols(self) -> int:
+        return len(self.raw_data[0]) if self.raw_data else 0
+
+    @property
+    def shape(self) -> Tuple[int,int]:
+        #return (len(self.raw_data), len(self.raw_data[0])) if self.raw_data else (0,0)
+        return (self.n_rows, self.n_cols)
+
+    def col_vectors(self) -> Tuple[Vector, ...]:
         transpose  = tuple(zip(*self.raw_data))
         return tuple(Vector(c) for c in transpose)
 
-    @property
-    def col_vectors(self) -> Tuple[Vector, ...]:
+    def row_vectors(self) -> Tuple[Vector, ...]:
         return tuple(Vector(c) for c in self.raw_data)
 
-    @property
     def transpose(self) -> Matrix:
         return Matrix(tuple(zip(*self.raw_data)))
 
+    def is_square(self) -> bool:
+        rows, cols = self.shape
+        return rows == cols
+
+    def is_unitary(self) -> bool:
+        if not self.is_square:
+            return False      
+        identity = Matrix.identity(self.n_rows)
+        transpose = self.transpose()
+        # TODO: This needs to be the conjugate transpose with complex
+        return self @ transpose == identity and transpose @ self == identity 
     def identity(size: int) -> Matrix:
         return Matrix(tuple(
             tuple(1 if i==j else 0 for i in range(size))
@@ -74,8 +156,8 @@ class Matrix:
         
     def _elementwise_op(matrix_a: Matrix, matrix_b: Matrix, op: Callable[[Scalar, Scalar], Scalar]) -> Matrix:
         return Matrix(tuple(
-            tuple(op(a,b) for (a,b) in row)
-            for row in zip(matrix_a.raw_data, matrix_b.raw_data)
+            tuple(op(a,b) for (a,b) in zip(row_a, row_b))
+            for row_a,row_b in zip(matrix_a.raw_data, matrix_b.raw_data)
         ))
 
     def _elementwise_scalar_op(matrix: Matrix, scalar: Scalar, op: Callable[[Scalar, Scalar], Scalar]) -> Matrix:
@@ -113,7 +195,7 @@ class Matrix:
         if rows != len(vector):
             raise Exception("MatVecMul incompatiable sizes")
         return Vector(tuple(
-            Vector.dotprod(row, vector) for row in matrix.row_vectors
+            Vector.dotprod(row, vector) for row in matrix.row_vectors()
         ))
 
     def _matrix_matmul(a: Matrix, b: Matrix) -> Matrix:
@@ -122,7 +204,7 @@ class Matrix:
         if a_cols != b_rows:
             raise Exception("Matrix Matmul Incomatible Matrix Shapes")
         return Matrix(tuple(
-            tuple(Vector.dotprod(w,v) for w in a.row_vectors) for v in b.col_vectors
+            tuple(Vector.dotprod(w,v) for v in b.col_vectors()) for w in a.row_vectors()
         ))
 
     ###
