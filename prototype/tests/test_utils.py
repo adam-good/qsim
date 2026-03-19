@@ -1,3 +1,4 @@
+from matplotlib.pylab import result_type
 from utils.typing import Vector, Matrix
 import unittest
 
@@ -44,7 +45,7 @@ class TestVector(unittest.TestCase):
         result = Vector.dotprod(v1,v2)
         self.assertEqual(result,target)
 
-class TestMatrix(unittest.TestCase):
+class TestMatrixArithmatic(unittest.TestCase):
     def test_scalar_add(self):
         matrix = Matrix( ((1,2),(3,4)) )
         scalar = 2.
@@ -94,7 +95,6 @@ class TestMatrix(unittest.TestCase):
         result = m1 * m2
         self.assertEqual(result, target)
 
-    
     def test_elementwise_div(self):
         m1 = Matrix( ((3,3),(3,3)) )
         m2 = Matrix( ((2,2),(2,2)) )
@@ -131,6 +131,25 @@ class TestMatrix(unittest.TestCase):
         m2 = Matrix( ((3,3,3),(3,3,3)))
         result = m1 @ m2
         self.assertEqual(result.shape, (2,3))
+
+class TestMatrixProperties(unittest.TestCase):
+    def test_matrix_row_vectors(self):
+        matrix = Matrix( ((1,2),(3,4)))
+        target = (Vector((1,2)), Vector((3,4)))
+        result = matrix.row_vectors
+        self.assertEqual(result, target)
+
+    def test_matrix_col_vectors(self):
+        matrix = Matrix( ((1,2),(3,4)) )
+        target = (Vector((1,3)), Vector((2,4)))
+        result = matrix.col_vectors
+        self.assertEqual(result, target)
+
+    def test_matrix_transpose(self):
+        matrix = Matrix( ((1,2,3), (4,5,6)) )
+        target = Matrix( ((1,4),(2,5),(3,6)) )
+        result = matrix.transpose
+        self.assertEqual(result, target)
 
 # class TestMathUtils(unittest.TestCase):
 #     def test_rad2deg(self):
