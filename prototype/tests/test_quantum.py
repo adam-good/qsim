@@ -64,10 +64,11 @@ class TestQuantumState(unittest.TestCase):
             outcome = qstate.probability_distribution(psi)
             self.assertEqual(target,outcome)
 
-#     def test_quantumstate_eq(self):
-#         psi = QuantumState(np.array([1.0,0.0]))
-#         omega = QuantumState(np.array([1.0,0.0]))
-#         assert_equal(psi == omega, True)
+    def test_quantumstate_reset(self):
+        psi = qstate.KETPLUS
+        result = qstate.reset(psi)
+        target = qstate.KET0
+        self.assertEqual(result,target)
 
 # class TestQubit(unittest.TestCase):
   
