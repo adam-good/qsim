@@ -7,8 +7,8 @@ class TestGates(unittest.TestCase):
     def test_h_gate(self):
         qubit = KET0
         result = hadamard(qubit)
-        expected_result = QState((1, 1)) / np.sqrt(2)
-        self.assertEqual(result, expected_result)
+        target = QState((1, 1)) / np.sqrt(2)
+        self.assertEqual(result, target)
 
     def test_x_gate(self):
         qubit = KET0
