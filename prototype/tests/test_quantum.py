@@ -1,5 +1,6 @@
 from utils.typing import Vector
 import unittest
+import math
 import numpy as np
 import quantum.gate as qgate
 import quantum.state as qstate
@@ -69,6 +70,31 @@ class TestQuantumState(unittest.TestCase):
         result = qstate.reset(psi)
         target = qstate.KET0
         self.assertEqual(result,target)
+
+
+    def test_quantumstate_collapse(self):
+        psi = qstate.KET0
+        target = qstate.KET0
+        result = qstate.collapse(psi)
+        self.assertEqual(result,target)
+
+        psi = qstate.KET1
+        target = qstate.KET1
+        result = qstate.collapse(psi)
+        self.assertEqual(result,target)
+
+
+        # TODO: Should this really be done?
+        N = 1000
+        counts = {qstate.KET0:0, qstate.KET1:0}
+        for i in range(N):
+            psi = qstate.QState((1/math.sqrt(2), 1/math.sqrt(2)))
+            counts[qstate.collapse(psi)] += 1
+        result = tuple(val / N for val in counts.values())
+        target = (0.5, 0.5)
+        for a,b in zip(result, target):
+            self.assertAlmostEqual(a,b,places=1)
+            
 
 # class TestQubit(unittest.TestCase):
   
