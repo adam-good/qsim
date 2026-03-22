@@ -1,14 +1,20 @@
 import unittest
 import numpy as np
-from quantum.gate import hadamard
+from quantum.gate import hadamard, xgate
 from quantum.state import KET0, QState
 
-class TestHGate(unittest.TestCase):
+class TestGates(unittest.TestCase):
     def test_h_gate(self):
         qubit = KET0
         result = hadamard(qubit)
         expected_result = QState((1, 1)) / np.sqrt(2)
         self.assertEqual(result, expected_result)
+
+    def test_x_gate(self):
+        qubit = KET0
+        result = xgate(qubit)
+        target = QState((0,1))
+        self.assertEqual(result, target)
 
 # class TestXGate(unittest.TestCase):
 #     def test_cnot_gate(self):
