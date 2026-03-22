@@ -16,27 +16,20 @@ class TestGates(unittest.TestCase):
         target = qstate.QState((0,1))
         self.assertEqual(result, target)
 
-# class TestQuantumState(unittest.TestCase):
-#     def test_quantumstate_to_vector(self):
-#         vec = np.array([np.pi, 2*np.pi])
-#         state = QuantumState(vec)
-#         outcome = state.vector
-#         np.testing.assert_array_equal(outcome, vec)
-
-#     def test_quantumestate_angles(self):
-#         h = 1.0 / np.sqrt(2) # hadamard value
-#         vectors = [
-#             np.array([1.0, 0.0]),    # ket 0
-#             np.array([0.0, 1.0]),    # ket 1
-#             np.array([h, h]),        # ket plus
-#             np.array([h, -h]),       # key minus
+class TestQuantumState(unittest.TestCase):
+    def test_quantumestate_angles(self):
+        h = 1.0 / np.sqrt(2) # hadamard value
+        qubits = [
+           qstate.QState((1.0, 0.0)),    # ket 0
+           qstate.QState((0.0, 1.0)),    # ket 1
+           qstate.QState((h, h)),        # ket plus
+           qstate.QState((h, -h)),       # key minus
             
-#         ]
-#         targets = [0.0, 90.0, 45.0, 315.0]
-#         for vec, target in zip(vectors, targets):
-#             psi = QuantumState(vec)
-#             outcome = psi.angle
-#             np.testing.assert_equal(outcome, target)
+        ]
+        targets = [0.0, 90.0, 45.0, 315.0]
+        for psi, target in zip(qubits, targets):
+            outcome = qstate.angle(psi)
+            np.testing.assert_equal(outcome, target)
       
 
 #     def test_quantumstate_bloch_angles(self):
