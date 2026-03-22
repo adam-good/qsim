@@ -30,22 +30,20 @@ class TestQuantumState(unittest.TestCase):
         for psi, target in zip(qubits, targets):
             outcome = qstate.angle(psi)
             np.testing.assert_equal(outcome, target)
-      
 
-#     def test_quantumstate_bloch_angles(self):
-#         h = 1.0 / np.sqrt(2) # hadamard value
-#         vectors = [
-#             np.array([1.0, 0.0]),    # ket 0
-#             np.array([0.0, 1.0]),    # ket 1
-#             np.array([h, h]),        # ket plus
-#             np.array([h, -h]),       # key minus
+    def test_quantumstate_bloch_angles(self):
+        h = 1.0 / np.sqrt(2) # hadamard value
+        quantum_states = [
+           qstate.QState((1.0, 0.0)),    # ket 0
+           qstate.QState((0.0, 1.0)),    # ket 1
+           qstate.QState((h, h)),        # ket plus
+           qstate.QState((h, -h)),       # key minus
             
-#         ]
-#         targets = (0.0, 180.0, 90.0, 270.0)
-#         for vec, target in zip(vectors, targets):
-#             psi = QuantumState(vec)
-#             outcome = psi.bloch_angle
-#             np.testing.assert_equal(outcome, target)
+        ]
+        targets = (0.0, 180.0, 90.0, 270.0)
+        for psi, target in zip(quantum_states, targets):
+            outcome = qstate.bloch_angle(psi)
+            np.testing.assert_equal(outcome, target)
 
 #     def test_quantumstate_probability_distribution(self):
 #         h = 1.0 / np.sqrt(2) # hadamard value
