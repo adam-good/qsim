@@ -16,14 +16,6 @@ class TestGates(unittest.TestCase):
         target = QState((0,1))
         self.assertEqual(result, target)
 
-# class TestXGate(unittest.TestCase):
-#     def test_cnot_gate(self):
-#         cnot_gate = XGate()
-#         qubits = Qubit()
-#         result = cnot_gate(qubits)
-#         expected_result = np.array([0.0, 1.0])
-#         np.testing.assert_almost_equal(result, expected_result)
-
 # class TestQuantumState(unittest.TestCase):
 #     def test_quantumstate_to_vector(self):
 #         vec = np.array([np.pi, 2*np.pi])
