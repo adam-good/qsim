@@ -1,3 +1,4 @@
+from utils.typing import Vector
 import unittest
 import numpy as np
 import quantum.gate as qgate
@@ -45,24 +46,23 @@ class TestQuantumState(unittest.TestCase):
             outcome = qstate.bloch_angle(psi)
             np.testing.assert_equal(outcome, target)
 
-#     def test_quantumstate_probability_distribution(self):
-#         h = 1.0 / np.sqrt(2) # hadamard value
-#         vectors = [
-#             np.array([1.0, 0.0]),    # ket 0
-#             np.array([0.0, 1.0]),    # ket 1
-#             np.array([h, h]),        # ket plus
-#             np.array([h, -h]),       # key minus
-#         ]
-#         targets = [
-#             [1.0, 0.0],
-#             [0.0, 1.0],
-#             [0.5, 0.5],
-#             [0.5, 0.5]
-#         ]
-#         for vec, target in zip(vectors, targets):
-#             psi = QuantumState(vec)
-#             outcome = psi.probability_distribution
-#             np.testing.assert_array_almost_equal(outcome, target)
+    def test_quantumstate_probability_distribution(self):
+        h = 1.0 / np.sqrt(2) # hadamard value
+        quantum_states = [
+            qstate.QState((1.0, 0.0)),    # ket 0
+            qstate.QState((0.0, 1.0)),    # ket 1
+            qstate.QState((h, h)),        # ket plus
+            qstate.QState((h, -h)),       # key minus
+        ]
+        target_vectors = [
+            Vector((1.0, 0.0)),
+            Vector((0.0, 1.0)),
+            Vector((0.5, 0.5)),
+            Vector((0.5, 0.5))
+        ]
+        for psi, target in zip(quantum_states, target_vectors):
+            outcome = qstate.probability_distribution(psi)
+            self.assertEqual(target,outcome)
 
 #     def test_quantumstate_eq(self):
 #         psi = QuantumState(np.array([1.0,0.0]))
