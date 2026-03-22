@@ -1,16 +1,14 @@
-# from numpy.ma.testutils import assert_equal
-# import unittest
-# import numpy as np
-# from quantum.gate import HGate, XGate
-# from quantum.qubit import Qubit, QuantumState
+import unittest
+import numpy as np
+from quantum.gate import hadamard
+from quantum.state import KET0, QState
 
-# class TestHGate(unittest.TestCase):
-#     def test_h_gate(self):
-#         h_gate = HGate()
-#         qubit = Qubit()
-#         result = h_gate(qubit)
-#         expected_result = np.array([1, 1]) / np.sqrt(2)
-#         np.testing.assert_almost_equal(result, expected_result)
+class TestHGate(unittest.TestCase):
+    def test_h_gate(self):
+        qubit = KET0
+        result = hadamard(qubit)
+        expected_result = QState((1, 1)) / np.sqrt(2)
+        self.assertEqual(result, expected_result)
 
 # class TestXGate(unittest.TestCase):
 #     def test_cnot_gate(self):
