@@ -4,6 +4,13 @@ import numpy as np
 
 type QGate = types.Matrix
 
+# TODO: Fix naming schemes
+# All gates should have a letter version
+# Some gates can have a full name version
+# - h()
+# - hgate()
+# - hadamard()
+
 def apply_gate(psi: qstate.QState, gate: QGate, check_unitary: bool = True) -> qstate.QState:
     if check_unitary and not _is_unitary(gate):
         raise Exception("Gate is Not Unitary")
