@@ -32,6 +32,9 @@ class SimQubit(qdev.Qubit):
         else:
             raise NotImplementedError()
 
+    def __hash__(self):
+        return hash(self.state)
+
 type Qubit = qdev.Qubit | SimQubit
 class SimDevice(qdev.QuantumDevice):
     def __init__(self, n):
