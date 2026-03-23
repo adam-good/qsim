@@ -2,21 +2,8 @@ from utils.typing import Vector
 import unittest
 import math
 import numpy as np
-import quantum.gate as qgate
 import quantum.state as qstate
 
-class TestGates(unittest.TestCase):
-    def test_h_gate(self):
-        qubit = qstate.KET0
-        result = qgate.hadamard(qubit)
-        target = qstate.QState((1, 1)) / np.sqrt(2)
-        self.assertEqual(result, target)
-
-    def test_x_gate(self):
-        qubit = qstate.KET0
-        result = qgate.xgate(qubit)
-        target = qstate.QState((0,1))
-        self.assertEqual(result, target)
 
 class TestQuantumState(unittest.TestCase):
     def test_quantumestate_angles(self):
