@@ -103,6 +103,15 @@ class Vector:
     def dotprod(w: Vector, v: Vector) -> Scalar:
         return sum(a*b for (a,b) in zip(w, v))
 
+    def __eq__(self, other: object) -> bool:
+        if isinstance(other, Vector):
+            for (a,b) in zip(self, other):
+                if not math.isclose(a,b):
+                    return False
+            return True
+        else:
+            raise NotImplementedError()
+
 @dataclass(frozen=True)
 class Matrix:
     raw_data: Tuple[Tuple[Scalar, ...], ...] # 2D Tuple so it's efficient

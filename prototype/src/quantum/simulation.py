@@ -24,6 +24,17 @@ class SimQubit(qdev.Qubit):
         self.state = qgate.negate(self.state)
         return self
 
+    def __eq__(self, other: object) -> bool:
+        if isinstance(other, SimQubit):
+            return self.state == other.state
+        elif isinstance(other, qstate.QState):
+            return self.state == other
+        else:
+            raise NotImplementedError()
+
+    def __hash__(self):
+        return hash(self.state)
+
 type Qubit = qdev.Qubit | SimQubit
 class SimDevice(qdev.QuantumDevice):
     def __init__(self, n):
