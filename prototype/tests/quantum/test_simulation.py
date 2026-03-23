@@ -42,3 +42,19 @@ class TestSimQubit(unittest.TestCase):
         for (q,s,t) in zip(qubit_result, state_result, target):
             self.assertAlmostEqual(q,t,places=1)
             self.assertAlmostEqual(s,t, places=1)
+
+    def test_simqubit_eq(self):
+        psi = qstate.QState((1/math.sqrt(2), 1/math.sqrt(2)))
+        q1 = qsim.SimQubit(psi)
+        q2 = qsim.SimQubit(psi)
+        target = True
+        result = q1 == q2
+        self.assertEqual(result, target)
+
+        psi = qstate.QState((1/math.sqrt(2), 1/math.sqrt(2)))
+        omega = qstate.QState((0,1))
+        q1 = qsim.SimQubit(psi)
+        q2 = qsim.SimQubit(omega)
+        target = False
+        result = q1 == q2
+        self.assertEqual(target, result)
