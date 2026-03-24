@@ -1,8 +1,9 @@
+import math
 import utils.typing as types
 import quantum.state as qstate
-import numpy as np
+from enum import Enum
 
-type QGate = types.Matrix
+QGate = types.Matrix
 
 # TODO: Fix naming schemes
 # All gates should have a letter version
@@ -11,40 +12,31 @@ type QGate = types.Matrix
 # - hgate()
 # - hadamard()
 
+class Gates(Enum):
+    H = 0
+    X = 1
+
+COMMON_GATES: dict[Gates, QGate] = {
+    Gates.H: QGate( ((1,1),(1,-1)) ) / math.sqrt(2),
+    Gates.X: QGate( ((0,1),(1,0)) )
+}
+
 def apply_gate(psi: qstate.QState, gate: QGate, check_unitary: bool = True) -> qstate.QState:
-    if check_unitary and not _is_unitary(gate):
+    if check_unitary and not gate.is_unitary():
         raise Exception("Gate is Not Unitary")
     return gate @ psi
 
-def hadamard(psi: qstate.QState) -> qstate.QState:
-    gate: QGate = types.Matrix(
-        ((1,1),
-        (1,-1))
-    ) / np.sqrt(2)   
+def hgate(psi: qstate.QState) -> qstate.QState:
+    gate: QGate = COMMON_GATES[Gates.H]
     return apply_gate(psi, gate, check_unitary=False)
 
 def xgate(psi: qstate.QState) -> qstate.QState:
-    gate: QGate = types.Matrix(
-        ((0,1),
-         (1,0))
-    )
+    gate: QGate = COMMON_GATES[Gates.X]
     return apply_gate(psi, gate, check_unitary=False)
 
-def negate(psi: qstate.QState) -> qstate.QState:
-    return xgate(psi)
+hadamard  = hgate
+negate = xgate
 
-
-def _is_square(mat: types.Matrix) -> bool:
-    return len(mat.shape) == 2 and mat.shape[0] == mat.shape[1]
-
-def _is_unitary(mat: types.Matrix) -> bool:
-        if not _is_square(mat):
-            return False
-                
-        identity = types.Matrix.identity(mat.shape[0])
-        # TODO: Add the conjugate part when we upgrade to complex numbers
-        conj_transpose = mat.transpose
-
-        return mat @ conj_transpose == identity
-    
+h = hgate
+x = xgate    
 

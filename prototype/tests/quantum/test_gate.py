@@ -6,7 +6,7 @@ import quantum.gate as qgate
 class TestGates(unittest.TestCase):
     def test_h_gate(self):
         qubit = qstate.KET0
-        result = qgate.hadamard(qubit)
+        result = qgate.hgate(qubit)
         target = qstate.QState((1, 1)) / math.sqrt(2)
         self.assertEqual(result, target)
 
