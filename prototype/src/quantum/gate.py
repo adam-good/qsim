@@ -5,13 +5,6 @@ from enum import Enum
 
 QGate = types.Matrix
 
-# TODO: Fix naming schemes
-# All gates should have a letter version
-# Some gates can have a full name version
-# - h()
-# - hgate()
-# - hadamard()
-
 class Gates(Enum):
     H = 0
     X = 1
