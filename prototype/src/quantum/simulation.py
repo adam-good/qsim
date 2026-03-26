@@ -35,6 +35,9 @@ class SimQubit(qdev.Qubit):
     def __hash__(self):
         return hash(self.state)
 
+    def __repr__(self):
+        return f"\u007C{self.state}\u27E9"
+
 type Qubit = qdev.Qubit | SimQubit
 class SimDevice(qdev.QuantumDevice):
     def __init__(self, n):
