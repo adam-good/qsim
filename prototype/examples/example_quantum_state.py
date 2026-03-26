@@ -13,8 +13,9 @@ def main():
     qubit = qsim.SimQubit(custom_state)
 
     # Measure the qubit
-    outcome = qubit.measure()
-    print("Measurement Outcome:", outcome)
+    qubit, outcome = qubit.measure()
+    print(f"Measurement Outcome: {outcome}")
+    print(f"Post-Measurment State: {qubit}")
 
 if __name__ == "__main__":
     main()
