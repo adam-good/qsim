@@ -2,7 +2,7 @@ import unittest
 import math
 import numpy as np
 import quantum.state as qstate
-import utils.typing as types
+from utils.math.vector import Vector
 
 class TestQuantumState(unittest.TestCase):
     def test_quantumestate_angles(self):
@@ -42,10 +42,10 @@ class TestQuantumState(unittest.TestCase):
             qstate.QState((h, -h)),       # key minus
         ]
         target_vectors = [
-            types.Vector((1.0, 0.0)),
-            types.Vector((0.0, 1.0)),
-            types.Vector((0.5, 0.5)),
-            types.Vector((0.5, 0.5))
+            Vector((1.0, 0.0)),
+            Vector((0.0, 1.0)),
+            Vector((0.5, 0.5)),
+            Vector((0.5, 0.5))
         ]
         for psi, target in zip(quantum_states, target_vectors):
             outcome = qstate.probability_distribution(psi)
