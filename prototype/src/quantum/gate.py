@@ -1,9 +1,9 @@
 import math
-import utils.typing as types
 import quantum.state as qstate
+from utils.math.matrix import Matrix
 from enum import Enum
 
-QGate = types.Matrix
+QGate = Matrix
 
 class Gates(Enum):
     H = 0
