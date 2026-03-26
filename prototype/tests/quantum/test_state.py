@@ -1,6 +1,5 @@
 import unittest
 import math
-import numpy as np
 import quantum.state as qstate
 from utils.math.vector import Vector
 
@@ -17,10 +16,10 @@ class TestQuantumState(unittest.TestCase):
         targets = [0.0, 90.0, 45.0, 315.0]
         for psi, target in zip(qubits, targets):
             outcome = qstate.angle(psi)
-            np.testing.assert_equal(outcome, target)
+            self.assertEqual(outcome, target)
 
     def test_quantumstate_bloch_angles(self):
-        h = 1.0 / np.sqrt(2) # hadamard value
+        h = 1.0 / math.sqrt(2) # hadamard value
         quantum_states = [
            qstate.QState((1.0, 0.0)),    # ket 0
            qstate.QState((0.0, 1.0)),    # ket 1
@@ -31,10 +30,10 @@ class TestQuantumState(unittest.TestCase):
         targets = (0.0, 180.0, 90.0, 270.0)
         for psi, target in zip(quantum_states, targets):
             outcome = qstate.bloch_angle(psi)
-            np.testing.assert_equal(outcome, target)
+            self.assertEqual(outcome, target)
 
     def test_quantumstate_probability_distribution(self):
-        h = 1.0 / np.sqrt(2) # hadamard value
+        h = 1.0 / math.sqrt(2) # hadamard value
         quantum_states = [
             qstate.QState((1.0, 0.0)),    # ket 0
             qstate.QState((0.0, 1.0)),    # ket 1
