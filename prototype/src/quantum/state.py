@@ -50,9 +50,17 @@ def to_bloch_vector(psi: QState) -> Vector:
     angle = deg2rad(bloch_angle(psi))
     return Vector((math.cos(angle), math.sin(angle)))
 
-def probability_distribution(psi: QState) -> Vector:
-    return psi ** 2
+def measure(measurement: QState, state: QState) -> Scalar:
+    return Vector.dotprod(measurement, state)
 
+def probability(measurement: QState, state: QState) -> Scalar:
+    return measure(measurement, state) ** 2
+
+# TODO: I'm not happy with this implementation right now.
+def probability_distribution(basis: tuple[QState], state: QState) -> Vector:
+    prob = probability(basis[0], state)
+    return Vector((prob, 1-prob))
+    
 def collapse(psi: QState) -> QState:
     probabilities: Vector = probability_distribution(psi)
     random_idx: int = random.choices([0,1], weights=probabilities.raw_data, k=1)[0]
