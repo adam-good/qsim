@@ -1,4 +1,5 @@
-from quantum.simulation import SimDevice as QDevice
+from quantum.device import QuantumDevice as QDevice
+from quantum.simulation import SimDevice
 import quantum.state as qstate
 
 def qrng(device: QDevice, bitmap: dict[qstate.QState, int]) -> int:
@@ -12,7 +13,7 @@ def main():
         qstate.KET0:0,
         qstate.KET1:1,
     }
-    device = QDevice(4)
+    device = SimDevice(4)
     result = [qrng(device, bitmap) for _ in range(16)]
     print(result)
 
