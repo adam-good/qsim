@@ -1,4 +1,5 @@
-from decorator import contextmanager
+from contextlib import contextmanager
+from typing import Iterator
 from abc import ABCMeta, abstractmethod
 import quantum.state as qstate
 
@@ -29,7 +30,7 @@ class QuantumDevice(metaclass=ABCMeta):
         pass
 
     @contextmanager
-    def alloc(self):
+    def alloc(self) -> Iterator[Qubit]:
         qubit = self._alloc()
         try:
             yield qubit
