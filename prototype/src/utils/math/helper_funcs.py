@@ -1,6 +1,6 @@
 import numpy as np
 from typing import Callable
-from utils.typing import Scalar
+from utils.math.scalar import Scalar
 
 def rad2deg(theta: Scalar) -> Scalar:
     return theta * 180 / np.pi
