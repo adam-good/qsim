@@ -1,35 +1,35 @@
-from quantum.qubit import Qubit, QuantumState
-from utils.gates import H_GATE, X_GATE, is_unitary
-import numpy as np
-import numpy.typing as npt
+import math
+import quantum.state as qstate
+from utils.math.matrix import Matrix
+from enum import Enum
 
-class Gate:
-    def __init__(self, matrix: npt.NDArray[np.float64]):
-        if not is_unitary(matrix):
-            raise Exception("Invalid Gate! Matrix Not Unitary")
-        self.matrix = matrix          
-    
-    def __call__(self, qubit: Qubit) -> np.ndarray:
-        new_state = self.matrix @ qubit.state.vector
-        qubit.state = QuantumState(new_state)
-        return new_state
+QGate = Matrix
 
-    def __matmul__(self, other: Gate | Qubit | QuantumState) -> Gate | QuantumState:
-        if isinstance(other, Gate):
-            return Gate(self.matrix @ other.matrix)
-        elif isinstance(other, Qubit):
-            state = QuantumState(self.matrix @ other.state.vector)
-            other.state = state
-            return state
-        elif isinstance(other, QuantumState):
-            return QuantumState(self.matrix @ other.vector)
-              
+class Gates(Enum):
+    H = 0
+    X = 1
 
-class HGate(Gate):
-    def __init__(self):
-        super().__init__(H_GATE)
-         
+COMMON_GATES: dict[Gates, QGate] = {
+    Gates.H: QGate( ((1,1),(1,-1)) ) / math.sqrt(2),
+    Gates.X: QGate( ((0,1),(1,0)) )
+}
 
-class XGate(Gate):
-    def __init__(self):
-        super().__init__(X_GATE)
+def apply_gate(psi: qstate.QState, gate: QGate, check_unitary: bool = True) -> qstate.QState:
+    if check_unitary and not gate.is_unitary():
+        raise Exception("Gate is Not Unitary")
+    return gate @ psi
+
+def hgate(psi: qstate.QState) -> qstate.QState:
+    gate: QGate = COMMON_GATES[Gates.H]
+    return apply_gate(psi, gate, check_unitary=False)
+
+def xgate(psi: qstate.QState) -> qstate.QState:
+    gate: QGate = COMMON_GATES[Gates.X]
+    return apply_gate(psi, gate, check_unitary=False)
+
+hadamard  = hgate
+negate = xgate
+
+h = hgate
+x = xgate    
+
