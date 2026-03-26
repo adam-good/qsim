@@ -1,12 +1,6 @@
-from quantum.device import QuantumDevice as QDevice
 from quantum.simulation import SimDevice
+from quantum.algorithms.qrng import qrng
 import quantum.state as qstate
-
-def qrng(device: QDevice, bitmap: dict[qstate.QState, int]) -> int:
-    with device.alloc() as psi:
-        psi.hadamard()
-        psi, measurement = psi.measure()
-    return bitmap[measurement]
 
 def main():
     bitmap = {
