@@ -112,6 +112,9 @@ class Vector:
         else:
             raise NotImplementedError()
 
+    def __repr__(self):
+        return f"{self.raw_data}"
+
 @dataclass(frozen=True)
 class Matrix:
     raw_data: Tuple[Tuple[Scalar, ...], ...] # 2D Tuple so it's efficient
