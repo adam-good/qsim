@@ -46,8 +46,9 @@ class TestQuantumState(unittest.TestCase):
             Vector((0.5, 0.5)),
             Vector((0.5, 0.5))
         ]
+        z_basis = qstate.Z_BASIS
         for psi, target in zip(quantum_states, target_vectors):
-            outcome = qstate.probability_distribution(qstate.Z_BASIS, psi)
+            outcome = qstate.probability_distribution(z_basis, psi)
             self.assertEqual(target,outcome)
 
     def test_quantumstate_reset(self):
@@ -56,16 +57,18 @@ class TestQuantumState(unittest.TestCase):
         target = qstate.KET0
         self.assertEqual(result,target)
 
-
+    # TODO: Collapse to other basis
     def test_quantumstate_collapse(self):
+        z_basis = qstate.Z_BASIS
+
         psi = qstate.KET0
         target = qstate.KET0
-        result = qstate.collapse(qstate.Z_BASIS, psi)
+        result = qstate.collapse(z_basis, psi)
         self.assertEqual(result,target)
 
         psi = qstate.KET1
         target = qstate.KET1
-        result = qstate.collapse(qstate.Z_BASIS, psi)
+        result = qstate.collapse(z_basis, psi)
         self.assertEqual(result,target)
 
 
@@ -74,7 +77,7 @@ class TestQuantumState(unittest.TestCase):
         counts = {qstate.KET0:0, qstate.KET1:0}
         for i in range(N):
             psi = qstate.QState((1/math.sqrt(2), 1/math.sqrt(2)))
-            counts[qstate.collapse(qstate.Z_BASIS, psi)] += 1
+            counts[qstate.collapse(z_basis, psi)] += 1
         result = tuple(val / N for val in counts.values())
         target = (0.5, 0.5)
         for a,b in zip(result, target):

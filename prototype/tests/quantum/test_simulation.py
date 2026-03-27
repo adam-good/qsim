@@ -11,10 +11,12 @@ class TestSimQubit(unittest.TestCase):
         self.assertEqual(result, target)
 
     def test_simqubit_measure(self):
+        z_basis = qstate.Z_BASIS
+
         target_state = qstate.KET0
         target_qubit = qsim.SimQubit(target_state)
         qubit = qsim.SimQubit(target_state)
-        result_qubit, result_state = qubit.measure(qstate.Z_BASIS)
+        result_qubit, result_state = qubit.measure(z_basis)
         self.assertEqual(result_qubit, target_qubit)
         self.assertEqual(result_state, target_state)
 
