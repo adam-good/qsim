@@ -11,6 +11,9 @@ KET1: QState = QState((0.,1.))
 KETPLUS: QState = QState((1.,1.)) / math.sqrt(2)
 KETMINUS: QState = QState((1.,-1.)) / math.sqrt(2)
 
+Z_BASIS = (KET0, KET1)
+X_BASIS = (KETPLUS, KETMINUS)
+
 def _x(psi: QState) -> Scalar:
     return psi[0]
 
