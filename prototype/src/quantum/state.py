@@ -3,27 +3,13 @@ import random
 from utils.math.scalar import Scalar
 from utils.math.vector import Vector
 from utils.math.helper_funcs import vec2d_to_angle, deg2rad
-from enum import Enum
 
 QState = Vector
 
-class Basis(Enum):
-    KET0 = 0
-    KET1 = 1
-    KETPLUS = 2
-    KETMINUS = 3
-
-BASE_STATES: dict[Basis, QState] = {
-    Basis.KET0 : QState((1.,0.)),
-    Basis.KET1 : QState((0., 1.)),
-    Basis.KETPLUS: QState((1.,1.)) / math.sqrt(2),
-    Basis.KETMINUS: QState((1.,-1.)) / math.sqrt(2)
-}
-
-KET0: QState = BASE_STATES[Basis.KET0]
-KET1: QState = BASE_STATES[Basis.KET1]
-KETPLUS: QState = BASE_STATES[Basis.KETPLUS]
-KETMINUS: QState = BASE_STATES[Basis.KETMINUS]
+KET0: QState =  QState((1.,0.))
+KET1: QState = QState((0.,1.))
+KETPLUS: QState = QState((1.,1.)) / math.sqrt(2)
+KETMINUS: QState = QState((1.,-1.)) / math.sqrt(2)
 
 def _x(psi: QState) -> Scalar:
     return psi[0]
