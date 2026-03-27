@@ -70,6 +70,16 @@ class TestQuantumState(unittest.TestCase):
             result = qstate.collapse(basis, psi)
             self.assertEqual(result, target)
 
-
-
+    def test_quantum_superposition_collapse(self):
+        basises = (qstate.Z_BASIS, qstate.X_BASIS)
+        for basis in basises:
+            w, v = basis
+            superposition = (w+v) / math.sqrt(2)
+            N = 1000
+            shots = [qstate.collapse(basis, superposition) for _ in range(N) ]
+            result_w = len([x for x in shots if x == w]) / N
+            result_v = len([x for x in shots if x == v]) / N
+            self.assertAlmostEqual(result_w, 0.5, delta=0.05)
+            self.assertAlmostEqual(result_v, 0.5, delta=0.05)
+            
            
