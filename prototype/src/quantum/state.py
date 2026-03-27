@@ -5,14 +5,15 @@ from utils.math.vector import Vector
 from utils.math.helper_funcs import vec2d_to_angle, deg2rad
 
 QState = Vector
+type QBasis = tuple[QState, QState]
 
 KET0: QState =  QState((1.,0.))
 KET1: QState = QState((0.,1.))
 KETPLUS: QState = QState((1.,1.)) / math.sqrt(2)
 KETMINUS: QState = QState((1.,-1.)) / math.sqrt(2)
 
-Z_BASIS = (KET0, KET1)
-X_BASIS = (KETPLUS, KETMINUS)
+Z_BASIS: QBasis = (KET0, KET1)
+X_BASIS: QBasis = (KETPLUS, KETMINUS)
 
 def _x(psi: QState) -> Scalar:
     return psi[0]
