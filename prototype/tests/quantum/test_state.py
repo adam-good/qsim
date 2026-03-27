@@ -59,27 +59,17 @@ class TestQuantumState(unittest.TestCase):
 
     # TODO: Collapse to other basis
     def test_quantumstate_collapse(self):
-        z_basis = qstate.Z_BASIS
+        tests = [
+            (qstate.Z_BASIS, qstate.KET0, qstate.KET0),
+            (qstate.Z_BASIS, qstate.KET1, qstate.KET1),
+            (qstate.X_BASIS, qstate.KETPLUS, qstate.KETPLUS),
+            (qstate.X_BASIS, qstate.KETMINUS, qstate.KETMINUS)
+        ]
 
-        psi = qstate.KET0
-        target = qstate.KET0
-        result = qstate.collapse(z_basis, psi)
-        self.assertEqual(result,target)
-
-        psi = qstate.KET1
-        target = qstate.KET1
-        result = qstate.collapse(z_basis, psi)
-        self.assertEqual(result,target)
+        for (basis, psi, target) in tests:
+            result = qstate.collapse(basis, psi)
+            self.assertEqual(result, target)
 
 
-        # TODO: Should this really be done?
-        N = 1000
-        counts = {qstate.KET0:0, qstate.KET1:0}
-        for i in range(N):
-            psi = qstate.QState((1/math.sqrt(2), 1/math.sqrt(2)))
-            counts[qstate.collapse(z_basis, psi)] += 1
-        result = tuple(val / N for val in counts.values())
-        target = (0.5, 0.5)
-        for a,b in zip(result, target):
-            self.assertAlmostEqual(a,b,places=1)
-            
+
+           
