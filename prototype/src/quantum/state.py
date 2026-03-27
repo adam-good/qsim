@@ -56,13 +56,13 @@ def measure(measurement: QState, state: QState) -> Scalar:
 def probability(measurement: QState, state: QState) -> Scalar:
     return measure(measurement, state) ** 2
 
-# TODO: I'm not happy with this implementation right now.
+# NOTE: This can be made more efficient later
 def probability_distribution(basis: tuple[QState], state: QState) -> Vector:
-    prob = probability(basis[0], state)
-    return Vector((prob, 1-prob))
+    probs = tuple(probability(m, state) for m in basis)
+    return Vector(probs)
     
-def collapse(psi: QState) -> QState:
-    probabilities: Vector = probability_distribution(psi)
+def collapse(basis: tuple[QState], psi: QState) -> QState:
+    probabilities: Vector = probability_distribution(basis, psi)
     random_idx: int = random.choices([0,1], weights=probabilities.raw_data, k=1)[0]
     result_states: list[Vector] = [KET0, KET1]
     return result_states[random_idx]
