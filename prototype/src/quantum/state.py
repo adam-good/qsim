@@ -3,27 +3,16 @@ import random
 from utils.math.scalar import Scalar
 from utils.math.vector import Vector
 from utils.math.helper_funcs import vec2d_to_angle, deg2rad
-from enum import Enum
 
 QState = Vector
 
-class Basis(Enum):
-    KET0 = 0
-    KET1 = 1
-    KETPLUS = 2
-    KETMINUS = 3
+KET0: QState =  QState((1.,0.))
+KET1: QState = QState((0.,1.))
+KETPLUS: QState = QState((1.,1.)) / math.sqrt(2)
+KETMINUS: QState = QState((1.,-1.)) / math.sqrt(2)
 
-BASE_STATES: dict[Basis, QState] = {
-    Basis.KET0 : QState((1.,0.)),
-    Basis.KET1 : QState((0., 1.)),
-    Basis.KETPLUS: QState((1.,1.)) / math.sqrt(2),
-    Basis.KETMINUS: QState((1.,-1.)) / math.sqrt(2)
-}
-
-KET0: QState = BASE_STATES[Basis.KET0]
-KET1: QState = BASE_STATES[Basis.KET1]
-KETPLUS: QState = BASE_STATES[Basis.KETPLUS]
-KETMINUS: QState = BASE_STATES[Basis.KETMINUS]
+Z_BASIS = (KET0, KET1)
+X_BASIS = (KETPLUS, KETMINUS)
 
 def _x(psi: QState) -> Scalar:
     return psi[0]
@@ -50,14 +39,24 @@ def to_bloch_vector(psi: QState) -> Vector:
     angle = deg2rad(bloch_angle(psi))
     return Vector((math.cos(angle), math.sin(angle)))
 
-def probability_distribution(psi: QState) -> Vector:
-    return psi ** 2
+# NOTE: While this is the mathematically correct representation
+#       of a measurment, this adds confusion with the `measure`
+#       method of a Qubit.
+def measure(measurement: QState, state: QState) -> Scalar:
+    return Vector.dotprod(measurement, state)
 
-def collapse(psi: QState) -> QState:
-    probabilities: Vector = probability_distribution(psi)
+def probability(measurement: QState, state: QState) -> Scalar:
+    return measure(measurement, state) ** 2
+
+# NOTE: This can be made more efficient later
+def probability_distribution(basis: tuple[QState, QState], state: QState) -> Vector:
+    probs = tuple(probability(m, state) for m in basis)
+    return Vector(probs)
+    
+def collapse(basis: tuple[QState, QState], psi: QState) -> QState:
+    probabilities: Vector = probability_distribution(basis, psi)
     random_idx: int = random.choices([0,1], weights=probabilities.raw_data, k=1)[0]
-    result_states: list[Vector] = [KET0, KET1]
-    return result_states[random_idx]
+    return basis[random_idx]
 
 def reset(_psi: QState | None = None) -> QState:
     return KET0

@@ -12,8 +12,8 @@ class SimQubit(qdev.Qubit):
         self.state = qstate.reset(self.state)
         return self
 
-    def measure(self) -> tuple[SimQubit, qstate.QState]:
-        self.state = qstate.collapse(self.state)
+    def measure(self, basis: tuple[qstate.QState, qstate.QState]) -> tuple[SimQubit, qstate.QState]:
+        self.state = qstate.collapse(basis, self.state)
         return (self, self.state)
 
     def hadamard(self) -> SimQubit:

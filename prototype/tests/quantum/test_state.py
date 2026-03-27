@@ -46,8 +46,9 @@ class TestQuantumState(unittest.TestCase):
             Vector((0.5, 0.5)),
             Vector((0.5, 0.5))
         ]
+        z_basis = qstate.Z_BASIS
         for psi, target in zip(quantum_states, target_vectors):
-            outcome = qstate.probability_distribution(psi)
+            outcome = qstate.probability_distribution(z_basis, psi)
             self.assertEqual(target,outcome)
 
     def test_quantumstate_reset(self):
@@ -56,27 +57,28 @@ class TestQuantumState(unittest.TestCase):
         target = qstate.KET0
         self.assertEqual(result,target)
 
-
     def test_quantumstate_collapse(self):
-        psi = qstate.KET0
-        target = qstate.KET0
-        result = qstate.collapse(psi)
-        self.assertEqual(result,target)
+        tests = [
+            (qstate.Z_BASIS, qstate.KET0, qstate.KET0),
+            (qstate.Z_BASIS, qstate.KET1, qstate.KET1),
+            (qstate.X_BASIS, qstate.KETPLUS, qstate.KETPLUS),
+            (qstate.X_BASIS, qstate.KETMINUS, qstate.KETMINUS)
+        ]
 
-        psi = qstate.KET1
-        target = qstate.KET1
-        result = qstate.collapse(psi)
-        self.assertEqual(result,target)
+        for (basis, psi, target) in tests:
+            result = qstate.collapse(basis, psi)
+            self.assertEqual(result, target)
 
-
-        # TODO: Should this really be done?
-        N = 1000
-        counts = {qstate.KET0:0, qstate.KET1:0}
-        for i in range(N):
-            psi = qstate.QState((1/math.sqrt(2), 1/math.sqrt(2)))
-            counts[qstate.collapse(psi)] += 1
-        result = tuple(val / N for val in counts.values())
-        target = (0.5, 0.5)
-        for a,b in zip(result, target):
-            self.assertAlmostEqual(a,b,places=1)
+    def test_quantum_superposition_collapse(self):
+        basises = (qstate.Z_BASIS, qstate.X_BASIS)
+        for basis in basises:
+            w, v = basis
+            superposition = (w+v) / math.sqrt(2)
+            N = 1000
+            shots = [qstate.collapse(basis, superposition) for _ in range(N) ]
+            result_w = len([x for x in shots if x == w]) / N
+            result_v = len([x for x in shots if x == v]) / N
+            self.assertAlmostEqual(result_w, 0.5, delta=0.05)
+            self.assertAlmostEqual(result_v, 0.5, delta=0.05)
             
+           
