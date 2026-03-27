@@ -13,7 +13,7 @@ def main():
     qubit = qsim.SimQubit(custom_state)
 
     # Measure the qubit
-    qubit, outcome = qubit.measure()
+    qubit, outcome = qubit.measure(qstate.Z_BASIS)
     print(f"Measurement Outcome: {outcome}")
     print(f"Post-Measurment State: {qubit}")
 
