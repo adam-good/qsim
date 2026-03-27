@@ -14,7 +14,7 @@ class TestSimQubit(unittest.TestCase):
         target_state = qstate.KET0
         target_qubit = qsim.SimQubit(target_state)
         qubit = qsim.SimQubit(target_state)
-        result_qubit, result_state = qubit.measure()
+        result_qubit, result_state = qubit.measure(qstate.Z_BASIS)
         self.assertEqual(result_qubit, target_qubit)
         self.assertEqual(result_state, target_state)
 
@@ -22,7 +22,7 @@ class TestSimQubit(unittest.TestCase):
         target_state = qstate.KET1
         target_qubit = qsim.SimQubit(target_state)
         qubit = qsim.SimQubit(target_state)
-        result_qubit, result_state = qubit.measure()
+        result_qubit, result_state = qubit.measure(qstate.Z_BASIS)
         self.assertEqual(result_qubit, target_qubit)
         self.assertEqual(result_state, target_state)
 
@@ -33,7 +33,7 @@ class TestSimQubit(unittest.TestCase):
         qubit_counts = {ket0:0, ket1:0}
         for i in range(N):
             psi = qstate.QState( (1/math.sqrt(2), 1/math.sqrt(2)) )
-            qubit, state = qsim.SimQubit(psi).measure()
+            qubit, state = qsim.SimQubit(psi).measure(qstate.Z_BASIS)
             qubit_counts[qubit] += 1
             state_counts[state] += 1
         state_result = tuple(val / N for val in state_counts.values())
