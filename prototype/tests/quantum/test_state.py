@@ -57,7 +57,6 @@ class TestQuantumState(unittest.TestCase):
         target = qstate.KET0
         self.assertEqual(result,target)
 
-    # TODO: Collapse to other basis
     def test_quantumstate_collapse(self):
         tests = [
             (qstate.Z_BASIS, qstate.KET0, qstate.KET0),
