@@ -21,6 +21,9 @@ def new_channel(chnl_type: TypeVar) -> Channel:
     channel = Channel[chnl_type](endpoint_a, endpoint_b)
     return channel
 
+def get_endpoints(chnl: Channel) -> tuple[ChannelEndpoint, ChannelEndpoint]:
+    return (chnl.endpoint_A, chnl.endpoint_B)
+
 def send[T](endpoint: ChannelEndpoint[T], data: T):
     endpoint.output.put(data)
 
