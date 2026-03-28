@@ -1,3 +1,4 @@
+import time
 import utils.channel as chnl
 import quantum.state as qst
 import quantum.device as qdev
@@ -21,7 +22,12 @@ def _bb84_decode(
     device: qdev.QuantumDevice,
     qubit: qdev.Qubit,
     basis_map: dict[int, qst.QBasis] = {0:qst.Z_BASIS, 1:qst.X_BASIS},
-    value_map: dict[qst.QState, int] = {qst.KET0:0, qst.KET1:1}) -> tuple[int, int]:
+    value_map: dict[qst.QState, int] = {
+        qst.KET0:0,
+        qst.KET1:1,
+        qst.KETPLUS:0,
+        qst.KETMINUS:1
+    }) -> tuple[int, int]:
     basis_key = qrng(device)
     basis = basis_map[basis_key]
     qubit, state = qubit.measure(basis)
@@ -54,7 +60,7 @@ def bb84_recv(
     primary_channel: chnl.ChannelEndpoint[qdev.Qubit],
     auth_channel: chnl.ChannelEndpoint[int],
     verbose=False) -> list[int]:
-    key: list[int] = n_bits*[0]
+    key: list[int] = n_bits*[2] # Use 2 as invalid val
     idx = 0
     while idx < n_bits:
         qubit = chnl.recv(primary_channel)
@@ -68,6 +74,7 @@ def bb84_recv(
             idx += 1
 
         if verbose:
+            time.sleep(.1)
             print(f"Data: {key}", end='\r')
     if verbose:
         print("")
