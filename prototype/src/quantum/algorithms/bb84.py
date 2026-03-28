@@ -1,9 +1,9 @@
 import utils.channel as chnl
-from quantum.state import QBasis, QState, Z_BASIS, X_BASIS, KET0, KET1
-from quantum.device import QuantumDevice, Qubit
+import quantum.state as qst
+import quantum.device as qdev
 from quantum.algorithms.qrng import qrng
 
-def _bb84_encode(device: QuantumDevice, val: int) -> tuple[Qubit,int]:
+def _bb84_encode(device: qdev.QuantumDevice, val: int) -> tuple[qdev.Qubit,int]:
     basis = qrng(device)
     with device.alloc() as qubit:
         match (basis, val):
@@ -18,10 +18,10 @@ def _bb84_encode(device: QuantumDevice, val: int) -> tuple[Qubit,int]:
         return (qubit, basis)
 
 def _bb84_decode(
-    device: QuantumDevice,
-    qubit: Qubit,
-    basis_map: dict[int, QBasis] = {0:Z_BASIS, 1:X_BASIS},
-    value_map: dict[QState, int] = {KET0:0, KET1:1}) -> tuple[int, int]:
+    device: qdev.QuantumDevice,
+    qubit: qdev.Qubit,
+    basis_map: dict[int, qst.QBasis] = {0:qst.Z_BASIS, 1:qst.X_BASIS},
+    value_map: dict[qst.QState, int] = {qst.KET0:0, qst.KET1:1}) -> tuple[int, int]:
     basis_key = qrng(device)
     basis = basis_map[basis_key]
     qubit, state = qubit.measure(basis)
@@ -30,10 +30,10 @@ def _bb84_decode(
     
 
 def bb84_send(
-    device: QuantumDevice,
+    device: qdev.QuantumDevice,
     key: list[int],
     n_bits: int,
-    quantum_channel: chnl.ChannelEndpoint[Qubit],
+    quantum_channel: chnl.ChannelEndpoint[qdev.Qubit],
     auth_channel: chnl.ChannelEndpoint[int]):
     assert len(key) == n_bits # NOTE: Is this good practice?
 
@@ -49,9 +49,9 @@ def bb84_send(
             idx += 1
 
 def bb84_recv(
-    device: QuantumDevice,
+    device: qdev.QuantumDevice,
     n_bits: int,
-    primary_channel: chnl.ChannelEndpoint[Qubit],
+    primary_channel: chnl.ChannelEndpoint[qdev.Qubit],
     auth_channel: chnl.ChannelEndpoint[int],
     verbose=False) -> list[int]:
     key: list[int] = n_bits*[0]
