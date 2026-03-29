@@ -24,6 +24,9 @@ class SimQubit(qdev.Qubit):
         self.state = qgate.negate(self.state)
         return self
 
+    def _copy(self) -> SimQubit:
+        return SimQubit(self.state)
+
     def __eq__(self, other: object) -> bool:
         if isinstance(other, SimQubit):
             return self.state == other.state
@@ -62,6 +65,9 @@ class SimDevice(qdev.QuantumDevice):
 
         self.alloc_tracker[i] = False
         self.qubits[i] = psi
+
+    def copy(self, psi: Qubit) -> Qubit:
+         return psi._copy()
 
     @contextmanager
     def alloc(self) -> Generator[Qubit]:

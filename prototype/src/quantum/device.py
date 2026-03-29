@@ -20,6 +20,13 @@ class Qubit(metaclass=ABCMeta):
     def negate(self) -> Qubit:
         pass
 
+    # NOTE: This is private because it varies from physical constraints
+    #       to my knowledge. But it seems necessary.
+    #       Perhaps when I learn more I can impliment this better.
+    @abstractmethod
+    def _copy(self) -> Qubit:
+        pass
+
 class QuantumDevice(metaclass=ABCMeta):
     @abstractmethod
     def _alloc(self) -> Qubit:
@@ -27,6 +34,10 @@ class QuantumDevice(metaclass=ABCMeta):
 
     @abstractmethod
     def _dealloc(self, psi: Qubit):
+        pass
+
+    @abstractmethod
+    def copy(self, psi: Qubit) -> Qubit:
         pass
 
     @contextmanager
