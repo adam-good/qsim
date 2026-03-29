@@ -4,19 +4,22 @@ import quantum.state as qst
 import quantum.device as qdev
 from quantum.algorithms.qrng import qrng
 
-def _bb84_encode(device: qdev.QuantumDevice, val: int) -> tuple[qdev.Qubit,int]:
-    basis = qrng(device)
-    with device.alloc() as qubit:
-        match (basis, val):
-            case (0, 0):
-                qubit = qubit
-            case (0, 1):
-                qubit = qubit.negate()
-            case (1, 0):
-                qubit = qubit.hadamard()
-            case (1, 1):
-                qubit = qubit.negate().hadamard()
-        return (qubit, basis)
+def _bb84_encode(device: qdev.QuantumDevice, val: int, basis_key: int) -> tuple[qdev.Qubit,int]:
+    # TODO: We can't use the generator here because it will reset the
+    #       qubit before sending it.
+    #       According to the textbook, qubits could be literally sent as
+    #       photons, so maybe I need a way to "clone" a qubit for sending?
+    qubit = device._alloc() # NOTE: This obviously shouldn't be done
+    match (basis_key, val):
+        case (0, 0):
+            qubit = qubit # KET0
+        case (0, 1):
+            qubit = qubit.negate() # KET1
+        case (1, 0):
+            qubit = qubit.hadamard() # KET PLUS
+        case (1, 1):
+                qubit = qubit.negate().hadamard() # KET MINUS              
+    return (qubit, basis_key)
 
 def _bb84_decode(
     device: qdev.QuantumDevice,
@@ -45,7 +48,8 @@ def bb84_send(
 
     idx = 0
     while idx < n_bits:
-        qubit, local_basis_key = _bb84_encode(device, key[idx])
+        basis = qrng(device)
+        qubit, local_basis_key = _bb84_encode(device, key[idx], basis)
 
         chnl.send(quantum_channel, qubit)
         remote_basis_key = chnl.recv(auth_channel)
