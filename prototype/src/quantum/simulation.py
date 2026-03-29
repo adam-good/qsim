@@ -49,16 +49,6 @@ class SimDevice(qdev.QuantumDevice):
         return len([x for x in self.alloc_tracker if not x])
 
 
-    def _alloc(self) -> Qubit:
-        for i in self.alloc_tracker.keys():
-            if self.alloc_tracker[i]:
-                break
-
-        qubit = self.qubits[i]
-        self.alloc_tracker[i] = True
-
-        return qubit
-
     def _n_alloc(self, n: int) -> list[Qubit]:
         assert n <= self.n_qubits
         available_qubits: list[int] = [
@@ -71,6 +61,10 @@ class SimDevice(qdev.QuantumDevice):
         self.alloc_tracker.update([(i,True) for i in selection])
         return qubits
 
+    
+    def _alloc(self) -> Qubit:
+        return self._n_alloc(1)[0]
+    
     def _dealloc(self, qubit: Qubit):
         for i in self.alloc_tracker.keys():
             if not self.alloc_tracker[i]:
