@@ -4,6 +4,8 @@ import quantum.state as qst
 import quantum.device as qdev
 from quantum.algorithms.qrng import qrng
 
+# TODO: This file needs to be made more simple
+
 def _bb84_encode(device: qdev.QuantumDevice, val: int, basis_key: int) -> tuple[qdev.Qubit,int]:
     with device.alloc() as qubit:
         match (basis_key, val):
@@ -20,6 +22,7 @@ def _bb84_encode(device: qdev.QuantumDevice, val: int, basis_key: int) -> tuple[
 def _bb84_decode(
     device: qdev.QuantumDevice,
     qubit: qdev.Qubit,
+    basis_key: int,
     basis_map: dict[int, qst.QBasis] = {0:qst.Z_BASIS, 1:qst.X_BASIS},
     value_map: dict[qst.QState, int] = {
         qst.KET0:0,
@@ -27,7 +30,6 @@ def _bb84_decode(
         qst.KETPLUS:0,
         qst.KETMINUS:1
     }) -> tuple[int, int]:
-    basis_key = qrng(device)
     basis = basis_map[basis_key]
     qubit, state = qubit.measure(basis)
     val = value_map[state]
@@ -44,8 +46,8 @@ def bb84_send(
 
     idx = 0
     while idx < n_bits:
-        basis = qrng(device)
-        qubit, local_basis_key = _bb84_encode(device, key[idx], basis)
+        basis_key = qrng(device)
+        qubit, local_basis_key = _bb84_encode(device, key[idx], basis_key)
 
         chnl.send(quantum_channel, qubit)
         remote_basis_key = chnl.recv(auth_channel)
@@ -64,7 +66,8 @@ def bb84_recv(
     idx = 0
     while idx < n_bits:
         qubit = chnl.recv(primary_channel)
-        val, local_basis_key = _bb84_decode(device, qubit)
+        basis_key = qrng(device)
+        val, local_basis_key = _bb84_decode(device, qubit, basis_key)
 
         chnl.send(auth_channel, local_basis_key)
         remote_basis_key = chnl.recv(auth_channel)
