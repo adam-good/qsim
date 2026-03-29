@@ -34,7 +34,21 @@ def _bb84_decode(
     qubit, state = qubit.measure(basis)
     val = value_map[state]
     return (val, basis_key)
+
+# NOTE: This seems unnecesary.
+#       Leaving for now because I anticipate adding compleixty later
+def _bb84_send_qubit(
+    qubit: qdev.Qubit,
+    channel: chnl.ChannelEndpoint[qdev.Qubit]):
+    chnl.send(channel, qubit)
     
+
+def _bb84_exchange_basis(
+    basis_key: int,
+    channel: chnl.ChannelEndpoint[int]) -> int:
+    remote_basis_key = chnl.recv(channel)
+    chnl.send(channel, basis_key)
+    return remote_basis_key
 
 def bb84_send(
     device: qdev.QuantumDevice,
@@ -48,10 +62,8 @@ def bb84_send(
     while idx < n_bits:
         basis_key = qrng(device)
         qubit, local_basis_key = _bb84_encode(device, key[idx], basis_key)
-
-        chnl.send(quantum_channel, qubit)
-        remote_basis_key = chnl.recv(auth_channel)
-        chnl.send(auth_channel, local_basis_key)
+        _bb84_send_qubit(qubit, quantum_channel)
+        remote_basis_key = _bb84_exchange_basis(basis_key, auth_channel)      
 
         if local_basis_key == remote_basis_key:
             idx += 1
