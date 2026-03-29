@@ -43,7 +43,10 @@ class SimDevice(qdev.QuantumDevice):
     def __init__(self, n):
         self.qubits: dict[int, Qubit] = {i:SimQubit() for i in range(n)}
         self.alloc_tracker: dict[int, bool] = {i:False for i in range(n)}
-        
+
+    @property
+    def n_qubits(self) -> int:
+        return len(self.qubits.items())
 
     def _alloc(self) -> Qubit:
         for i in self.alloc_tracker.keys():
@@ -55,13 +58,13 @@ class SimDevice(qdev.QuantumDevice):
 
         return qubit
 
-    def _dealloc(self, psi: Qubit):
+    def _dealloc(self, qubit: Qubit):
         for i in self.alloc_tracker.keys():
             if not self.alloc_tracker[i]:
                 break
 
         self.alloc_tracker[i] = False
-        self.qubits[i] = psi
+        self.qubits[i] = qubit
 
     @contextmanager
     def alloc(self) -> Generator[Qubit]:
