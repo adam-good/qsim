@@ -1,5 +1,3 @@
-from typing import Generator
-from contextlib import contextmanager
 import quantum.device as qdev
 import quantum.state as qstate
 import quantum.gate as qgate
@@ -72,12 +70,3 @@ class SimDevice(qdev.QuantumDevice):
 
         self.alloc_tracker[i] = False
         self.qubits[i] = qubit
-
-    @contextmanager
-    def alloc(self) -> Generator[Qubit]:
-        qubit = self._alloc()
-        try:
-            yield qubit
-        finally:
-            qubit.reset()
-            self._dealloc(qubit)
