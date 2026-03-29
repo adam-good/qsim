@@ -5,6 +5,8 @@ import quantum.device as qdev
 from quantum.algorithms.qrng import qrng
 
 # TODO: This file needs to be made more simple
+# TODO: Expand to work in batches instead of single qubits
+# TODO: Privacy Amplification Algorithms???
 
 def _bb84_encode(device: qdev.QuantumDevice, val: int, basis_key: int) -> tuple[qdev.Qubit,int]:
     with device.alloc() as qubit:
@@ -74,7 +76,7 @@ def bb84_recv(
     primary_channel: chnl.ChannelEndpoint[qdev.Qubit],
     auth_channel: chnl.ChannelEndpoint[int],
     verbose=False) -> list[int]:
-    key: list[int] = n_bits*[2] # Use 2 as invalid val
+    key: list[int|None] = n_bits*[None]
     idx = 0
     while idx < n_bits:
         qubit = chnl.recv(primary_channel)
@@ -90,8 +92,8 @@ def bb84_recv(
 
         if verbose:
             time.sleep(.1)
-            print(f"Data: {key}", end='\r')
+            print(f"Data: {''.join([str(k) if k is not None else ' ' for k in key])}", end='\r')
     if verbose:
         print("")
-    return key
+    return [k for k in key if k]
 
