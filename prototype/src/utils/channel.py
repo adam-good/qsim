@@ -26,15 +26,7 @@ def get_endpoints(chnl: Channel) -> tuple[ChannelEndpoint, ChannelEndpoint]:
     return (chnl.endpoint_A, chnl.endpoint_B)
 
 def send[T](endpoint: ChannelEndpoint[T], data: T):
-    with endpoint.mutex:
-        print("Beginning Send")
-        endpoint.output.put(data)
-        print("Ending Send")
+   endpoint.output.put(data)
 
 def recv[T](endpoint: ChannelEndpoint[T]) -> T:
-    
-    with endpoint.mutex:
-        print("Beginning Recieve")
-        data = endpoint.input.get()
-        print("Ending Recieve")
-    return data
+    return endpoint.input.get()
