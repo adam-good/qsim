@@ -46,7 +46,8 @@ class SimDevice(qdev.QuantumDevice):
 
     @property
     def n_qubits(self) -> int:
-        return len(self.qubits.items())
+        return len([x for x in self.alloc_tracker if not x])
+
 
     def _alloc(self) -> Qubit:
         for i in self.alloc_tracker.keys():
