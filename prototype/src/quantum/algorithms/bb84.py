@@ -7,6 +7,7 @@ from quantum.algorithms.qrng import qrng
 # TODO: This file needs to be made more simple
 # TODO: Expand to work in batches instead of single qubits
 # TODO: Privacy Amplification Algorithms???
+# TODO: Add Unit Tests!!!
 
 def _bb84_encode(device: qdev.QuantumDevice, val: int, basis_key: int) -> tuple[qdev.Qubit,int]:
     with device.alloc() as qubit:
