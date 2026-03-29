@@ -5,21 +5,17 @@ import quantum.device as qdev
 from quantum.algorithms.qrng import qrng
 
 def _bb84_encode(device: qdev.QuantumDevice, val: int, basis_key: int) -> tuple[qdev.Qubit,int]:
-    # TODO: We can't use the generator here because it will reset the
-    #       qubit before sending it.
-    #       According to the textbook, qubits could be literally sent as
-    #       photons, so maybe I need a way to "clone" a qubit for sending?
-    qubit = device._alloc() # NOTE: This obviously shouldn't be done
-    match (basis_key, val):
-        case (0, 0):
-            qubit = qubit # KET0
-        case (0, 1):
-            qubit = qubit.negate() # KET1
-        case (1, 0):
-            qubit = qubit.hadamard() # KET PLUS
-        case (1, 1):
-                qubit = qubit.negate().hadamard() # KET MINUS              
-    return (qubit, basis_key)
+    with device.alloc() as qubit:
+        match (basis_key, val):
+            case (0, 0):
+                qubit = qubit # KET0
+            case (0, 1):
+                qubit = qubit.negate() # KET1
+            case (1, 0):
+                qubit = qubit.hadamard() # KET PLUS
+            case (1, 1):
+                    qubit = qubit.negate().hadamard() # KET MINUS              
+        return (device.copy(qubit), basis_key)
 
 def _bb84_decode(
     device: qdev.QuantumDevice,
