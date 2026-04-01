@@ -74,3 +74,9 @@ class TestSimDevice(unittest.TestCase):
         result = device._n_alloc(4)
         for (r,t) in zip(result, target):
             self.assertEqual(r,t)
+
+    def test_simdevice_alloc(self):
+        device = qsim.SimDevice(16)
+        target: qsim.Qubit = list(device.qubits.values())[0]
+        result = device._alloc()
+        self.assertEqual(target, result)
