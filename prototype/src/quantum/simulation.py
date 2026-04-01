@@ -23,6 +23,11 @@ class SimQubit(qdev.Qubit):
         self.state = qgate.negate(self.state)
         return self
 
+    # TODO: I need to define how I want to differentiate equivalences
+    #       - Qubit "reference" is the same (i.e. it's the same qubit in the sim)
+    #       - Qubit values are the same (i.e. A == B if A and B both have KET0 as state)
+    #       - Qubit state equivalence (i.e. A == KET0)
+
     def cmp_state(self, other: qstate.QState) -> bool:
         return self.state == other
 
@@ -32,7 +37,7 @@ class SimQubit(qdev.Qubit):
 
     def __eq__(self, other: object) -> bool:
         if isinstance(other, SimQubit):
-            return self.cmp_ref(other)
+            return self.cmp_state(other.state)
         elif isinstance(other, qstate.QState):
             return self.cmp_state(other)
         else:
