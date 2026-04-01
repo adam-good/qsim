@@ -60,7 +60,7 @@ class SimDevice(qdev.QuantumDevice):
 
 
     def _n_alloc(self, n: int) -> list[qdev.Qubit]:
-        assert n <= self.n_available_qubits
+        assert n <= self.n_available_qubits()
         available_qubits: list[int] = [
             i for i,is_alloc
             in self.alloc_tracker.items()

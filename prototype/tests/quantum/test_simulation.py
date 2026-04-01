@@ -68,14 +68,14 @@ class TestSimDevice(unittest.TestCase):
         device = qsim.SimDevice(qubits)
 
         target: int = n_qubits
-        result: int = device.n_qubits
+        result: int = device.n_available_qubits()
         self.assertEqual(target, result)
 
         target: int = n_qubits - n_alloc
         # Simulate Allocation to Test SimDevice.n_qubits()
         for i in range(n_alloc):
             device.alloc_tracker[i] = True
-        result = device.n_qubits
+        result = device.n_available_qubits()
         self.assertEqual(result, target)
        
 
@@ -89,7 +89,7 @@ class TestSimDevice(unittest.TestCase):
             self.assertEqual(r,t)
 
         target = len(qubits) - 4
-        result = device.n_qubits
+        result = device.n_available_qubits()
         self.assertEqual(target, result)
 
     # TODO: update to test ref equality instead of val equality
