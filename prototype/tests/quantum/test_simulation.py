@@ -14,25 +14,24 @@ class TestSimQubit(unittest.TestCase):
         z_basis = qstate.Z_BASIS
 
         target_state = qstate.KET0
-        target_qubit = qsim.SimQubit(state=target_state)
         qubit = qsim.SimQubit(state=target_state)
         result_qubit, result_state = qubit.measure(z_basis)
-        self.assertEqual(result_qubit, target_qubit)
-        self.assertEqual(result_state, target_state)
-
+        self.assertEqual(result_qubit.state, target_state)  # Qubit's State Collapsed Correctly
+        self.assertEqual(result_state, target_state)        # Correct Result State Returned
+        self.assertEqual(qubit.ref_id, result_qubit.ref_id) # Qubit Reference Remained Static
         
         target_state = qstate.KET1
-        target_qubit = qsim.SimQubit(state=target_state)
         qubit = qsim.SimQubit(state=target_state)
         result_qubit, result_state = qubit.measure(qstate.Z_BASIS)
-        self.assertEqual(result_qubit, target_qubit)
-        self.assertEqual(result_state, target_state)
+        self.assertEqual(result_qubit.state, target_state)  # Qubit's State Collapsed Correctly
+        self.assertEqual(result_state, target_state)        # Correct Result State Returned
+        self.assertEqual(qubit.ref_id, result_qubit.ref_id) # Qubit Reference Remained Static
 
         N = 1000
         ket0 = qsim.SimQubit(state=qstate.KET0)
         ket1 = qsim.SimQubit(state=qstate.KET1)
-        state_counts = {qstate.KET0:0, qstate.KET1:0}
-        qubit_counts = {ket0:0, ket1:0}
+        state_counts: dict[qstate.QState, int] = {qstate.KET0:0, qstate.KET1:0}
+        qubit_counts: dict[qsim.SimQubit, int] = {ket0:0, ket1:0}
         for i in range(N):
             psi = qstate.QState( (1/math.sqrt(2), 1/math.sqrt(2)) )
             qubit, state = qsim.SimQubit(state=psi).measure(qstate.Z_BASIS)
