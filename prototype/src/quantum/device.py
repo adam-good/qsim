@@ -21,9 +21,8 @@ class Qubit(metaclass=ABCMeta):
         pass
 
 class QuantumDevice(metaclass=ABCMeta):
-    @property
     @abstractmethod
-    def n_qubits(self) -> int:
+    def n_available_qubits(self) -> int:
         pass
     
     @abstractmethod

@@ -55,13 +55,12 @@ class SimDevice(qdev.QuantumDevice):
         self.qubits: dict[int, qdev.Qubit] = {qubit.ref_id:qubit for qubit in qubits}
         self.alloc_tracker: dict[int, bool] = {qubit.ref_id:False for qubit in qubits}
 
-    @property
-    def n_qubits(self) -> int:
+    def n_available_qubits(self) -> int:
         return len([x for x in self.alloc_tracker.values() if not x])
 
 
     def _n_alloc(self, n: int) -> list[qdev.Qubit]:
-        assert n <= self.n_qubits
+        assert n <= self.n_available_qubits
         available_qubits: list[int] = [
             i for i,is_alloc
             in self.alloc_tracker.items()
