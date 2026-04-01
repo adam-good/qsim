@@ -38,6 +38,7 @@ class SimQubit(qdev.Qubit):
 
 type Qubit = qdev.Qubit | SimQubit
 class SimDevice(qdev.QuantumDevice):
+    # TODO: Add list of qubits as parameter
     def __init__(self, n):
         self.qubits: dict[int, Qubit] = {i:SimQubit() for i in range(n)}
         self.alloc_tracker: dict[int, bool] = {i:False for i in range(n)}
