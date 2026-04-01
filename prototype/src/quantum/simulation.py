@@ -23,15 +23,18 @@ class SimQubit(qdev.Qubit):
         self.state = qgate.negate(self.state)
         return self
 
+    def cmp_state(self, other: qstate.QState) -> bool:
+        return self.state == other
+
     # TODO: This should probably work across devices
-    def ref_equal(self, other: SimQubit) -> bool:
+    def cmp_ref(self, other: SimQubit) -> bool:
         return self.ref_id == other.ref_id
 
     def __eq__(self, other: object) -> bool:
         if isinstance(other, SimQubit):
-            return self.state == other.state
+            return self.cmp_state(other.state)
         elif isinstance(other, qstate.QState):
-            return self.state == other
+            return self.cmp_state(other)
         else:
             raise NotImplementedError()
 
