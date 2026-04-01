@@ -32,7 +32,7 @@ class SimQubit(qdev.Qubit):
 
     def __eq__(self, other: object) -> bool:
         if isinstance(other, SimQubit):
-            return self.cmp_state(other.state)
+            return self.cmp_ref(other)
         elif isinstance(other, qstate.QState):
             return self.cmp_state(other)
         else:
