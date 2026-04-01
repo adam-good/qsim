@@ -23,6 +23,10 @@ class SimQubit(qdev.Qubit):
         self.state = qgate.negate(self.state)
         return self
 
+    # TODO: This should probably work across devices
+    def ref_equal(self, other: SimQubit) -> bool:
+        return self.ref_id == other.ref_id
+
     def __eq__(self, other: object) -> bool:
         if isinstance(other, SimQubit):
             return self.state == other.state
