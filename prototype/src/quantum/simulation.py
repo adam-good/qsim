@@ -37,11 +37,10 @@ class SimQubit(qdev.Qubit):
     def __repr__(self):
         return f"\u007C{self.state}\u27E9"
 
-type Qubit = qdev.Qubit | SimQubit
 class SimDevice(qdev.QuantumDevice):
     # TODO: Add list of qubits as parameter
     def __init__(self, n):
-        self.qubits: dict[int, Qubit] = {i:SimQubit() for i in range(n)}
+        self.qubits: dict[int, qdev.Qubit] = {ref_id:SimQubit(ref_id) for ref_id in range(n)}
         self.alloc_tracker: dict[int, bool] = {i:False for i in range(n)}
 
     @property
@@ -49,7 +48,7 @@ class SimDevice(qdev.QuantumDevice):
         return len([x for x in self.alloc_tracker.values() if not x])
 
 
-    def _n_alloc(self, n: int) -> list[Qubit]:
+    def _n_alloc(self, n: int) -> list[qdev.Qubit]:
         assert n <= self.n_qubits
         available_qubits: list[int] = [
             i for i,is_alloc
@@ -57,15 +56,15 @@ class SimDevice(qdev.QuantumDevice):
             if not is_alloc
         ]
         selection: list[int] = available_qubits[:n]
-        qubits: list[Qubit] = [self.qubits[i] for i in selection]
+        qubits: list[qdev.Qubit] = [self.qubits[i] for i in selection]
         self.alloc_tracker.update([(i,True) for i in selection])
         return qubits
 
     
-    def _alloc(self) -> Qubit:
+    def _alloc(self) -> qdev.Qubit:
         return self._n_alloc(1)[0]
     
-    def _dealloc(self, qubit: Qubit):
+    def _dealloc(self, qubit: qdev.Qubit):
         for i in self.alloc_tracker.keys():
             if not self.alloc_tracker[i]:
                 break
