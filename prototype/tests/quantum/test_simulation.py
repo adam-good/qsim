@@ -60,3 +60,12 @@ class TestSimQubit(unittest.TestCase):
         target = False
         result = q1 == q2
         self.assertEqual(target, result)
+
+class TestSimDevice(unittest.TestCase):
+    def test_simdevice_n_qubits(self):
+        device = qsim.SimDevice(16)
+        target = 16
+        result = device.n_qubits
+        self.assertEqual(target, result)
+
+        
