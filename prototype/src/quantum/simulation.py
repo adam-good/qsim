@@ -28,18 +28,18 @@ class SimQubit(qdev.Qubit):
     #       - Qubit values are the same (i.e. A == B if A and B both have KET0 as state)
     #       - Qubit state equivalence (i.e. A == KET0)
 
-    def cmp_state(self, other: qstate.QState) -> bool:
-        return self.state == other
+    def cmp_state(qubit: SimQubit, state: qstate.QState) -> bool:
+        return qubit.state == state
 
     # TODO: This should probably work across devices
-    def cmp_ref(self, other: SimQubit) -> bool:
-        return self.ref_id == other.ref_id
+    def cmp_ref(a: SimQubit, b: SimQubit) -> bool:
+        return a.ref_id == b.ref_id
 
     def __eq__(self, other: object) -> bool:
         if isinstance(other, SimQubit):
-            return self.cmp_state(other.state)
+            return SimQubit.cmp_state(self, other.state)
         elif isinstance(other, qstate.QState):
-            return self.cmp_state(other)
+            return SimQubit.cmp_state(self, other)
         else:
             raise NotImplementedError()
 
