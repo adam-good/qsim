@@ -3,7 +3,7 @@ import quantum.state as qstate
 import quantum.gate as qgate
 
 class SimQubit(qdev.Qubit):
-    def __init__(self, ref_id: int, init_state: qstate.QState = qstate.KET0):
+    def __init__(self, ref_id: int = 0, init_state: qstate.QState = qstate.KET0):
         self.ref_id = ref_id
         self.state = init_state
     
