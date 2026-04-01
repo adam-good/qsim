@@ -5,7 +5,7 @@ import quantum.simulation as qsim
 
 class TestSimQubit(unittest.TestCase):
     def test_simqubit_reset(self):
-        qubit = qsim.SimQubit(qstate.QState((0,1)))
+        qubit = qsim.SimQubit(state=qstate.QState((0,1)))
         result = qubit.reset()
         target = qstate.KET0
         self.assertEqual(result, target)
@@ -14,28 +14,28 @@ class TestSimQubit(unittest.TestCase):
         z_basis = qstate.Z_BASIS
 
         target_state = qstate.KET0
-        target_qubit = qsim.SimQubit(target_state)
-        qubit = qsim.SimQubit(target_state)
+        target_qubit = qsim.SimQubit(state=target_state)
+        qubit = qsim.SimQubit(state=target_state)
         result_qubit, result_state = qubit.measure(z_basis)
         self.assertEqual(result_qubit, target_qubit)
         self.assertEqual(result_state, target_state)
 
         
         target_state = qstate.KET1
-        target_qubit = qsim.SimQubit(target_state)
-        qubit = qsim.SimQubit(target_state)
+        target_qubit = qsim.SimQubit(state=target_state)
+        qubit = qsim.SimQubit(state=target_state)
         result_qubit, result_state = qubit.measure(qstate.Z_BASIS)
         self.assertEqual(result_qubit, target_qubit)
         self.assertEqual(result_state, target_state)
 
         N = 1000
-        ket0 = qsim.SimQubit(qstate.KET0)
-        ket1 = qsim.SimQubit(qstate.KET1)
+        ket0 = qsim.SimQubit(state=qstate.KET0)
+        ket1 = qsim.SimQubit(state=qstate.KET1)
         state_counts = {qstate.KET0:0, qstate.KET1:0}
         qubit_counts = {ket0:0, ket1:0}
         for i in range(N):
             psi = qstate.QState( (1/math.sqrt(2), 1/math.sqrt(2)) )
-            qubit, state = qsim.SimQubit(psi).measure(qstate.Z_BASIS)
+            qubit, state = qsim.SimQubit(state=psi).measure(qstate.Z_BASIS)
             qubit_counts[qubit] += 1
             state_counts[state] += 1
         state_result = tuple(val / N for val in state_counts.values())
@@ -47,16 +47,16 @@ class TestSimQubit(unittest.TestCase):
 
     def test_simqubit_eq(self):
         psi = qstate.QState((1/math.sqrt(2), 1/math.sqrt(2)))
-        q1 = qsim.SimQubit(psi)
-        q2 = qsim.SimQubit(psi)
+        q1 = qsim.SimQubit(state=psi)
+        q2 = qsim.SimQubit(state=psi)
         target = True
         result = q1 == q2
         self.assertEqual(result, target)
 
         psi = qstate.QState((1/math.sqrt(2), 1/math.sqrt(2)))
         omega = qstate.QState((0,1))
-        q1 = qsim.SimQubit(psi)
-        q2 = qsim.SimQubit(omega)
+        q1 = qsim.SimQubit(state=psi)
+        q2 = qsim.SimQubit(state=omega)
         target = False
         result = q1 == q2
         self.assertEqual(target, result)
