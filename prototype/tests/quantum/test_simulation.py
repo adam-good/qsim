@@ -68,6 +68,7 @@ class TestSimDevice(unittest.TestCase):
         result = device.n_qubits
         self.assertEqual(target, result)
 
+    # TODO: update to test ref equality instead of val equality
     def test_simdevice_n_alloc(self):
         device = qsim.SimDevice(16)
         target = list(device.qubits.values())[:4]
@@ -75,6 +76,7 @@ class TestSimDevice(unittest.TestCase):
         for (r,t) in zip(result, target):
             self.assertEqual(r,t)
 
+    # TODO: update to test ref equality instead of val equality
     def test_simdevice_alloc(self):
         device = qsim.SimDevice(16)
         target: qsim.Qubit = list(device.qubits.values())[0]
