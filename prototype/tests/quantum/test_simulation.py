@@ -86,7 +86,7 @@ class TestSimDevice(unittest.TestCase):
         target = list(device.qubits.values())[:4]
         result = device._n_alloc(4)
         for (r,t) in zip(result, target):
-            self.assertEqual(r,t)
+            self.assertIs(r,t)
 
         target = len(qubits) - 4
         result = device.n_available_qubits()
