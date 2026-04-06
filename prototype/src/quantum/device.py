@@ -22,11 +22,19 @@ class Qubit(metaclass=ABCMeta):
 
 class QuantumDevice(metaclass=ABCMeta):
     @abstractmethod
+    def n_available_qubits(self) -> int:
+        pass
+    
+    @abstractmethod
     def _alloc(self) -> Qubit:
         pass
 
     @abstractmethod
-    def _dealloc(self, psi: Qubit):
+    def _n_alloc(self, n: int) -> list[Qubit]:
+        pass
+
+    @abstractmethod
+    def _dealloc(self, qubit: Qubit):
         pass
 
     @contextmanager
@@ -38,3 +46,12 @@ class QuantumDevice(metaclass=ABCMeta):
             qubit.reset()
             self._dealloc(qubit)
 
+    @contextmanager
+    def n_alloc(self, n: int) -> Iterator[list[Qubit]]:
+        qubits = self._n_alloc(n)
+        try:
+            yield qubits
+        finally:
+            for qubit in qubits:
+                qubit.reset()
+                self._dealloc(qubit)
