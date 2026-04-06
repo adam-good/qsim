@@ -1,7 +1,7 @@
-from quantum.device import QuantumDevice
-from quantum.state import QState, Z_BASIS
+import quantum.device as qdev
+import quantum.state as qstate
 
-def qrng(n: int, device: QuantumDevice, map: dict[QState, int]) -> list[int]:
+def qrng(n: int, device: qdev.QuantumDevice, map: dict[qstate.QState, int]) -> list[int]:
     result = n*[2]
     i = 0
     while i < n:
@@ -9,7 +9,7 @@ def qrng(n: int, device: QuantumDevice, map: dict[QState, int]) -> list[int]:
         with device.n_alloc(n_qubits) as qubits:
             for qubit in qubits:
                 qubit = qubit.hadamard()
-                qubit, measurment = qubit.measure(Z_BASIS)
+                qubit, measurment = qubit.measure(qstate.Z_BASIS)
                 result[i] = map[measurment]
                 i += 1
     return result
