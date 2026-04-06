@@ -7,7 +7,7 @@ Pure-Python quantum computing simulator (Python 3.14+). No external runtime depe
 
 ### Run all tests
 ```
-uv run python -m unittest discover -s tests
+uv run python -m unittest discover -s tests --top-level-directory .
 ```
 
 ### Run a single test file
@@ -76,16 +76,19 @@ uv add --dev <package>       # dev dependency
 - Regular classes for mutable state (`SimQubit`, `SimDevice`)
 
 ### Error Handling
-- `raise NotImplementedError()` for unsupported types in operator overloads
+- `return NotImplemented` (not raise) in `__eq__` fallback for non-matching types
+- `return NotImplemented` in operator overloads (`__add__`, `__sub__`, `__mul__`, `__truediv__`) when operand types are incompatible
 - `raise Exception("message")` for domain errors (non-unitary gates, dimension mismatches)
 - `assert` for internal invariants (e.g., allocation bounds)
 - No custom exception classes defined yet
 - No `try/except` in source code (only `try/finally` for context manager cleanup)
 
 ### Operator Overloading
-- Implement `__add__`, `__sub__`, `__mul__` (scalar), `__matmul__` (matrix/vector multiply) on `Vector` and `Matrix`
-- Always return `NotImplemented` (not raise) in `__eq__` fallback for non-matching types
-- Raise `NotImplementedError()` in `__add__`/`__sub__` when operand types are incompatible
+- `Vector`: `__add__`/`__sub__` accept `Vector` only; `__mul__`/`__truediv__` accept `Scalar` only; `__rmul__` for `scalar * vector`
+- `Matrix`: `__add__`/`__sub__` accept `Matrix` only; `__mul__`/`__truediv__` accept `Scalar` only; `__matmul__` for true matrix/vector multiplication
+- Always `return NotImplemented` for incompatible operand types (not raise)
+- No element-wise vector-vector multiply/divide, no scalar add/sub on vectors/matrices
+- No `@overload` stubs needed — use simple type annotations on concrete methods
 
 ### Context Managers
 - Use `try/finally` for resource cleanup in `alloc()` and `n_alloc()` on device implementations
@@ -115,7 +118,7 @@ uv add --dev <package>       # dev dependency
 1. `uv run ruff format .` — auto-format
 2. `uv run ruff check --fix .` — lint + auto-fix
 3. `uv run ty check` — type check
-4. `uv run python -m unittest discover -s tests` — all tests pass
+4. `uv run python -m unittest discover -s tests --top-level-directory .` — all tests pass
 
 ### Architecture
 ```
