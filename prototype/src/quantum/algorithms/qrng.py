@@ -1,7 +1,11 @@
 import quantum.device as qdev
 import quantum.state as qstate
 
-def qrng(n: int, device: qdev.QuantumDevice, map: dict[qstate.QState, int]) -> list[int]:
+def qrng(
+    n: int,
+    device: qdev.QuantumDevice,
+    map: dict[qstate.QState, int] = {qstate.KET0:0,qstate.KET1:1}
+) -> list[int]:
     result = n*[2]
     i = 0
     while i < n:
