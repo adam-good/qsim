@@ -82,14 +82,40 @@ uv add --dev <package>       # dev dependency
 - No custom exception classes defined yet
 - No `try/except` in source code (only `try/finally` for context manager cleanup)
 
+### Operator Overloading
+- Implement `__add__`, `__sub__`, `__mul__` (scalar), `__matmul__` (matrix/vector multiply) on `Vector` and `Matrix`
+- Always return `NotImplemented` (not raise) in `__eq__` fallback for non-matching types
+- Raise `NotImplementedError()` in `__add__`/`__sub__` when operand types are incompatible
+
+### Context Managers
+- Use `try/finally` for resource cleanup in `alloc()` and `n_alloc()` on device implementations
+- Ensure deallocation runs even if the block raises an exception
+- Pattern: `with device.alloc(...) as qubit: ...`
+
+### Enums
+- Use `enum.Enum` for gate identifiers: `class Gates(Enum): H = "H"; X = "X"`
+- Store string values for readability in error messages and logging
+
+### `__init__.py` Convention
+- All `__init__.py` files are empty — no re-exports or public API surface at package level
+- Import modules directly by their full path
+
 ### Testing
 - **Framework: `unittest`** (stdlib) — no pytest
 - Test classes inherit from `unittest.TestCase`
 - Assertions: `self.assertEqual()`, `self.assertAlmostEqual()`, `self.assertIs()`, `self.assertRaises()`
 - Test file naming: `test_*.py` mirroring `src/` directory structure
-- Test class naming: `Test<ModuleName>` (e.g., `TestQuantumState`)
-- Test method naming: `test_<module>_<feature>` (e.g., `test_quantumstate_angles`)
+- Test class naming: `Test<ModuleName>` (e.g., `TestQuantumState`, `TestVector`)
+- Test method naming: `test_<module>_<feature>` (e.g., `test_quantumstate_angles`, `test_vector_matmul`)
 - Empty test files are valid placeholders for future tests
+- Probabilistic tests: use `self.assertAlmostEqual(actual, expected, delta=0.05)` for distributions (e.g., 1000-shot ~50/50 splits)
+- Include `if __name__ == "__main__": unittest.main()` guard in test files for direct execution
+
+### Before Committing Checklist
+1. `uv run ruff format .` — auto-format
+2. `uv run ruff check --fix .` — lint + auto-fix
+3. `uv run ty check` — type check
+4. `uv run python -m unittest discover -s tests` — all tests pass
 
 ### Architecture
 ```
