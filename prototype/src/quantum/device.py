@@ -4,12 +4,17 @@ from abc import ABCMeta, abstractmethod
 import quantum.state as qstate
 
 class Qubit(metaclass=ABCMeta):
+    @property
+    @abstractmethod
+    def ref_id(self) -> int:
+        pass
+
     @abstractmethod
     def measure(self, basis: tuple[qstate.QState, qstate.QState]) -> tuple[Qubit, qstate.QState]:
         pass
 
     @abstractmethod
-    def reset(self):
+    def reset(self) -> Qubit:
         pass
 
     @abstractmethod
@@ -43,8 +48,7 @@ class QuantumDevice(metaclass=ABCMeta):
         try:
             yield qubit
         finally:
-            qubit.reset()
-            self._dealloc(qubit)
+            self._dealloc(qubit.reset())
 
     @contextmanager
     def n_alloc(self, n: int) -> Iterator[list[Qubit]]:
@@ -53,5 +57,4 @@ class QuantumDevice(metaclass=ABCMeta):
             yield qubits
         finally:
             for qubit in qubits:
-                qubit.reset()
-                self._dealloc(qubit)
+                self._dealloc(qubit.reset())
