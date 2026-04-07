@@ -39,14 +39,11 @@ def to_bloch_vector(psi: QState) -> Vector:
     angle = deg2rad(bloch_angle(psi))
     return Vector((math.cos(angle), math.sin(angle)))
 
-# NOTE: While this is the mathematically correct representation
-#       of a measurment, this adds confusion with the `measure`
-#       method of a Qubit.
-def measure(measurement: QState, state: QState) -> Scalar:
+def amplitude(measurement: QState, state: QState) -> Scalar:
     return Vector.dotprod(measurement, state)
 
 def probability(measurement: QState, state: QState) -> Scalar:
-    return measure(measurement, state) ** 2
+    return amplitude(measurement, state) ** 2
 
 # NOTE: This can be made more efficient later
 def probability_distribution(basis: tuple[QState, QState], state: QState) -> Vector:
