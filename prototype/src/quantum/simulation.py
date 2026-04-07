@@ -6,24 +6,28 @@ import quantum.gate as qgate
 
 @dataclass(frozen=True, eq=False)
 class SimQubit(qdev.Qubit):
-    ref_id: int = 0
+    id: int = 0
     state: qstate.QState = qstate.KET0
 
+    @property
+    def ref_id(self) -> int:
+        return self.id
+
     def reset(self) -> SimQubit:
-        return SimQubit(self.ref_id, qstate.KET0)
+        return SimQubit(self.id, qstate.KET0)
 
     def measure(self, basis: tuple[qstate.QState, qstate.QState]) -> tuple[SimQubit, qstate.QState]:
         collapsed = qstate.collapse(basis, self.state)
-        return (SimQubit(self.ref_id, collapsed), collapsed)
+        return (SimQubit(self.id, collapsed), collapsed)
 
     def hadamard(self) -> SimQubit:
-        return SimQubit(self.ref_id, qgate.hadamard(self.state))
+        return SimQubit(self.id, qgate.hadamard(self.state))
 
     def negate(self) -> SimQubit:
-        return SimQubit(self.ref_id, qgate.negate(self.state))
+        return SimQubit(self.id, qgate.negate(self.state))
 
     def ref_eq(self, other: qdev.Qubit) -> bool:
-        return self.ref_id == other.ref_id
+        return self.id == other.ref_id
 
     def state_eq(self, state: qstate.QState) -> bool:
         return self.state == state
@@ -31,14 +35,14 @@ class SimQubit(qdev.Qubit):
     def equiv(self, other: SimQubit) -> bool:
         return self.state == other.state
 
-    def __repr__(self):
-        return f"Qubit({self.ref_id}, {self.state})"
+    def __repr__(self) -> str:
+        return f"Qubit({self.id}, {self.state})"
 
 
 class SimDevice(qdev.QuantumDevice):
     def __init__(self, qubits: list[SimQubit]):
-        self.qubits: dict[int, qdev.Qubit] =  {qubit.ref_id : qubit for qubit in qubits}
-        self.alloc_tracker: dict[int, bool] = {qubit.ref_id : False for qubit in qubits}
+        self.qubits: dict[int, qdev.Qubit] =  {qubit.id : qubit for qubit in qubits}
+        self.alloc_tracker: dict[int, bool] = {qubit.id : False for qubit in qubits}
 
     def n_available_qubits(self) -> int:
         return len([x for x in self.alloc_tracker.values() if not x])
