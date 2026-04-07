@@ -40,9 +40,6 @@ class Vector:
     def __iter__(self) -> Iterator[Scalar]:
         return iter(self.raw_data)
 
-    def dotprod(w: Vector, v: Vector) -> Scalar:
-        return sum(a * b for a, b in zip(w, v))
-
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Vector):
             return NotImplemented
@@ -52,3 +49,7 @@ class Vector:
 
     def __repr__(self):
         return f"{self.raw_data}"
+
+
+def dotprod(w: Vector, v: Vector) -> Scalar:
+        return sum(a * b for a, b in zip(w, v))   
