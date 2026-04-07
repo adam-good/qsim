@@ -1,41 +1,50 @@
+from typing import NewType
 import math
 import random
 import utils.math.scalar as scalar
 import utils.math.vector as vector
 import utils.math.helper_funcs as helper
 
-QState = vector.Vector
+QState = NewType('QState', vector.Vector)
 
-KET0: QState = QState((1.0, 0.0))
-KET1: QState = QState((0.0, 1.0))
-KETPLUS: QState = QState((1.0, 1.0)) / math.sqrt(2)
-KETMINUS: QState = QState((1.0, -1.0)) / math.sqrt(2)
+def qstate(data: tuple[scalar.Scalar, scalar.Scalar]) -> QState:
+    return QState(vector.Vector(data))
+
+hadamard_constant: scalar.Scalar = 1.0 / math.sqrt(2)
+
+KET0: QState = qstate((1.0, 0.0))
+KET1: QState = qstate((0.0, 1.0))
+KETPLUS: QState = qstate((hadamard_constant, hadamard_constant))
+KETMINUS: QState = qstate((hadamard_constant, -hadamard_constant))
 
 Z_BASIS = (KET0, KET1)
 X_BASIS = (KETPLUS, KETMINUS)
 
 
-def _x(psi: QState) -> scalar.Scalar:
+def x(psi: QState) -> scalar.Scalar:
     return psi[0]
 
 
-def _y(psi: QState) -> scalar.Scalar:
+def y(psi: QState) -> scalar.Scalar:
     return psi[1]
+
+def as_tuple(psi: QState) -> tuple[scalar.Scalar, scalar.Scalar]:
+    return (x(psi), y(psi))
 
 
 def is_valid(psi: QState) -> bool:
-    return math.isclose(_x(psi) ** 2 + _y(psi) ** 2, 1.0)
+    return math.isclose(x(psi) ** 2 + y(psi) ** 2, 1.0)
 
 
 def angle(psi: QState) -> scalar.Scalar:
-    return helper.vec2d_to_angle(_x(psi), _y(psi))
+    return helper.vec2d_to_angle(x(psi), y(psi))
 
 
 def bloch_angle(psi: QState) -> scalar.Scalar:
-    return helper.vec2d_to_angle(_x(psi), _y(psi), lambda x: 2 * x)
+    return helper.vec2d_to_angle(x(psi), y(psi), lambda x: 2 * x)
 
 
-def to_bloch_vector(psi: QState) -> vector.Vector:
+def bloch_vector(psi: QState) -> vector.Vector:
     angle = helper.deg2rad(bloch_angle(psi))
     return vector.Vector((math.cos(angle), math.sin(angle)))
 
