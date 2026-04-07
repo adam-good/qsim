@@ -45,7 +45,7 @@ class SimDevice(qdev.QuantumDevice):
         self.alloc_tracker: dict[int, bool] = {qubit.id : False for qubit in qubits}
 
     def n_available_qubits(self) -> int:
-        return len([x for x in self.alloc_tracker.values() if not x])
+        return sum(1 for x in self.alloc_tracker.values() if not x)
 
     def _n_alloc(self, n: int) -> list[qdev.Qubit]:
         assert n <= self.n_available_qubits()
