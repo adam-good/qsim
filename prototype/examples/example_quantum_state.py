@@ -4,9 +4,10 @@ import math
 import quantum.state as qstate
 import quantum.simulation as qsim
 
+
 def main():
     # Create a custom quantum state |ψ⟩ = (1/√2)|0> + (1/√2)|1>
-    state_vector = (1/math.sqrt(2), 1/math.sqrt(2))
+    state_vector = (1 / math.sqrt(2), 1 / math.sqrt(2))
     custom_state = qstate.QState(state_vector)
 
     # Create a qubit with the custom state
@@ -16,6 +17,7 @@ def main():
     qubit, outcome = qubit.measure(qstate.Z_BASIS)
     print(f"Measurement Outcome: {outcome}")
     print(f"Post-Measurment State: {qubit}")
+
 
 if __name__ == "__main__":
     main()

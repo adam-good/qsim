@@ -3,9 +3,10 @@ import math
 import quantum.state as qstate
 import quantum.simulation as qsim
 
+
 class TestSimQubit(unittest.TestCase):
     def test_simqubit_reset(self):
-        qubit = qsim.SimQubit(state=qstate.QState((0,1)))
+        qubit = qsim.SimQubit(state=qstate.QState((0, 1)))
         result = qubit.reset()
         self.assertEqual(result.state, qstate.KET0)
         self.assertEqual(result.ref_id, qubit.ref_id)
@@ -16,21 +17,29 @@ class TestSimQubit(unittest.TestCase):
         target_state = qstate.KET0
         qubit = qsim.SimQubit(state=target_state)
         result_qubit, result_state = qubit.measure(z_basis)
-        self.assertEqual(result_qubit.state, target_state)  # Qubit's State Collapsed Correctly
-        self.assertEqual(result_state, target_state)        # Correct Result State Returned
-        self.assertEqual(qubit.ref_id, result_qubit.ref_id) # Qubit Reference Remained Static
-        
+        self.assertEqual(
+            result_qubit.state, target_state
+        )  # Qubit's State Collapsed Correctly
+        self.assertEqual(result_state, target_state)  # Correct Result State Returned
+        self.assertEqual(
+            qubit.ref_id, result_qubit.ref_id
+        )  # Qubit Reference Remained Static
+
         target_state = qstate.KET1
         qubit = qsim.SimQubit(state=target_state)
         result_qubit, result_state = qubit.measure(qstate.Z_BASIS)
-        self.assertEqual(result_qubit.state, target_state)  # Qubit's State Collapsed Correctly
-        self.assertEqual(result_state, target_state)        # Correct Result State Returned
-        self.assertEqual(qubit.ref_id, result_qubit.ref_id) # Qubit Reference Remained Static
+        self.assertEqual(
+            result_qubit.state, target_state
+        )  # Qubit's State Collapsed Correctly
+        self.assertEqual(result_state, target_state)  # Correct Result State Returned
+        self.assertEqual(
+            qubit.ref_id, result_qubit.ref_id
+        )  # Qubit Reference Remained Static
 
         N = 1000
-        state_counts: dict[qstate.QState, int] = {qstate.KET0:0, qstate.KET1:0}
+        state_counts: dict[qstate.QState, int] = {qstate.KET0: 0, qstate.KET1: 0}
         for i in range(N):
-            psi = qstate.QState( (1/math.sqrt(2), 1/math.sqrt(2)) )
+            psi = qstate.QState((1 / math.sqrt(2), 1 / math.sqrt(2)))
             qubit, state = qsim.SimQubit(state=psi).measure(qstate.Z_BASIS)
             state_counts[state] += 1
         state_result = tuple(val / N for val in state_counts.values())
@@ -39,8 +48,8 @@ class TestSimQubit(unittest.TestCase):
             self.assertAlmostEqual(s, t, places=1)
 
     def test_simqubit_ref_eq(self):
-        psi = qstate.QState((1/math.sqrt(2), 1/math.sqrt(2)))
-        omega = qstate.QState((0,1))
+        psi = qstate.QState((1 / math.sqrt(2), 1 / math.sqrt(2)))
+        omega = qstate.QState((0, 1))
 
         q1 = qsim.SimQubit(id=0, state=psi)
         q2 = qsim.SimQubit(id=0, state=omega)
@@ -50,16 +59,16 @@ class TestSimQubit(unittest.TestCase):
         self.assertFalse(q1.ref_eq(q3))
 
     def test_simqubit_state_eq(self):
-        psi = qstate.QState((1/math.sqrt(2), 1/math.sqrt(2)))
-        omega = qstate.QState((0,1))
+        psi = qstate.QState((1 / math.sqrt(2), 1 / math.sqrt(2)))
+        omega = qstate.QState((0, 1))
 
         q1 = qsim.SimQubit(id=0, state=psi)
         self.assertTrue(q1.state_eq(psi))
         self.assertFalse(q1.state_eq(omega))
 
     def test_simqubit_equiv(self):
-        psi = qstate.QState((1/math.sqrt(2), 1/math.sqrt(2)))
-        omega = qstate.QState((0,1))
+        psi = qstate.QState((1 / math.sqrt(2), 1 / math.sqrt(2)))
+        omega = qstate.QState((0, 1))
 
         q1 = qsim.SimQubit(id=0, state=psi)
         q2 = qsim.SimQubit(id=1, state=psi)
@@ -67,6 +76,7 @@ class TestSimQubit(unittest.TestCase):
 
         q3 = qsim.SimQubit(id=0, state=omega)
         self.assertFalse(q1.equiv(q3))
+
 
 class TestSimDevice(unittest.TestCase):
     def test_simdevice_n_qubits(self):
@@ -85,15 +95,14 @@ class TestSimDevice(unittest.TestCase):
             device.allocated.add(i)
         result = device.n_available_qubits()
         self.assertEqual(result, target)
-       
 
     def test_simdevice_n_alloc(self):
         qubits = [qsim.SimQubit(ref_id) for ref_id in range(16)]
         device = qsim.SimDevice(qubits)
         target = list(device.qubits.values())[:4]
         result = device._n_alloc(4)
-        for (r,t) in zip(result, target):
-            self.assertIs(r,t)
+        for r, t in zip(result, target):
+            self.assertIs(r, t)
 
         target = len(qubits) - 4
         result = device.n_available_qubits()

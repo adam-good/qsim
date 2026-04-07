@@ -2,6 +2,7 @@ import unittest
 import quantum.state as qstate
 import quantum.gate as qgate
 
+
 class TestGates(unittest.TestCase):
     def test_h_gate(self):
         psi = qstate.KET0
@@ -13,7 +14,7 @@ class TestGates(unittest.TestCase):
         psi = qstate.KET0
         result = qgate.xgate(psi)
         target = qstate.KET1
-        self.assertEqual(result, target)       
+        self.assertEqual(result, target)
 
 
 if __name__ == "__main__":

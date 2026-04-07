@@ -20,21 +20,21 @@ class TestMatrixArithmetic(unittest.TestCase):
 
     def test_scalar_mul(self):
         matrix = Matrix(((1, 2), (3, 4)))
-        scalar = 2.
+        scalar = 2.0
         target = Matrix(((2, 4), (6, 8)))
         result = matrix * scalar
         self.assertEqual(result, target)
 
     def test_rmul(self):
         matrix = Matrix(((1, 2), (3, 4)))
-        scalar = 2.
+        scalar = 2.0
         target = Matrix(((2, 4), (6, 8)))
         result = scalar * matrix
         self.assertEqual(result, target)
 
     def test_scalar_div(self):
         matrix = Matrix(((1, 2), (3, 4)))
-        scalar = 2.
+        scalar = 2.0
         target = Matrix(((1 / 2, 2 / 2), (3 / 2, 4 / 2)))
         result = matrix / scalar
         self.assertEqual(result, target)
