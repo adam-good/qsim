@@ -45,9 +45,9 @@ def probability_distribution(basis: tuple[QState, QState], state: QState) -> Vec
     probs = tuple(probability(m, state) for m in basis)
     return Vector(probs)
     
-def collapse(basis: tuple[QState, QState], psi: QState) -> QState:
+def collapse(basis: tuple[QState, QState], psi: QState, rng: random.Random = random.Random()) -> QState:
     probabilities: Vector = probability_distribution(basis, psi)
-    random_idx: int = random.choices([0,1], weights=probabilities.raw_data, k=1)[0]
+    random_idx: int = rng.choices([0,1], weights=probabilities.raw_data, k=1)[0]
     return basis[random_idx]
 
 def reset(_psi: QState | None = None) -> QState:
