@@ -42,20 +42,20 @@ class SimQubit(qdev.Qubit):
 class SimDevice(qdev.QuantumDevice):
     def __init__(self, qubits: list[SimQubit]):
         self.qubits: dict[int, qdev.Qubit] =  {qubit.id : qubit for qubit in qubits}
-        self.available: set[int] = set(self.qubits.keys())
         self.allocated: set[int] = set()
 
+    def _available(self) -> set[int]:
+        return self.qubits.keys() - self.allocated
+
     def n_available_qubits(self) -> int:
-        return len(self.available)
+        return len(self.qubits) - len(self.allocated)
     
     def _n_alloc(self, n: int) -> list[qdev.Qubit]:
         assert n <= self.n_available_qubits()
 
-        selection: list[int] = list(self.available)[:n]
-        self.allocated.update(selection)
-        self.available -= self.allocated
-
+        selection: list[int] = list(self._available())[:n]
         qubits: list[qdev.Qubit] = [self.qubits[i] for i in selection]
+        self.allocated.update(selection)
         return qubits
 
     def _alloc(self) -> qdev.Qubit:
@@ -63,5 +63,4 @@ class SimDevice(qdev.QuantumDevice):
 
     def _dealloc(self, qubit: qdev.Qubit):
         self.allocated.remove(qubit.ref_id)
-        self.available.add(qubit.ref_id)
         self.qubits[qubit.ref_id] = qubit
