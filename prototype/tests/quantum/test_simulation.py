@@ -83,7 +83,6 @@ class TestSimDevice(unittest.TestCase):
         # Simulate Allocation to Test SimDevice.n_qubits()
         for i in range(n_alloc):
             device.allocated.add(i)
-            device.available.remove(i)
         result = device.n_available_qubits()
         self.assertEqual(result, target)
        
