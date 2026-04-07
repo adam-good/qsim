@@ -21,7 +21,7 @@ def _y(psi: QState) -> Scalar:
     return psi[1]
 
 def is_valid(psi: QState) -> bool:
-    return _x(psi)**2 + _y(psi)**2 == 1.0
+    return math.isclose(_x(psi)**2 + _y(psi)**2, 1.0)
 
 def angle(psi: QState) -> Scalar:
     return vec2d_to_angle(_x(psi), _y(psi))
