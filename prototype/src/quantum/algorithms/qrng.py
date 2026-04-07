@@ -3,10 +3,10 @@ import quantum.state as qstate
 
 def qrng(
     n: int, device: qdev.QuantumDevice,
-    map: dict[qstate.QState, int] | None
+    state_map: dict[qstate.QState, int] | None
 ) -> list[int]:
-    if not map:
-        map = {qstate.KET0:0,qstate.KET1:1}    
+    if state_map is None:
+        state_map = {qstate.KET0:0,qstate.KET1:1}    
     
     result = n*[2]
     i = 0
@@ -16,6 +16,6 @@ def qrng(
             for qubit in qubits:
                 qubit = qubit.hadamard()
                 qubit, measurment = qubit.measure(qstate.Z_BASIS)
-                result[i] = map[measurment]
+                result[i] = state_map[measurment]
                 i += 1
     return result
