@@ -42,18 +42,18 @@ class TestSimQubit(unittest.TestCase):
         psi = qstate.QState((1/math.sqrt(2), 1/math.sqrt(2)))
         omega = qstate.QState((0,1))
 
-        q1 = qsim.SimQubit(ref_id=0, state=psi)
-        q2 = qsim.SimQubit(ref_id=0, state=omega)
+        q1 = qsim.SimQubit(id=0, state=psi)
+        q2 = qsim.SimQubit(id=0, state=omega)
         self.assertTrue(q1.ref_eq(q2))
 
-        q3 = qsim.SimQubit(ref_id=1, state=psi)
+        q3 = qsim.SimQubit(id=1, state=psi)
         self.assertFalse(q1.ref_eq(q3))
 
     def test_simqubit_state_eq(self):
         psi = qstate.QState((1/math.sqrt(2), 1/math.sqrt(2)))
         omega = qstate.QState((0,1))
 
-        q1 = qsim.SimQubit(ref_id=0, state=psi)
+        q1 = qsim.SimQubit(id=0, state=psi)
         self.assertTrue(q1.state_eq(psi))
         self.assertFalse(q1.state_eq(omega))
 
@@ -61,11 +61,11 @@ class TestSimQubit(unittest.TestCase):
         psi = qstate.QState((1/math.sqrt(2), 1/math.sqrt(2)))
         omega = qstate.QState((0,1))
 
-        q1 = qsim.SimQubit(ref_id=0, state=psi)
-        q2 = qsim.SimQubit(ref_id=1, state=psi)
+        q1 = qsim.SimQubit(id=0, state=psi)
+        q2 = qsim.SimQubit(id=1, state=psi)
         self.assertTrue(q1.equiv(q2))
 
-        q3 = qsim.SimQubit(ref_id=0, state=omega)
+        q3 = qsim.SimQubit(id=0, state=omega)
         self.assertFalse(q1.equiv(q3))
 
 class TestSimDevice(unittest.TestCase):
@@ -82,7 +82,8 @@ class TestSimDevice(unittest.TestCase):
         target: int = n_qubits - n_alloc
         # Simulate Allocation to Test SimDevice.n_qubits()
         for i in range(n_alloc):
-            device.alloc_tracker[i] = True
+            device.allocated.add(i)
+            device.available.remove(i)
         result = device.n_available_qubits()
         self.assertEqual(result, target)
        
