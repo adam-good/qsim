@@ -11,12 +11,10 @@ def qstate(data: tuple[scalar.Scalar, scalar.Scalar]) -> QState:
     return QState(vector.Vector(data))
 
 hadamard_constant: scalar.Scalar = 1.0 / math.sqrt(2)
-
 KET0: QState = qstate((1.0, 0.0))
 KET1: QState = qstate((0.0, 1.0))
 KETPLUS: QState = qstate((hadamard_constant, hadamard_constant))
 KETMINUS: QState = qstate((hadamard_constant, -hadamard_constant))
-
 Z_BASIS = (KET0, KET1)
 X_BASIS = (KETPLUS, KETMINUS)
 
