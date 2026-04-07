@@ -1,7 +1,7 @@
 import math
 import random
 from utils.math.scalar import Scalar
-from utils.math.vector import Vector
+from utils.math.vector import Vector, dotprod
 from utils.math.helper_funcs import vec2d_to_angle, deg2rad
 
 QState = Vector
@@ -35,7 +35,7 @@ def to_bloch_vector(psi: QState) -> Vector:
     return Vector((math.cos(angle), math.sin(angle)))
 
 def amplitude(measurement: QState, state: QState) -> Scalar:
-    return Vector.dotprod(measurement, state)
+    return dotprod(measurement, state)
 
 def probability(measurement: QState, state: QState) -> Scalar:
     return amplitude(measurement, state) ** 2
