@@ -3,7 +3,8 @@ import quantum.state as qstate
 
 
 def qrng(
-    n: int, device: qdev.QuantumDevice, state_map: dict[qstate.QState, int] | None
+    n: int, device: qdev.QuantumDevice,
+    state_map: dict[qstate.QState, int] | None = None
 ) -> list[int]:
     if state_map is None:
         state_map = {qstate.KET0: 0, qstate.KET1: 1}
