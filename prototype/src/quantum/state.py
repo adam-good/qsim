@@ -30,11 +30,6 @@ def bloch_angle(psi: QState) -> Scalar:
     return vec2d_to_angle(_x(psi), _y(psi),
                           lambda x: 2 * x)
 
-# NOTE: This might not be necessary anymore
-# Kinda redundant and all
-def to_vector(psi: QState) -> Vector:
-    return psi
-
 def to_bloch_vector(psi: QState) -> Vector:
     angle = deg2rad(bloch_angle(psi))
     return Vector((math.cos(angle), math.sin(angle)))
