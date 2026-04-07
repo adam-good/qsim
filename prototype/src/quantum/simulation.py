@@ -36,7 +36,7 @@ class SimQubit(qdev.Qubit):
         return self.state == other.state
 
     def __repr__(self) -> str:
-        return f"Qubit({self.id}, {self.state})"
+        return f"SimQubit({self.id}, {self.state})"
 
 
 class SimDevice(qdev.QuantumDevice):
