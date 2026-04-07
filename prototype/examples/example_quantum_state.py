@@ -8,10 +8,10 @@ import quantum.simulation as qsim
 def main():
     # Create a custom quantum state |ψ⟩ = (1/√2)|0> + (1/√2)|1>
     state_vector = (1 / math.sqrt(2), 1 / math.sqrt(2))
-    custom_state = qstate.QState(state_vector)
+    custom_state = qstate.qstate(state_vector)
 
     # Create a qubit with the custom state
-    qubit = qsim.SimQubit(custom_state)
+    qubit = qsim.SimQubit(0, custom_state)
 
     # Measure the qubit
     qubit, outcome = qubit.measure(qstate.Z_BASIS)
