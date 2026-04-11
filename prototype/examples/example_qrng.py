@@ -1,6 +1,5 @@
-from quantum.algorithms.qrng import generate_random_bits
+from quantum.algorithms.random import generate_random_bits
 import quantum.simulation as qsim
-
 
 def main():
     n_qubits = 4
