@@ -73,23 +73,38 @@ class TestMatrixArithmetic(unittest.TestCase):
 
     def test_add_not_implemented(self):
         matrix = Matrix(((1, 2), (3, 4)))
-        self.assertIs(matrix.__add__(42), NotImplemented)
+        self.assertIs(
+            matrix.__add__(42),  # ty: ignore[invalid-argument-type]
+            NotImplemented,
+        )
 
     def test_sub_not_implemented(self):
         matrix = Matrix(((1, 2), (3, 4)))
-        self.assertIs(matrix.__sub__(42), NotImplemented)
+        self.assertIs(
+            matrix.__sub__(42),  # ty: ignore[invalid-argument-type]
+            NotImplemented,
+        )
 
     def test_mul_not_implemented(self):
         matrix = Matrix(((1, 2), (3, 4)))
-        self.assertIs(matrix.__mul__("not a scalar"), NotImplemented)
+        self.assertIs(
+            matrix.__mul__("not a scalar"),  # ty: ignore[invalid-argument-type]
+            NotImplemented,
+        )
 
     def test_truediv_not_implemented(self):
         matrix = Matrix(((1, 2), (3, 4)))
-        self.assertIs(matrix.__truediv__("not a scalar"), NotImplemented)
+        self.assertIs(
+            matrix.__truediv__("not a scalar"),  # ty: ignore[invalid-argument-type]
+            NotImplemented,
+        )
 
     def test_matmul_not_implemented(self):
         matrix = Matrix(((1, 2), (3, 4)))
-        self.assertIs(matrix.__matmul__(42), NotImplemented)
+        self.assertIs(
+            matrix.__matmul__(42),  # ty: ignore[invalid-argument-type]
+            NotImplemented,
+        )
 
 
 class TestMatrixProperties(unittest.TestCase):
