@@ -11,8 +11,8 @@ class TestQuantumState(unittest.TestCase):
         qubits = [
             qstate.qstate((1.0, 0.0)),  # ket 0
             qstate.qstate((0.0, 1.0)),  # ket 1
-            qstate.qstate((h, h)),      # ket plus
-            qstate.qstate((h, -h)),     # key minus
+            qstate.qstate((h, h)),  # ket plus
+            qstate.qstate((h, -h)),  # key minus
         ]
         targets = [0.0, 90.0, 45.0, 315.0]
         for psi, target in zip(qubits, targets):

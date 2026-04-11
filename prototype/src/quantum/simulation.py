@@ -6,7 +6,7 @@ import quantum.gate as qgate
 
 @dataclass(frozen=True, eq=False)
 class SimQubit(qdev.Qubit):
-    id: int = 0 # TODO: This needs to be unique across devices
+    id: int = 0  # TODO: This needs to be unique across devices
     state: qstate.QState = qstate.KET0
 
     @property

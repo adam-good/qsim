@@ -6,10 +6,12 @@ import utils.math.vector as vector
 import utils.math.helper_funcs as helper
 
 QState = NewType("QState", vector.Vector)
-QBasis = NewType("QBasis", tuple[QState,QState])
+QBasis = NewType("QBasis", tuple[QState, QState])
+
 
 def qstate(data: tuple[scalar.Scalar, scalar.Scalar]) -> QState:
     return QState(vector.Vector(data))
+
 
 hadamard_constant: scalar.Scalar = 1.0 / math.sqrt(2)
 KET0: QState = qstate((1.0, 0.0))
@@ -26,6 +28,7 @@ def x(psi: QState) -> scalar.Scalar:
 
 def y(psi: QState) -> scalar.Scalar:
     return psi[1]
+
 
 def as_tuple(psi: QState) -> tuple[scalar.Scalar, scalar.Scalar]:
     return (x(psi), y(psi))
