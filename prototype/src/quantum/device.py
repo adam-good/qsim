@@ -11,6 +11,10 @@ class Qubit(metaclass=ABCMeta):
         pass
 
     @abstractmethod
+    def copy(self) -> Qubit:
+        pass
+
+    @abstractmethod
     def measure(
         self, basis: tuple[qstate.QState, qstate.QState]
     ) -> tuple[Qubit, qstate.QState]:
@@ -32,6 +36,10 @@ class Qubit(metaclass=ABCMeta):
 class QuantumDevice(metaclass=ABCMeta):
     @abstractmethod
     def n_available_qubits(self) -> int:
+        pass
+
+    @abstractmethod
+    def copy(self, qubit: Qubit) -> Qubit:
         pass
 
     @abstractmethod

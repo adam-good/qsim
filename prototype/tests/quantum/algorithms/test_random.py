@@ -14,6 +14,9 @@ class MockQubit(qdev.Qubit):
     def ref_id(self) -> int:
         return self._id
 
+    def copy(self) -> qdev.Qubit:
+        return MockQubit(self._id, self._state)
+
     def measure(
         self, basis: tuple[qstate.QState, qstate.QState]
     ) -> tuple[qdev.Qubit, qstate.QState]:
@@ -36,6 +39,9 @@ class MockDevice(qdev.QuantumDevice):
     def __init__(self, n_qubits: int):
         self._qubits = [MockQubit(i, qstate.KET0) for i in range(n_qubits)]
         self._allocated: set[int] = set()
+
+    def copy(self, qubit: qdev.Qubit) -> qdev.Qubit:
+        return qubit.copy()
 
     def n_available_qubits(self) -> int:
         return len(self._qubits) - len(self._allocated)

@@ -6,12 +6,15 @@ import quantum.gate as qgate
 
 @dataclass(frozen=True, eq=False)
 class SimQubit(qdev.Qubit):
-    id: int = 0
+    id: int = 0 # TODO: This needs to be unique across devices
     state: qstate.QState = qstate.KET0
 
     @property
     def ref_id(self) -> int:
         return self.id
+
+    def copy(self) -> qdev.Qubit:
+        return SimQubit(self.id, self.state)
 
     def reset(self) -> SimQubit:
         return SimQubit(self.id, qstate.KET0)
@@ -48,6 +51,10 @@ class SimDevice(qdev.QuantumDevice):
 
     def _available(self) -> set[int]:
         return self.qubits.keys() - self.allocated
+
+    def copy(self, qubit: qdev.Qubit) -> qdev.Qubit:
+        assert qubit.ref_id in self.qubits.keys()
+        return qubit.copy()
 
     def n_available_qubits(self) -> int:
         return len(self.qubits) - len(self.allocated)

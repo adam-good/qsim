@@ -11,6 +11,9 @@ class TestQubitImpl(qdev.Qubit):
     def ref_id(self) -> int:
         return self._id
 
+    def copy(self) -> qdev.Qubit:
+        return TestQubitImpl(self._id)
+
     def measure(
         self, basis: tuple[qstate.QState, qstate.QState]
     ) -> tuple[qdev.Qubit, qstate.QState]:
@@ -31,6 +34,9 @@ class TestDeviceImpl(qdev.QuantumDevice):
         self._qubits = [TestQubitImpl(i) for i in range(n_qubits)]
         self._allocated: set[int] = set()
         self._dealloc_calls: list[int] = []
+
+    def copy(self, qubit: qdev.Qubit) -> qdev.Qubit:
+        return qubit.copy()
 
     def n_available_qubits(self) -> int:
         total = len(self._qubits)
