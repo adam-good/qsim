@@ -2,13 +2,20 @@ import time
 import utils.channel as chnl
 import quantum.state as qst
 import quantum.device as qdev
-from quantum.algorithms.qrng import qrng
+import quantum.algorithms.random as qrand
 
 # TODO: This file needs to be made more simple
 # TODO: Expand to work in batches instead of single qubits
 # TODO: Privacy Amplification Algorithms???
 # TODO: Add Unit Tests!!!
 
+DEFAULT_BASIS_MAP: dict[int, qst.QBasis] = {0:qst.Z_BASIS, 1:qst.X_BASIS}
+DEFAULT_VAL_MAP: dict[qst.QState, int] = {
+    qst.KET0:0,
+    qst.KET1:1,
+    qst.KETPLUS:0,
+    qst.KETMINUS:1
+}
 
 def _bb84_encode(
     device: qdev.QuantumDevice, val: int, basis_key: int
@@ -30,13 +37,8 @@ def _bb84_decode(
     device: qdev.QuantumDevice,
     qubit: qdev.Qubit,
     basis_key: int,
-    basis_map: dict[int, qst.QBasis] = {0: qst.Z_BASIS, 1: qst.X_BASIS},
-    value_map: dict[qst.QState, int] = {
-        qst.KET0: 0,
-        qst.KET1: 1,
-        qst.KETPLUS: 0,
-        qst.KETMINUS: 1,
-    },
+    basis_map: dict[int, qst.QBasis] = DEFAULT_BASIS_MAP,
+    value_map: dict[qst.QState, int] = DEFAULT_VAL_MAP
 ) -> tuple[int, int]:
     basis = basis_map[basis_key]
     qubit, state = qubit.measure(basis)
@@ -67,7 +69,7 @@ def bb84_send(
 
     idx = 0
     while idx < n_bits:
-        basis_key = qrng(device)
+        basis_key = qrand.random_bit(device)
         qubit, local_basis_key = _bb84_encode(device, key[idx], basis_key)
         _bb84_send_qubit(qubit, quantum_channel)
         remote_basis_key = _bb84_exchange_basis(basis_key, auth_channel)
@@ -87,7 +89,7 @@ def bb84_recv(
     idx = 0
     while idx < n_bits:
         qubit = chnl.recv(primary_channel)
-        basis_key = qrng(device)
+        basis_key = qrand.random_bit(device)
         val, local_basis_key = _bb84_decode(device, qubit, basis_key)
 
         chnl.send(auth_channel, local_basis_key)

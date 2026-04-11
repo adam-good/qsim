@@ -29,3 +29,8 @@ def generate_random_bits(
         result.extend(_batch_random_bits(batch_size, device))
         i += batch_size
     return result
+
+def random_bit(device: qdev.QuantumDevice) -> int:
+    with device.alloc() as qubit:
+        _, state = qubit.hadamard().measure(qstate.Z_BASIS)
+        return _qubit_to_bit(state)
