@@ -10,13 +10,9 @@ def _batch_random_bits(n: int, device: qdev.QuantumDevice) -> list[int]:
     assert n <= device.n_available_qubits()
 
     with device.n_alloc(n) as qubits:
-        return [
-            _qubit_to_bit(state)
-            for _, state in [
-                qubit.hadamard().measure(qstate.Z_BASIS) for qubit in qubits
-            ]
-        ]
-
+        measurements = [qubit.hadamard().measure(qstate.Z_BASIS) for qubit in qubits]
+        bits = [_qubit_to_bit(state) for _,state in measurements]
+    return bits
 
 def generate_random_bits(
     n: int,
