@@ -12,7 +12,7 @@ def qrng(
         batch_size = min(device.n_available_qubits(), n - i)
         with device.n_alloc(batch_size) as qubits:
             for qubit in qubits:
-                _, measurment = qubit.hadamard().measure(qstate.Z_BASIS)
-                result[i] = 0 if measurment == qstate.KET0 else 1
+                _, measurement = qubit.hadamard().measure(qstate.Z_BASIS)
+                result[i] = 0 if measurement == qstate.KET0 else 1
                 i += 1
     return result
