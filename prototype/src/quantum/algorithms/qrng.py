@@ -6,7 +6,7 @@ def qrng(
     n: int, device: qdev.QuantumDevice,
 ) -> list[int]:
 
-    result = n * [2]
+    result = [0] * n
     i = 0
     while i < n:
         batch_size = min(device.n_available_qubits(), n - i)
