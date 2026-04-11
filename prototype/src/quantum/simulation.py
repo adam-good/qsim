@@ -28,14 +28,6 @@ class SimQubit(qdev.Qubit):
     def negate(self) -> SimQubit:
         return SimQubit(self.id, qgate.negate(self.state))
 
-    def __eq__(self, other: object) -> bool:
-        if isinstance(other, SimQubit):
-            return self.state == other.state
-        elif isinstance(other, qstate.QState):
-            return self.state == other
-        else:
-            raise NotImplementedError()
-
     def ref_eq(self, other: qdev.Qubit) -> bool:
         return self.id == other.ref_id
 
@@ -71,14 +63,6 @@ class SimDevice(qdev.QuantumDevice):
     def _alloc(self) -> qdev.Qubit:
         return self._n_alloc(1)[0]
 
-    @contextmanager
-    def alloc(self) -> Generator[Qubit]:
-        qubit = self._alloc()
-        try:
-            yield qubit
-        finally:
-            qubit.reset()
-            self._dealloc(qubit)
     def _dealloc(self, qubit: qdev.Qubit):
         self.allocated.remove(qubit.ref_id)
         self.qubits[qubit.ref_id] = qubit
