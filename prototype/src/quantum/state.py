@@ -6,6 +6,7 @@ import utils.math.vector as vector
 import utils.math.helper_funcs as helper
 
 QState = NewType("QState", vector.Vector)
+QBasis = NewType("QBasis", tuple[QState,QState])
 
 def qstate(data: tuple[scalar.Scalar, scalar.Scalar]) -> QState:
     return QState(vector.Vector(data))
@@ -15,8 +16,8 @@ KET0: QState = qstate((1.0, 0.0))
 KET1: QState = qstate((0.0, 1.0))
 KETPLUS: QState = qstate((hadamard_constant, hadamard_constant))
 KETMINUS: QState = qstate((hadamard_constant, -hadamard_constant))
-Z_BASIS = (KET0, KET1)
-X_BASIS = (KETPLUS, KETMINUS)
+Z_BASIS: QBasis = QBasis((KET0, KET1))
+X_BASIS: QBasis = QBasis((KETPLUS, KETMINUS))
 
 
 def x(psi: QState) -> scalar.Scalar:
