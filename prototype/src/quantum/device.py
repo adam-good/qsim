@@ -3,6 +3,7 @@ from typing import Iterator
 from abc import ABCMeta, abstractmethod
 import quantum.state as qstate
 
+
 class Qubit(metaclass=ABCMeta):
     @property
     @abstractmethod
@@ -10,7 +11,9 @@ class Qubit(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def measure(self, basis: tuple[qstate.QState, qstate.QState]) -> tuple[Qubit, qstate.QState]:
+    def measure(
+        self, basis: tuple[qstate.QState, qstate.QState]
+    ) -> tuple[Qubit, qstate.QState]:
         pass
 
     @abstractmethod
@@ -25,11 +28,12 @@ class Qubit(metaclass=ABCMeta):
     def negate(self) -> Qubit:
         pass
 
+
 class QuantumDevice(metaclass=ABCMeta):
     @abstractmethod
     def n_available_qubits(self) -> int:
         pass
-    
+
     @abstractmethod
     def _alloc(self) -> Qubit:
         pass

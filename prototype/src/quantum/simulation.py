@@ -16,7 +16,9 @@ class SimQubit(qdev.Qubit):
     def reset(self) -> SimQubit:
         return SimQubit(self.id, qstate.KET0)
 
-    def measure(self, basis: tuple[qstate.QState, qstate.QState]) -> tuple[SimQubit, qstate.QState]:
+    def measure(
+        self, basis: tuple[qstate.QState, qstate.QState]
+    ) -> tuple[SimQubit, qstate.QState]:
         collapsed = qstate.collapse(basis, self.state)
         return (SimQubit(self.id, collapsed), collapsed)
 
@@ -41,7 +43,7 @@ class SimQubit(qdev.Qubit):
 
 class SimDevice(qdev.QuantumDevice):
     def __init__(self, qubits: list[SimQubit]):
-        self.qubits: dict[int, qdev.Qubit] =  {qubit.id : qubit for qubit in qubits}
+        self.qubits: dict[int, qdev.Qubit] = {qubit.id: qubit for qubit in qubits}
         self.allocated: set[int] = set()
 
     def _available(self) -> set[int]:
@@ -49,7 +51,7 @@ class SimDevice(qdev.QuantumDevice):
 
     def n_available_qubits(self) -> int:
         return len(self.qubits) - len(self.allocated)
-    
+
     def _n_alloc(self, n: int) -> list[qdev.Qubit]:
         assert n <= self.n_available_qubits()
 
