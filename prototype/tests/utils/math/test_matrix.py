@@ -102,7 +102,7 @@ class TestMatrixArithmetic(unittest.TestCase):
     def test_matmul_not_implemented(self):
         matrix = Matrix(((1, 2), (3, 4)))
         self.assertIs(
-            matrix.__matmul__(42),  # ty: ignore[invalid-argument-type]
+            matrix.__matmul__(42),  # type: ignore[no-matching-overload] # testing invalid operand
             NotImplemented,
         )
 

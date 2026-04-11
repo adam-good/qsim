@@ -22,7 +22,7 @@ def apply_gate(
 ) -> qstate.QState:
     if check_unitary and not gate.is_unitary():
         raise Exception("Gate is Not Unitary")
-    return gate @ psi
+    return qstate.QState(gate @ psi)
 
 
 def hgate(psi: qstate.QState) -> qstate.QState:
