@@ -5,25 +5,11 @@ import utils.math.scalar as scalar
 import utils.math.vector as vector
 import utils.math.helper_funcs as helper
 
-<<<<<<< HEAD
-QState = Vector
-type QBasis = tuple[QState, QState]
-||||||| 9370761
-QState = Vector
-=======
 QState = NewType('QState', vector.Vector)
->>>>>>> main
 
 def qstate(data: tuple[scalar.Scalar, scalar.Scalar]) -> QState:
     return QState(vector.Vector(data))
 
-<<<<<<< HEAD
-Z_BASIS: QBasis = (KET0, KET1)
-X_BASIS: QBasis = (KETPLUS, KETMINUS)
-||||||| 9370761
-Z_BASIS = (KET0, KET1)
-X_BASIS = (KETPLUS, KETMINUS)
-=======
 hadamard_constant: scalar.Scalar = 1.0 / math.sqrt(2)
 KET0: QState = qstate((1.0, 0.0))
 KET1: QState = qstate((0.0, 1.0))
@@ -31,7 +17,6 @@ KETPLUS: QState = qstate((hadamard_constant, hadamard_constant))
 KETMINUS: QState = qstate((hadamard_constant, -hadamard_constant))
 Z_BASIS = (KET0, KET1)
 X_BASIS = (KETPLUS, KETMINUS)
->>>>>>> main
 
 
 def x(psi: QState) -> scalar.Scalar:

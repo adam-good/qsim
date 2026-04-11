@@ -28,9 +28,6 @@ class SimQubit(qdev.Qubit):
     def negate(self) -> SimQubit:
         return SimQubit(self.id, qgate.negate(self.state))
 
-    def _copy(self) -> SimQubit:
-        return SimQubit(self.state)
-
     def __eq__(self, other: object) -> bool:
         if isinstance(other, SimQubit):
             return self.state == other.state
