@@ -1,4 +1,4 @@
-import quantum.algorithms.qrng as qrng
+import quantum.algorithms.random as qrand
 import quantum.algorithms.bb84 as bb84
 import quantum.device as qdev
 import quantum.simulation as qsim
@@ -6,8 +6,8 @@ import utils.channel as chnl
 import threading
 
 if __name__ == "__main__":
-    device1 = qsim.SimDevice(1)
-    device2 = qsim.SimDevice(1)
+    device1 = qsim.SimDevice([qsim.SimQubit(0)])
+    device2 = qsim.SimDevice([qsim.SimQubit(1)])
     q_channel: chnl.Channel[qdev.Qubit] = chnl.new_channel()
     auth_channel: chnl.Channel[int] = chnl.new_channel()
 
@@ -15,7 +15,7 @@ if __name__ == "__main__":
     end_a, end_b = chnl.get_endpoints(auth_channel)
 
     n_bits = 2**6
-    key: list[int] = [qrng.qrng(device1) for _ in range(n_bits)]
+    key: list[int] = [qrand.random_bit(device1) for _ in range(n_bits)]
     print(f"Key:  {''.join([str(k) for k in key])}")
 
     sender = threading.Thread(
