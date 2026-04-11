@@ -5,7 +5,7 @@ import utils.math.scalar as scalar
 import utils.math.vector as vector
 import utils.math.helper_funcs as helper
 
-QState = NewType('QState', vector.Vector)
+QState = NewType("QState", vector.Vector)
 
 def qstate(data: tuple[scalar.Scalar, scalar.Scalar]) -> QState:
     return QState(vector.Vector(data))
@@ -64,8 +64,10 @@ def probability_distribution(
 
 
 def collapse(
-    basis: tuple[QState, QState], psi: QState, rng: random.Random = random.Random()
+    basis: tuple[QState, QState], psi: QState, rng: random.Random | None = None
 ) -> QState:
+    if rng is None:
+        rng = random.Random()
     probabilities: vector.Vector = probability_distribution(basis, psi)
     random_idx: int = rng.choices([0, 1], weights=probabilities.raw_data, k=1)[0]
     return basis[random_idx]
