@@ -1,63 +1,90 @@
+from typing import NewType
 import math
 import random
-from utils.math.scalar import Scalar
-from utils.math.vector import Vector
-from utils.math.helper_funcs import vec2d_to_angle, deg2rad
+import utils.math.scalar as scalar
+import utils.math.vector as vector
+import utils.math.helper_funcs as helper
 
+<<<<<<< HEAD
 QState = Vector
 type QBasis = tuple[QState, QState]
+||||||| 9370761
+QState = Vector
+=======
+QState = NewType('QState', vector.Vector)
+>>>>>>> main
 
-KET0: QState =  QState((1.,0.))
-KET1: QState = QState((0.,1.))
-KETPLUS: QState = QState((1.,1.)) / math.sqrt(2)
-KETMINUS: QState = QState((1.,-1.)) / math.sqrt(2)
+def qstate(data: tuple[scalar.Scalar, scalar.Scalar]) -> QState:
+    return QState(vector.Vector(data))
 
+<<<<<<< HEAD
 Z_BASIS: QBasis = (KET0, KET1)
 X_BASIS: QBasis = (KETPLUS, KETMINUS)
+||||||| 9370761
+Z_BASIS = (KET0, KET1)
+X_BASIS = (KETPLUS, KETMINUS)
+=======
+hadamard_constant: scalar.Scalar = 1.0 / math.sqrt(2)
+KET0: QState = qstate((1.0, 0.0))
+KET1: QState = qstate((0.0, 1.0))
+KETPLUS: QState = qstate((hadamard_constant, hadamard_constant))
+KETMINUS: QState = qstate((hadamard_constant, -hadamard_constant))
+Z_BASIS = (KET0, KET1)
+X_BASIS = (KETPLUS, KETMINUS)
+>>>>>>> main
 
-def _x(psi: QState) -> Scalar:
+
+def x(psi: QState) -> scalar.Scalar:
     return psi[0]
 
-def _y(psi: QState) -> Scalar:
+
+def y(psi: QState) -> scalar.Scalar:
     return psi[1]
 
+def as_tuple(psi: QState) -> tuple[scalar.Scalar, scalar.Scalar]:
+    return (x(psi), y(psi))
+
+
 def is_valid(psi: QState) -> bool:
-    return _x(psi)**2 + _y(psi)**2 == 1.0
+    return math.isclose(x(psi) ** 2 + y(psi) ** 2, 1.0)
 
-def angle(psi: QState) -> Scalar:
-    return vec2d_to_angle(_x(psi), _y(psi))
 
-def bloch_angle(psi: QState) -> Scalar:
-    return vec2d_to_angle(_x(psi), _y(psi),
-                          lambda x: 2 * x)
+def angle(psi: QState) -> scalar.Scalar:
+    return helper.vec2d_to_angle(x(psi), y(psi))
 
-# NOTE: This might not be necessary anymore
-# Kinda redundant and all
-def to_vector(psi: QState) -> Vector:
-    return psi
 
-def to_bloch_vector(psi: QState) -> Vector:
-    angle = deg2rad(bloch_angle(psi))
-    return Vector((math.cos(angle), math.sin(angle)))
+def bloch_angle(psi: QState) -> scalar.Scalar:
+    return helper.vec2d_to_angle(x(psi), y(psi), lambda x: 2 * x)
 
-# NOTE: While this is the mathematically correct representation
-#       of a measurment, this adds confusion with the `measure`
-#       method of a Qubit.
-def measure(measurement: QState, state: QState) -> Scalar:
-    return Vector.dotprod(measurement, state)
 
-def probability(measurement: QState, state: QState) -> Scalar:
-    return measure(measurement, state) ** 2
+def bloch_vector(psi: QState) -> vector.Vector:
+    angle = helper.deg2rad(bloch_angle(psi))
+    return vector.Vector((math.cos(angle), math.sin(angle)))
+
+
+def amplitude(measurement: QState, state: QState) -> scalar.Scalar:
+    return vector.dotprod(measurement, state)
+
+
+def probability(measurement: QState, state: QState) -> scalar.Scalar:
+    return amplitude(measurement, state) ** 2
+
 
 # NOTE: This can be made more efficient later
-def probability_distribution(basis: tuple[QState, QState], state: QState) -> Vector:
+def probability_distribution(
+    basis: tuple[QState, QState], state: QState
+) -> vector.Vector:
     probs = tuple(probability(m, state) for m in basis)
-    return Vector(probs)
-    
-def collapse(basis: tuple[QState, QState], psi: QState) -> QState:
-    probabilities: Vector = probability_distribution(basis, psi)
-    random_idx: int = random.choices([0,1], weights=probabilities.raw_data, k=1)[0]
+    return vector.Vector(probs)
+
+
+def collapse(
+    basis: tuple[QState, QState], psi: QState, rng: random.Random = random.Random()
+) -> QState:
+    probabilities: vector.Vector = probability_distribution(basis, psi)
+    random_idx: int = rng.choices([0, 1], weights=probabilities.raw_data, k=1)[0]
     return basis[random_idx]
+
 
 def reset(_psi: QState | None = None) -> QState:
     return KET0

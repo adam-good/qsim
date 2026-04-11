@@ -1,15 +1,13 @@
-from quantum.simulation import SimDevice
-from quantum.algorithms.qrng import qrng
-import quantum.state as qstate
+from quantum.algorithms.random import generate_random_bits
+import quantum.simulation as qsim
 
 def main():
-    bitmap = {
-        qstate.KET0:0,
-        qstate.KET1:1,
-    }
-    device = SimDevice(4)
-    result = [qrng(device, bitmap) for _ in range(16)]
+    n_qubits = 4
+    qubits = [qsim.SimQubit(ref_id) for ref_id in range(n_qubits)]
+    device = qsim.SimDevice(qubits)
+    result = generate_random_bits(16, device)
     print(result)
+
 
 if __name__ == "__main__":
     main()
