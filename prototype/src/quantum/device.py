@@ -5,6 +5,7 @@ import quantum.state as qstate
 
 # TODO: Implement Device Transfer of Qubit Ownership
 
+
 class Qubit(metaclass=ABCMeta):
     @property
     @abstractmethod

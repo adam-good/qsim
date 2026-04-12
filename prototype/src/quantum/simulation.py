@@ -1,4 +1,3 @@
-from src.quantum.device import QuantumDevice
 from dataclasses import dataclass
 import quantum.device as qdev
 import quantum.state as qstate

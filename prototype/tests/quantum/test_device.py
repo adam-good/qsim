@@ -63,6 +63,21 @@ class TestDeviceImpl(qdev.QuantumDevice):
         self._allocated.remove(qubit.ref_id)
         self._dealloc_calls.append(qubit.ref_id)
 
+    def pop_qubit(self, qubit: qdev.Qubit) -> qdev.Qubit:
+        assert qubit.ref_id in self._allocated
+        self._allocated.remove(qubit.ref_id)
+        return self._qubits[qubit.ref_id]
+
+    def push_qubit(self, qubit: qdev.Qubit):
+        assert qubit.ref_id not in self._qubits
+        assert qubit.ref_id not in self._allocated
+        self._qubits.append(qubit)
+        self._allocated.add(qubit.ref_id)
+
+    def transfer(self, device: qdev.QuantumDevice, qubit: qdev.Qubit):
+        qubit = self.pop_qubit(qubit)
+        device.push_qubit(qubit)
+
 
 class TestQuantumDeviceInterface(unittest.TestCase):
     def test_alloc_context_manager(self):
@@ -94,6 +109,31 @@ class TestQubitInterface(unittest.TestCase):
     def test_qubit_is_abstract(self):
         with self.assertRaises(TypeError):
             qdev.Qubit()
+
+
+class TestQuantumDeviceTransfer(unittest.TestCase):
+    def test_pop_qubit_removes_from_allocated(self):
+        device = TestDeviceImpl(4)
+        device._alloc()
+        self.assertIn(0, device._allocated)
+        qubit = device.pop_qubit(device._qubits[0])
+        self.assertNotIn(0, device._allocated)
+        self.assertEqual(qubit.ref_id, 0)
+
+    def test_push_qubit_adds_to_qubits_and_allocated(self):
+        device = TestDeviceImpl(4)
+        external_qubit = TestQubitImpl(99)
+        device.push_qubit(external_qubit)
+        self.assertIn(99, device._allocated)
+        self.assertEqual(device._qubits[-1].ref_id, 99)
+
+    def test_transfer_moves_qubit_between_devices(self):
+        device1 = TestDeviceImpl(2)
+        device2 = TestDeviceImpl(2)
+        device1._alloc()
+        device1.transfer(device2, device1._qubits[0])
+        self.assertNotIn(0, device1._allocated)
+        self.assertIn(0, device2._allocated)
 
 
 if __name__ == "__main__":
