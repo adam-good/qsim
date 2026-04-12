@@ -44,6 +44,18 @@ class QuantumDevice(metaclass=ABCMeta):
         pass
 
     @abstractmethod
+    def pop_qubit(self, qubit: Qubit) -> Qubit:
+        pass
+
+    @abstractmethod
+    def push_qubit(self, qubit: Qubit):
+        pass
+
+    @abstractmethod
+    def transfer(self, device: QuantumDevice, qubit: Qubit):
+        pass
+
+    @abstractmethod
     def _alloc(self) -> Qubit:
         pass
 
