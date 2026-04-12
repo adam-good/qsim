@@ -56,6 +56,23 @@ class SimDevice(qdev.QuantumDevice):
         assert qubit.ref_id in self.qubits.keys()
         return qubit.copy()
 
+    def pop_qubit(self, qubit: qdev.Qubit) -> qdev.Qubit:
+        assert qubit.ref_id in self.allocated
+        qubit = self.qubits.pop(qubit.ref_id)
+        self.allocated.remove(qubit.ref_id)
+        return qubit
+
+    def push_qubit(self, qubit: qdev.Qubit):
+        assert qubit.ref_id not in self.qubits.keys()
+        assert qubit.ref_id not in self.allocated
+
+        self.qubits[qubit.ref_id] = qubit
+        self.allocated.add(qubit.ref_id)
+
+    def transfer(self, device: qdev.QuantumDevice, qubit: qdev.Qubit):
+        qubit = self.pop_qubit(qubit)
+        device.push_qubit(qubit)
+
     def n_available_qubits(self) -> int:
         return len(self.qubits) - len(self.allocated)
 

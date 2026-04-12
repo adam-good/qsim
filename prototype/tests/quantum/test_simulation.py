@@ -114,3 +114,26 @@ class TestSimDevice(unittest.TestCase):
         target = list(device.qubits.values())[0]
         result = device._alloc()
         self.assertIs(target, result)
+
+    def test_simdevice_pop_qubit(self):
+        qubits = [qsim.SimQubit(ref_id) for ref_id in range(4)]
+        device = qsim.SimDevice(qubits)
+        device.allocated.add(0)
+        qubit = device.pop_qubit(qubits[0])
+        self.assertNotIn(0, device.allocated)
+        self.assertEqual(qubit.ref_id, 0)
+
+    def test_simdevice_push_qubit(self):
+        device = qsim.SimDevice([])
+        external = qsim.SimQubit(42, qstate.KET0)
+        device.push_qubit(external)
+        self.assertIn(42, device.allocated)
+        self.assertEqual(device.qubits[42].ref_id, 42)
+
+    def test_simdevice_transfer(self):
+        dev1 = qsim.SimDevice([qsim.SimQubit(i) for i in range(2)])
+        dev2 = qsim.SimDevice([qsim.SimQubit(i) for i in range(2, 4)])
+        dev1.allocated.add(0)
+        dev1.transfer(dev2, dev1.qubits[0])
+        self.assertNotIn(0, dev1.allocated)
+        self.assertIn(0, dev2.allocated)
