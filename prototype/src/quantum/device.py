@@ -1,32 +1,17 @@
 from contextlib import contextmanager
-from typing import Iterator
+from dataclasses import dataclass
 from abc import ABCMeta, abstractmethod
+from typing import Iterator
 import quantum.state as qstate
+import quantum.gate as qgate
+
+QubitRef = int
 
 
-class Qubit(metaclass=ABCMeta):
-    @property
-    @abstractmethod
-    def ref_id(self) -> int:
-        pass
-
-    @abstractmethod
-    def measure(
-        self, basis: tuple[qstate.QState, qstate.QState]
-    ) -> tuple[Qubit, qstate.QState]:
-        pass
-
-    @abstractmethod
-    def reset(self) -> Qubit:
-        pass
-
-    @abstractmethod
-    def hadamard(self) -> Qubit:
-        pass
-
-    @abstractmethod
-    def negate(self) -> Qubit:
-        pass
+@dataclass(frozen=True)
+class Qubit:
+    id: int
+    state: qstate.QState = qstate.KET0
 
 
 class QuantumDevice(metaclass=ABCMeta):
@@ -46,13 +31,17 @@ class QuantumDevice(metaclass=ABCMeta):
     def _dealloc(self, qubit: Qubit):
         pass
 
+    @abstractmethod
+    def apply(self, qubit_id: int, gate: qgate.Gates) -> Qubit:
+        pass
+
     @contextmanager
     def alloc(self) -> Iterator[Qubit]:
         qubit = self._alloc()
         try:
             yield qubit
         finally:
-            self._dealloc(qubit.reset())
+            self._dealloc(qubit)
 
     @contextmanager
     def n_alloc(self, n: int) -> Iterator[list[Qubit]]:
@@ -61,4 +50,4 @@ class QuantumDevice(metaclass=ABCMeta):
             yield qubits
         finally:
             for qubit in qubits:
-                self._dealloc(qubit.reset())
+                self._dealloc(qubit)
