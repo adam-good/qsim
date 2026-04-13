@@ -11,7 +11,8 @@ class QState:
     vector: vector.Vector
 
     def __post_init__(self):
-        return NotImplemented
+        if not is_valid(self):
+            raise ValueError("Quantum State Breaks Born's Rule")
 
     def __getitem__(self, i: int) -> scalar.Scalar:
         return self.vector.__getitem__(i)
