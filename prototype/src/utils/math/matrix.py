@@ -68,9 +68,7 @@ class Matrix:
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Matrix):
             return NotImplemented
-        return all(
-            math.isclose(a, b) for a, b in zip(flatten(self), flatten(other))
-        )
+        return all(math.isclose(a, b) for a, b in zip(flatten(self), flatten(other)))
 
     def __repr__(self):
         return f"{self.raw_data}"
@@ -79,34 +77,43 @@ class Matrix:
 def row_vectors(m: Matrix) -> Tuple[vector.Vector, ...]:
     return tuple(vector.Vector(r) for r in m.raw_data)
 
+
 def col_vectors(m: Matrix) -> Tuple[vector.Vector, ...]:
     return tuple(
         vector.Vector(c)
         for c in zip(*m.raw_data)  # This acts as the transpose
     )
 
+
 def flatten(m: Matrix) -> Tuple[scalar.Scalar, ...]:
     return tuple(x for row in m.raw_data for x in row)
+
 
 def n_rows(m: Matrix) -> int:
     return len(m.raw_data) if m.raw_data else 0
 
+
 def n_cols(m: Matrix) -> int:
     return len(m.raw_data[0]) if m.raw_data else 0
 
+
 def shape(m: Matrix) -> Tuple[int, int]:
     return (n_rows(m), n_cols(m))
+
 
 def identity(size: int) -> Matrix:
     return Matrix(
         tuple(tuple(1 if i == j else 0 for i in range(size)) for j in range(size))
     )
 
+
 def transpose(m: Matrix) -> Matrix:
     return Matrix(tuple(zip(*m.raw_data)))
 
+
 def is_square(m: Matrix) -> bool:
     return n_rows(m) == n_cols(m)
+
 
 def is_unitary(m: Matrix) -> bool:
     if not is_square(m):

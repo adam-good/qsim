@@ -18,13 +18,14 @@ class QState:
     def __getitem__(self, i: int) -> scalar.Scalar:
         return self.vector.__getitem__(i)
 
+
 QBasis = typing.NewType("QBasis", tuple[QState, QState])
 
 HADAMARD_CONST: scalar.Scalar = 1.0 / math.sqrt(2)
 KET0: QState = QState(vector.Vector((1.0, 0.0)))
 KET1: QState = QState(vector.Vector((0.0, 1.0)))
-KETPLUS: QState = QState( vector.Vector((1,1)) * HADAMARD_CONST)
-KETMINUS: QState = QState( vector.Vector((1,-1)) * HADAMARD_CONST)
+KETPLUS: QState = QState(vector.Vector((1, 1)) * HADAMARD_CONST)
+KETMINUS: QState = QState(vector.Vector((1, -1)) * HADAMARD_CONST)
 Z_BASIS: QBasis = QBasis((KET0, KET1))
 X_BASIS: QBasis = QBasis((KETPLUS, KETMINUS))
 
@@ -67,16 +68,12 @@ def probability(measurement: QState, state: QState) -> scalar.Scalar:
 
 
 # NOTE: This can be made more efficient later
-def probability_distribution(
-    basis: QBasis, state: QState
-) -> vector.Vector:
+def probability_distribution(basis: QBasis, state: QState) -> vector.Vector:
     probs = tuple(probability(m, state) for m in basis)
     return vector.Vector(probs)
 
 
-def collapse(
-    basis: QBasis, psi: QState, rng: random.Random | None = None
-) -> QState:
+def collapse(basis: QBasis, psi: QState, rng: random.Random | None = None) -> QState:
     if rng is None:
         rng = random.Random()
     probabilities: vector.Vector = probability_distribution(basis, psi)
