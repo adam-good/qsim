@@ -11,18 +11,6 @@ class Qubit:
     def ref_id(self) -> int:
         return self.id
 
-    def reset(self) -> Qubit:
-        return Qubit(self.id, qstate.KET0)
-
-    def ref_eq(self, other: Qubit) -> bool:
-        return self.id == other.ref_id
-
-    def state_eq(self, state: qstate.QState) -> bool:
-        return self.state == state
-
-    def equiv(self, other: Qubit) -> bool:
-        return self.state == other.state
-
     def __repr__(self) -> str:
         return f"SimQubit({self.id}, {self.state})"
 
