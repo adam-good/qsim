@@ -1,65 +1,68 @@
-from contextlib import contextmanager
-from typing import Iterator
-from abc import ABCMeta, abstractmethod
+from dataclasses import dataclass
+import quantum.device as qdev
 import quantum.state as qstate
+import quantum.gate as qgate
 
 
+@dataclass(frozen=True, eq=False)
+class SimQubit(qdev.Qubit):
+    id: int = 0
+    state: qstate.QState = qstate.KET0
 
-# NOTE: These are not immutable because they're modeling real life mutable items
-class Qubit(metaclass=ABCMeta):
-    
     @property
-    @abstractmethod
     def ref_id(self) -> int:
-        pass
+        return self.id
 
-class QuantumDevice(metaclass=ABCMeta):
-    @abstractmethod
+    def reset(self) -> SimQubit:
+        return SimQubit(self.id, qstate.KET0)
+
+    def measure(
+        self, basis: tuple[qstate.QState, qstate.QState]
+    ) -> tuple[SimQubit, qstate.QState]:
+        collapsed = qstate.collapse(basis, self.state)
+        return (SimQubit(self.id, collapsed), collapsed)
+
+    def hadamard(self) -> SimQubit:
+        return SimQubit(self.id, qgate.hadamard(self.state))
+
+    def negate(self) -> SimQubit:
+        return SimQubit(self.id, qgate.negate(self.state))
+
+    def ref_eq(self, other: qdev.Qubit) -> bool:
+        return self.id == other.ref_id
+
+    def state_eq(self, state: qstate.QState) -> bool:
+        return self.state == state
+
+    def equiv(self, other: SimQubit) -> bool:
+        return self.state == other.state
+
+    def __repr__(self) -> str:
+        return f"SimQubit({self.id}, {self.state})"
+
+
+class SimDevice(qdev.QuantumDevice):
+    def __init__(self, qubits: list[SimQubit]):
+        self.qubits: dict[int, qdev.Qubit] = {qubit.id: qubit for qubit in qubits}
+        self.allocated: set[int] = set()
+
+    def _available(self) -> set[int]:
+        return self.qubits.keys() - self.allocated
+
     def n_available_qubits(self) -> int:
-        pass
+        return len(self.qubits) - len(self.allocated)
 
-    @abstractmethod
-    def _alloc(self) -> Qubit:
-        pass
+    def _n_alloc(self, n: int) -> list[qdev.Qubit]:
+        assert n <= self.n_available_qubits()
 
-    @abstractmethod
-    def _n_alloc(self, n: int) -> list[Qubit]:
-        pass
+        selection: list[int] = list(self._available())[:n]
+        qubits: list[qdev.Qubit] = [self.qubits[i] for i in selection]
+        self.allocated.update(selection)
+        return qubits
 
-    @abstractmethod
-    def _dealloc(self, qubit: Qubit):
-        pass
+    def _alloc(self) -> qdev.Qubit:
+        return self._n_alloc(1)[0]
 
-    @abstractmethod
-    def measure(self, qubit: Qubit, basis: qstate.QBasis) -> qstate.QState:
-        pass
-
-    @abstractmethod
-    def reset(self, qubit: Qubit) -> Qubit:
-        pass
-
-    @abstractmethod
-    def hadamard(self, qubit: Qubit) -> Qubit:
-        pass
-
-    @abstractmethod
-    def negate(self, qubit: Qubit) -> Qubit:
-        pass
-
-    @contextmanager
-    def alloc(self) -> Iterator[Qubit]:
-        qubit = self._alloc()
-        try:
-            yield qubit
-        finally:
-            self._dealloc( self.reset(qubit))
-
-    @contextmanager
-    def n_alloc(self, n: int) -> Iterator[list[Qubit]]:
-        qubits = self._n_alloc(n)
-        try:
-            yield qubits
-        finally:
-            for qubit in qubits:
-                self._dealloc(self.reset(qubit))
-   
+    def _dealloc(self, qubit: qdev.Qubit):
+        self.allocated.remove(qubit.ref_id)
+        self.qubits[qubit.ref_id] = qubit
