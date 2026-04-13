@@ -4,30 +4,14 @@ from abc import ABCMeta, abstractmethod
 import quantum.state as qstate
 
 
+
+# NOTE: These are not immutable because they're modeling real life mutable items
 class Qubit(metaclass=ABCMeta):
+    
     @property
     @abstractmethod
     def ref_id(self) -> int:
         pass
-
-    @abstractmethod
-    def measure(
-        self, basis: tuple[qstate.QState, qstate.QState]
-    ) -> tuple[Qubit, qstate.QState]:
-        pass
-
-    @abstractmethod
-    def reset(self) -> Qubit:
-        pass
-
-    @abstractmethod
-    def hadamard(self) -> Qubit:
-        pass
-
-    @abstractmethod
-    def negate(self) -> Qubit:
-        pass
-
 
 class QuantumDevice(metaclass=ABCMeta):
     @abstractmethod
@@ -46,13 +30,29 @@ class QuantumDevice(metaclass=ABCMeta):
     def _dealloc(self, qubit: Qubit):
         pass
 
+    @abstractmethod
+    def measure(self, qubit: Qubit, basis: qstate.QBasis) -> qstate.QState:
+        pass
+
+    @abstractmethod
+    def reset(self, qubit: Qubit) -> Qubit:
+        pass
+
+    @abstractmethod
+    def hadamard(self, qubit: Qubit) -> Qubit:
+        pass
+
+    @abstractmethod
+    def negate(self, qubit: Qubit) -> Qubit:
+        pass
+
     @contextmanager
     def alloc(self) -> Iterator[Qubit]:
         qubit = self._alloc()
         try:
             yield qubit
         finally:
-            self._dealloc(qubit.reset())
+            self._dealloc( self.reset(qubit))
 
     @contextmanager
     def n_alloc(self, n: int) -> Iterator[list[Qubit]]:
@@ -61,4 +61,5 @@ class QuantumDevice(metaclass=ABCMeta):
             yield qubits
         finally:
             for qubit in qubits:
-                self._dealloc(qubit.reset())
+                self._dealloc(self.reset(qubit))
+   
