@@ -1,5 +1,5 @@
 import math
-from typing import Tuple
+from typing import Tuple, overload
 from dataclasses import dataclass
 import utils.math.scalar as scalar
 import utils.math.vector as vector
@@ -85,6 +85,10 @@ class Matrix:
             return NotImplemented
         return Matrix(tuple(tuple(a / other for a in row) for row in self.raw_data))
 
+    @overload
+    def __matmul__(self, other: Matrix) -> Matrix: ...
+    @overload
+    def __matmul__(self, other: vector.Vector) -> vector.Vector: ...
     # TODO: Clean this up
     def __matmul__(self, other: Matrix | vector.Vector) -> Matrix | vector.Vector:
         if isinstance(other, Matrix):
