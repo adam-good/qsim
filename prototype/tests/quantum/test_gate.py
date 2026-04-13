@@ -38,8 +38,6 @@ class TestGates(unittest.TestCase):
         self.assertTrue(isinstance(qgate.COMMON_GATES[qgate.Gates.H], Matrix))
         self.assertTrue(isinstance(qgate.COMMON_GATES[qgate.Gates.X], Matrix))
 
-    
-
     def test_hadamard_alias(self):
         self.assertEqual(qgate.hadamard, qgate.hgate)
 

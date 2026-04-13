@@ -17,9 +17,7 @@ COMMON_GATES: dict[Gates, QGate] = {
 }
 
 
-def apply_gate(
-    psi: qst.QState, gate: QGate, check_unitary: bool = True
-) -> qst.QState:
+def apply_gate(psi: qst.QState, gate: QGate, check_unitary: bool = True) -> qst.QState:
     if check_unitary and not gate.is_unitary():
         raise Exception("Gate is Not Unitary")
     return qst.qstate_from_vector(gate @ psi)
