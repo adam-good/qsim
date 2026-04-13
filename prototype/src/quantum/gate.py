@@ -1,3 +1,4 @@
+import typing
 import dataclasses
 import quantum.state as qst
 import utils.math.matrix as matrix
@@ -13,6 +14,18 @@ class QGate:
         if not matrix.is_unitary(self.matrix):
             raise ValueError("Quantum Gate Matrix Must Be Unitary")
 
+    @typing.overload
+    def __matmul__(self, other: QGate) -> QGate: ... # Gate Composition
+    @typing.overload
+    def __matmul__(self, other: qst.QState) -> qst.QState: ... # Gate Application
+    def __matmul__(self, other: QGate | qst.QState) -> QGate | qst.QState:
+        if isinstance(other, QGate):
+            return compose_gates(self, other)
+        elif isinstance(other, qst.QState):
+            return apply_gate(self, other)
+        else:
+            return NotImplemented
+
 
 class Gates(Enum):
     H = 0
@@ -27,7 +40,7 @@ COMMON_GATES: dict[Gates, QGate] = {
 }
 
 
-def apply_gate(psi: qst.QState, gate: QGate) -> qst.QState:
+def apply_gate(gate: QGate,psi: qst.QState) -> qst.QState:
     return qst.QState(gate.matrix @ psi.vector)
 
 
@@ -37,9 +50,9 @@ def compose_gates(g1: QGate, g2: QGate) -> QGate:
 
 def hgate(psi: qst.QState) -> qst.QState:
     gate: QGate = COMMON_GATES[Gates.H]
-    return apply_gate(psi, gate)
+    return apply_gate(gate, psi)
 
 
 def xgate(psi: qst.QState) -> qst.QState:
     gate: QGate = COMMON_GATES[Gates.X]
-    return apply_gate(psi, gate)
+    return apply_gate(gate, psi)
