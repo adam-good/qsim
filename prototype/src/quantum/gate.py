@@ -35,12 +35,12 @@ def compose_gates(g1: QGate, g2: QGate) -> QGate:
 
 def hgate(psi: qst.QState) -> qst.QState:
     gate: QGate = COMMON_GATES[Gates.H]
-    return apply_gate(psi, gate, check_unitary=False)
+    return apply_gate(psi, gate)
 
 
 def xgate(psi: qst.QState) -> qst.QState:
     gate: QGate = COMMON_GATES[Gates.X]
-    return apply_gate(psi, gate, check_unitary=False)
+    return apply_gate(psi, gate)
 
 
 hadamard = hgate
