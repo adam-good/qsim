@@ -9,10 +9,10 @@ class TestQuantumState(unittest.TestCase):
     def test_quantumestate_angles(self):
         h = 1.0 / math.sqrt(2)  # hadamard value
         qubits = [
-            qstate.qstate((1.0, 0.0)),  # ket 0
-            qstate.qstate((0.0, 1.0)),  # ket 1
-            qstate.qstate((h, h)),      # ket plus
-            qstate.qstate((h, -h)),     # key minus
+            qstate.qstate_from_data((1.0, 0.0)),  # ket 0
+            qstate.qstate_from_data((0.0, 1.0)),  # ket 1
+            qstate.qstate_from_data((h, h)),      # ket plus
+            qstate.qstate_from_data((h, -h)),     # key minus
         ]
         targets = [0.0, 90.0, 45.0, 315.0]
         for psi, target in zip(qubits, targets):
@@ -22,10 +22,10 @@ class TestQuantumState(unittest.TestCase):
     def test_quantumstate_bloch_angles(self):
         h = 1.0 / math.sqrt(2)  # hadamard value
         quantum_states = [
-            qstate.qstate((1.0, 0.0)),  # ket 0
-            qstate.qstate((0.0, 1.0)),  # ket 1
-            qstate.qstate((h, h)),  # ket plus
-            qstate.qstate((h, -h)),  # key minus
+            qstate.qstate_from_data((1.0, 0.0)),  # ket 0
+            qstate.qstate_from_data((0.0, 1.0)),  # ket 1
+            qstate.qstate_from_data((h, h)),  # ket plus
+            qstate.qstate_from_data((h, -h)),  # key minus
         ]
         targets = (0.0, 180.0, 90.0, 270.0)
         for psi, target in zip(quantum_states, targets):
@@ -35,10 +35,10 @@ class TestQuantumState(unittest.TestCase):
     def test_quantumstate_probability_distribution(self):
         h = 1.0 / math.sqrt(2)  # hadamard value
         quantum_states = [
-            qstate.qstate((1.0, 0.0)),  # ket 0
-            qstate.qstate((0.0, 1.0)),  # ket 1
-            qstate.qstate((h, h)),  # ket plus
-            qstate.qstate((h, -h)),  # key minus
+            qstate.qstate_from_data((1.0, 0.0)),  # ket 0
+            qstate.qstate_from_data((0.0, 1.0)),  # ket 1
+            qstate.qstate_from_data((h, h)),  # ket plus
+            qstate.qstate_from_data((h, -h)),  # key minus
         ]
         target_vectors = [
             Vector((1.0, 0.0)),
@@ -72,7 +72,7 @@ class TestQuantumState(unittest.TestCase):
     def test_quantumstate_collapse_reproducible(self):
         rng1 = random.Random(42)
         rng2 = random.Random(42)
-        superposition = qstate.qstate((1 / math.sqrt(2), 1 / math.sqrt(2)))
+        superposition = qstate.qstate_from_data((1 / math.sqrt(2), 1 / math.sqrt(2)))
         results1 = [
             qstate.collapse(qstate.Z_BASIS, superposition, rng1) for _ in range(10)
         ]

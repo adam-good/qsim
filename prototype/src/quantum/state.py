@@ -7,14 +7,17 @@ import utils.math.helper_funcs as helper
 
 QState = NewType("QState", vector.Vector)
 
-def qstate(data: tuple[scalar.Scalar, scalar.Scalar]) -> QState:
+def qstate_from_data(data: tuple[scalar.Scalar, scalar.Scalar]) -> QState:
     return QState(vector.Vector(data))
 
+def qstate_from_vector(vec: vector.Vector) -> QState:
+    return QState(vec)
+
 hadamard_constant: scalar.Scalar = 1.0 / math.sqrt(2)
-KET0: QState = qstate((1.0, 0.0))
-KET1: QState = qstate((0.0, 1.0))
-KETPLUS: QState = qstate((hadamard_constant, hadamard_constant))
-KETMINUS: QState = qstate((hadamard_constant, -hadamard_constant))
+KET0: QState = qstate_from_data((1.0, 0.0))
+KET1: QState = qstate_from_data((0.0, 1.0))
+KETPLUS: QState = qstate_from_data((hadamard_constant, hadamard_constant))
+KETMINUS: QState = qstate_from_data((hadamard_constant, -hadamard_constant))
 Z_BASIS = (KET0, KET1)
 X_BASIS = (KETPLUS, KETMINUS)
 
