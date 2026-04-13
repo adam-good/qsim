@@ -1,5 +1,4 @@
 import dataclasses
-import math
 import quantum.state as qst
 import utils.math.matrix as matrix
 from enum import Enum
@@ -12,10 +11,13 @@ class Gates(Enum):
     H = 0
     X = 1
 
-
 COMMON_GATES: dict[Gates, QGate] = {
-    Gates.H: QGate(((1, 1), (1, -1))) / math.sqrt(2),
-    Gates.X: QGate(((0, 1), (1, 0))),
+    Gates.H: QGate(
+                   matrix.Matrix(((1, 1), (1, -1))) * qst.HADAMARD_CONST
+               ),
+    Gates.X: QGate(
+                   matrix.Matrix(((0, 1), (1, 0)))
+               ),
 }
 
 
