@@ -7,6 +7,11 @@ from enum import Enum
 class QGate:
     matrix: matrix.Matrix
 
+    # TODO: Find a way to not run this check for every new gate instance
+    def __post_init__(self):
+        if not matrix.is_unitary(self.matrix):
+            raise ValueError("Quantum Gate Matrix Must Be Unitary")
+
 class Gates(Enum):
     H = 0
     X = 1
