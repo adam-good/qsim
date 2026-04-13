@@ -9,12 +9,6 @@ import utils.math.vector as vector
 class Matrix:
     raw_data: Tuple[Tuple[scalar.Scalar, ...], ...]
 
-    def row_vectors(self) -> Tuple[vector.Vector, ...]:
-        return tuple(vector.Vector(r) for r in self.raw_data)
-
-    def _flatten(self) -> Tuple[scalar.Scalar, ...]:
-        return tuple(x for row in self.raw_data for x in row)
-
     def __add__(self, other: Matrix) -> Matrix:
         if not isinstance(other, Matrix):
             return NotImplemented
@@ -60,14 +54,14 @@ class Matrix:
             return Matrix(
                 tuple(
                     tuple(vector.dotprod(w, v) for v in col_vectors(other))
-                    for w in self.row_vectors()
+                    for w in row_vectors(self)
                 )
             )
         elif isinstance(other, vector.Vector):
             if n_cols(self) != len(other):
                 raise ValueError("Matrix-vector matmul incompatible sizes")
             return vector.Vector(
-                tuple(vector.dotprod(row, other) for row in self.row_vectors())
+                tuple(vector.dotprod(row, other) for row in row_vectors(self))
             )
         return NotImplemented
 
@@ -75,13 +69,24 @@ class Matrix:
         if not isinstance(other, Matrix):
             return NotImplemented
         return all(
-            math.isclose(a, b) for a, b in zip(self._flatten(), other._flatten())
+            math.isclose(a, b) for a, b in zip(flatten(self), flatten(other))
         )
 
     def __repr__(self):
         return f"{self.raw_data}"
 
 
+def row_vectors(m: Matrix) -> Tuple[vector.Vector, ...]:
+    return tuple(vector.Vector(r) for r in m.raw_data)
+
+def col_vectors(m: Matrix) -> Tuple[vector.Vector, ...]:
+    return tuple(
+        vector.Vector(c)
+        for c in zip(*m.raw_data)  # This acts as the transpose
+    )
+
+def flatten(m: Matrix) -> Tuple[scalar.Scalar, ...]:
+    return tuple(x for row in m.raw_data for x in row)
 
 def n_rows(m: Matrix) -> int:
     return len(m.raw_data) if m.raw_data else 0
@@ -91,12 +96,6 @@ def n_cols(m: Matrix) -> int:
 
 def shape(m: Matrix) -> Tuple[int, int]:
     return (n_rows(m), n_cols(m))
-
-def col_vectors(m: Matrix) -> Tuple[vector.Vector, ...]:
-    return tuple(
-        vector.Vector(c)
-        for c in zip(*m.raw_data)  # This acts as the transpose
-    )
 
 def identity(size: int) -> Matrix:
     return Matrix(
