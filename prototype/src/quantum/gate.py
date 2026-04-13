@@ -41,10 +41,3 @@ def hgate(psi: qst.QState) -> qst.QState:
 def xgate(psi: qst.QState) -> qst.QState:
     gate: QGate = COMMON_GATES[Gates.X]
     return apply_gate(psi, gate)
-
-
-hadamard = hgate
-negate = xgate
-
-h = hgate
-x = xgate
