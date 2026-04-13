@@ -16,15 +16,12 @@ class Gates(Enum):
     H = 0
     X = 1
 
+_hadamard_matrix = matrix.Matrix( ((1,1),(1,-1)) ) * qst.HADAMARD_CONST
+_negate_matrix = matrix.Matrix( ((0,1),(1,0)) )
 COMMON_GATES: dict[Gates, QGate] = {
-    Gates.H: QGate(
-                   matrix.Matrix(((1, 1), (1, -1))) * qst.HADAMARD_CONST
-               ),
-    Gates.X: QGate(
-                   matrix.Matrix(((0, 1), (1, 0)))
-               ),
+    Gates.H: QGate(_hadamard_matrix),
+    Gates.X: QGate(_negate_matrix),
 }
-
 
 def apply_gate(psi: qst.QState, gate: QGate) -> qst.QState:
     return qst.QState(gate.matrix @ psi.vector)
