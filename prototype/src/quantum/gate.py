@@ -1,5 +1,5 @@
 import math
-import quantum.state as qstate
+import quantum.state as qst
 import utils.math.matrix as matrix
 from enum import Enum
 
@@ -18,19 +18,19 @@ COMMON_GATES: dict[Gates, QGate] = {
 
 
 def apply_gate(
-    psi: qstate.QState, gate: QGate, check_unitary: bool = True
-) -> qstate.QState:
+    psi: qst.QState, gate: QGate, check_unitary: bool = True
+) -> qst.QState:
     if check_unitary and not gate.is_unitary():
         raise Exception("Gate is Not Unitary")
     return gate @ psi
 
 
-def hgate(psi: qstate.QState) -> qstate.QState:
+def hgate(psi: qst.QState) -> qst.QState:
     gate: QGate = COMMON_GATES[Gates.H]
     return apply_gate(psi, gate, check_unitary=False)
 
 
-def xgate(psi: qstate.QState) -> qstate.QState:
+def xgate(psi: qst.QState) -> qst.QState:
     gate: QGate = COMMON_GATES[Gates.X]
     return apply_gate(psi, gate, check_unitary=False)
 
