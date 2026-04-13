@@ -1,12 +1,21 @@
-from typing import NewType
+import dataclasses
 import math
 import random
 import utils.math.scalar as scalar
 import utils.math.vector as vector
 import utils.math.helper_funcs as helper
 
-QState = NewType("QState", vector.Vector)
 
+@dataclasses.dataclass(frozen=True)
+class QState:
+    vector: vector.Vector
+
+    def __post_init__(self):
+        return NotImplemented
+
+    def __getitem__(self, i: int) -> scalar.Scalar:
+        return self.vector.__getitem__(i)
+    
 
 def qstate_from_data(data: tuple[scalar.Scalar, scalar.Scalar]) -> QState:
     return QState(vector.Vector(data))
@@ -55,7 +64,7 @@ def bloch_vector(psi: QState) -> vector.Vector:
 
 
 def amplitude(measurement: QState, state: QState) -> scalar.Scalar:
-    return vector.dotprod(measurement, state)
+    return vector.dotprod(measurement.vector, state.vector)
 
 
 def probability(measurement: QState, state: QState) -> scalar.Scalar:
