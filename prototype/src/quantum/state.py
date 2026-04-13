@@ -18,11 +18,11 @@ class QState:
         return self.vector.__getitem__(i)
     
 
-hadamard_constant: scalar.Scalar = 1.0 / math.sqrt(2)
+HADAMARD_CONST: scalar.Scalar = 1.0 / math.sqrt(2)
 KET0: QState = QState(vector.Vector((1.0, 0.0)))
 KET1: QState = QState(vector.Vector((0.0, 1.0)))
-KETPLUS: QState = QState( vector.Vector((1,1)) * hadamard_constant)
-KETMINUS: QState = QState( vector.Vector((1,-1)) * hadamard_constant)
+KETPLUS: QState = QState( vector.Vector((1,1)) * HADAMARD_CONST)
+KETMINUS: QState = QState( vector.Vector((1,-1)) * HADAMARD_CONST)
 Z_BASIS = (KET0, KET1)
 X_BASIS = (KETPLUS, KETMINUS)
 
