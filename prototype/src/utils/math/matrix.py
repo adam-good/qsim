@@ -55,16 +55,16 @@ class Matrix:
     # TODO: Clean this up
     def __matmul__(self, other: Matrix | vector.Vector) -> Matrix | vector.Vector:
         if isinstance(other, Matrix):
-            if self.n_cols != other.n_rows:
+            if n_cols(self) != n_rows(other):
                 raise ValueError("Matrix matmul incompatible shapes")
             return Matrix(
                 tuple(
-                    tuple(vector.dotprod(w, v) for v in other.col_vectors())
+                    tuple(vector.dotprod(w, v) for v in col_vectors(other))
                     for w in self.row_vectors()
                 )
             )
         elif isinstance(other, vector.Vector):
-            if self.n_cols != len(other):
+            if n_cols(self) != len(other):
                 raise ValueError("Matrix-vector matmul incompatible sizes")
             return vector.Vector(
                 tuple(vector.dotprod(row, other) for row in self.row_vectors())

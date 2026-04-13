@@ -1,10 +1,12 @@
+import dataclasses
 import math
 import quantum.state as qst
 import utils.math.matrix as matrix
 from enum import Enum
 
-QGate = matrix.Matrix
-
+@dataclasses.dataclass(frozen=True)
+class QGate:
+    matrix: matrix.Matrix
 
 class Gates(Enum):
     H = 0
