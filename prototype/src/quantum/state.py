@@ -18,19 +18,11 @@ class QState:
         return self.vector.__getitem__(i)
     
 
-def qstate_from_data(data: tuple[scalar.Scalar, scalar.Scalar]) -> QState:
-    return QState(vector.Vector(data))
-
-
-def qstate_from_vector(vec: vector.Vector) -> QState:
-    return QState(vec)
-
-
 hadamard_constant: scalar.Scalar = 1.0 / math.sqrt(2)
-KET0: QState = qstate_from_data((1.0, 0.0))
-KET1: QState = qstate_from_data((0.0, 1.0))
-KETPLUS: QState = qstate_from_data((hadamard_constant, hadamard_constant))
-KETMINUS: QState = qstate_from_data((hadamard_constant, -hadamard_constant))
+KET0: QState = QState(vector.Vector((1.0, 0.0)))
+KET1: QState = QState(vector.Vector((0.0, 1.0)))
+KETPLUS: QState = QState( vector.Vector((1,1)) * hadamard_constant)
+KETMINUS: QState = QState( vector.Vector((1,-1)) * hadamard_constant)
 Z_BASIS = (KET0, KET1)
 X_BASIS = (KETPLUS, KETMINUS)
 
