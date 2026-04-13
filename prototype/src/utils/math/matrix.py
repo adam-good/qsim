@@ -30,25 +30,6 @@ class Matrix:
     def row_vectors(self) -> Tuple[vector.Vector, ...]:
         return tuple(vector.Vector(r) for r in self.raw_data)
 
-    def transpose(self) -> Matrix:
-        return Matrix(tuple(zip(*self.raw_data)))
-
-    def is_square(self) -> bool:
-        return self.n_rows == self.n_cols
-
-    def is_unitary(self) -> bool:
-        if not self.is_square():
-            return False
-        identity = Matrix.identity(self.n_rows)
-        transpose = self.transpose()  # TODO: This needs to be the conjugate transpose
-        return self @ transpose == identity and transpose @ self == identity
-
-    @staticmethod
-    def identity(size: int) -> Matrix:
-        return Matrix(
-            tuple(tuple(1 if i == j else 0 for i in range(size)) for j in range(size))
-        )
-
     def _flatten(self) -> Tuple[scalar.Scalar, ...]:
         return tuple(x for row in self.raw_data for x in row)
 
@@ -117,3 +98,23 @@ class Matrix:
 
     def __repr__(self):
         return f"{self.raw_data}"
+
+
+
+def identity(size: int) -> Matrix:
+    return Matrix(
+        tuple(tuple(1 if i == j else 0 for i in range(size)) for j in range(size))
+    )
+
+def transpose(m: Matrix) -> Matrix:
+    return Matrix(tuple(zip(*m.raw_data)))
+
+def is_square(m: Matrix) -> bool:
+    return m.n_rows == m.n_cols
+
+def is_unitary(m: Matrix) -> bool:
+    if not is_square(m):
+        return False
+    identity_matrix = identity(m.n_rows)
+    m_transpose = transpose(m)  # TODO: This needs to be the conjugate transpose
+    return m @ m_transpose == identity_matrix and m_transpose @ m == identity_matrix
