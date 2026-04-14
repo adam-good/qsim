@@ -29,24 +29,31 @@ class QuantumDevice:
     def n_available_qubits(self) -> int:
         return len(self.qubits) - len(self.allocated)
 
-    def _update_qubit(self, qubit_id: int, new_state: qstate.QState):        
-        if qubit_id not in self.qubits.keys():
+    # TODO: Need to design a way for this to be called whenever we update qubits
+    def _update_qubit_register(self, qubit: Qubit):
+        if qubit.ref_id not in self.qubits.keys():
             raise ValueError("Attempting Update on Foriegn Qubit")
-        if qubit_id not in self.allocated:
+        if qubit.ref_id not in self.allocated:
             return ValueError("Attempting to Update Unallocated Qubit")
 
-        self.qubits[qubit_id].state = new_state
+        self.qubits[qubit.ref_id] = qubit
 
-    def prepare_qubit(self, qubit: Qubit, gates: list[qgate.QGate]) -> Qubit:
-        gate = functools.reduce(qgate.compose_gates, gates)
-        state = qgate.apply_gate(gate, qubit.state)
-        self._update_qubit(qubit.ref_id, state)
-        return Qubit(qubit.ref_id, state)
+    def prepare_single_qubit(self, qubit: Qubit, gate: qgate.QGate) -> Qubit:
+        qubit = Qubit(qubit.ref_id, qgate.apply_gate(gate, qubit.state))
+        self._update_qubit_register(qubit)
+        return qubit
 
-    def measure_qubit(self, qubit: Qubit, basis: qstate.QBasis) -> qstate.QState:
+    
+    def measure_single_qubit(self, qubit: Qubit, basis: qstate.QBasis) -> qstate.QState:
         state = qstate.collapse(basis, qubit.state)
-        self._update_qubit(qubit.ref_id, state)
+        self._update_qubit_register(Qubit(qubit.ref_id, state))
         return state
+
+    def prepare_qubits(self, qubits: list[Qubit], gate: qgate.QGate) -> list[Qubit]:
+        return [self.prepare_single_qubit(qubit, gate) for qubit in qubits]
+
+    def measure_qubits(self, qubits: list[Qubit], basis: qstate.QBasis) -> list[qstate.QState]:
+        return [self.measure_single_qubit(qubit, basis) for qubit in qubits]
     
     def _n_alloc(self, n: int) -> list[Qubit]:
         assert n <= self.n_available_qubits() # TODO: Don't use asserts like this!
