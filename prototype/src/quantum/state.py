@@ -18,6 +18,9 @@ class QState:
     def __getitem__(self, i: int) -> scalar.Scalar:
         return self.vector.__getitem__(i)
 
+    def __repr__(self):
+        return f"\u007C{self.vector}\u27E9"
+
 
 QBasis = typing.NewType("QBasis", tuple[QState, QState])
 
