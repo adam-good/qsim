@@ -1,3 +1,5 @@
+import contextlib
+import typing
 import dataclasses as dcls
 import quantum.state as qstate
 import quantum.gate as qgate
@@ -40,3 +42,21 @@ class QuantumDevice:
     def _dealloc(self, qubit: Qubit):
         self.allocated.remove(qubit.ref_id)
         self.qubits[qubit.ref_id] = qubit
+
+    @contextlib.contextmanager
+    def alloc(self, n: int) -> typing.Iterator[list[Qubit]]:
+        qubits = self._n_alloc(n)
+        try:
+            yield qubits
+        finally:
+            for q in qubits:
+                self._dealloc(q)
+        
+
+    @contextlib.contextmanager
+    def alloc_single(self) -> typing.Iterator[Qubit]:
+        qubit = self._alloc()
+        try:
+            yield qubit
+        finally:
+            self._dealloc(qubit)
