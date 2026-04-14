@@ -34,9 +34,12 @@ class Gates(enum.Enum):
 
 _hadamard_matrix = matrix.Matrix(((1, 1), (1, -1))) * qst.HADAMARD_CONST
 _negate_matrix = matrix.Matrix(((0, 1), (1, 0)))
+
+H_GATE = QGate(_hadamard_matrix)
+X_GATE = QGate(_negate_matrix)
 COMMON_GATES: dict[Gates, QGate] = {
-    Gates.H: QGate(_hadamard_matrix),
-    Gates.X: QGate(_negate_matrix),
+    Gates.H: H_GATE,
+    Gates.X: X_GATE,
 }
 
 

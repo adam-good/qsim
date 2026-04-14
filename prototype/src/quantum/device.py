@@ -21,7 +21,6 @@ class Qubit:
 class QuantumDevice:
     def __init__(self, qubits: list[Qubit]):
         self.qubits: dict[int, Qubit] = {qubit.id: qubit for qubit in qubits}
-        self.gates: dict[qgate.Gates, qgate.QGate] = qgate.COMMON_GATES # TODO: Let this be custom
         self.allocated: set[int] = set()
 
     def _available(self) -> set[int]:
@@ -40,7 +39,7 @@ class QuantumDevice:
 
     def prepare_qubit(self, qubit: Qubit, gates: list[qgate.QGate]) -> Qubit:
         gate = functools.reduce(qgate.compose_gates, gates)
-        state = gate @ qubit.state
+        state = qgate.apply_gate(gate, qubit.state)
         self._update_qubit(qubit.ref_id, state)
         return Qubit(qubit.ref_id, state)
 
