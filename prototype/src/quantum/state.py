@@ -12,7 +12,7 @@ class QState:
     vector: vector.Vector
 
     def __post_init__(self):
-        if not is_valid(self):
+        if not vector.validate_born_rule(self.vector):
             raise ValueError("Quantum State Breaks Born's Rule")
 
     def __getitem__(self, i: int) -> scalar.Scalar:
@@ -43,8 +43,7 @@ def as_tuple(psi: QState) -> tuple[scalar.Scalar, scalar.Scalar]:
 
 
 def is_valid(psi: QState) -> bool:
-    return math.isclose(x(psi) ** 2 + y(psi) ** 2, 1.0)
-
+    return vector.validate_born_rule(psi.vector)
 
 def angle(psi: QState) -> scalar.Scalar:
     return helper.vec2d_to_angle(x(psi), y(psi))
