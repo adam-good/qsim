@@ -1,4 +1,3 @@
-import functools
 import contextlib
 import typing
 import dataclasses as dcls
