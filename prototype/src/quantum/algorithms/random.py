@@ -10,16 +10,10 @@ def _qstates_to_bits(states: list[qstate.QState]) -> list[int]:
     return [_qstate_to_bit(state) for state in states]
 
 def _prepare_qubits(qubits: list[qdev.Qubit], device: qdev.QuantumDevice) -> list[qdev.Qubit]:
-    return [
-        device.prepare_qubit(qubit, [qgate.H_GATE])
-        for qubit in qubits
-    ]
+    return device.prepare_qubits(qubits, qgate.H_GATE)
 
 def _measure_qubits(qubits: list[qdev.Qubit], device: qdev.QuantumDevice) -> list[qstate.QState]:
-    return [
-        device.measure_qubit(qubit, qstate.Z_BASIS)
-        for qubit in qubits
-    ]
+    return device.measure_qubits(qubits, qstate.Z_BASIS)
 
 def _batch_random_bits(n: int, device: qdev.QuantumDevice) -> list[int]:
     assert n <= device.n_available_qubits() # TODO: Don't use asserts like this!
