@@ -1,3 +1,5 @@
+import functools
+import math
 import contextlib
 import typing
 import dataclasses as dcls
@@ -20,6 +22,7 @@ class Qubit:
 class QuantumDevice:
     def __init__(self, qubits: list[Qubit]):
         self.qubits: dict[int, Qubit] = {qubit.id: qubit for qubit in qubits}
+        self.gates: dict[qgate.Gates, qgate.QGate] = qgate.COMMON_GATES # TODO: Let this be custom
         self.allocated: set[int] = set()
 
     def _available(self) -> set[int]:
@@ -28,8 +31,27 @@ class QuantumDevice:
     def n_available_qubits(self) -> int:
         return len(self.qubits) - len(self.allocated)
 
+    def _update_qubit(self, qubit_id: int, new_state: qstate.QState):        
+        if qubit_id not in self.qubits.keys():
+            raise ValueError("Attempting Update on Foriegn Qubit")
+        if qubit_id not in self.allocated:
+            return ValueError("Attempting to Update Unallocated Qubit")
+
+        self.qubits[qubit_id].state = new_state
+
+    def prepare_qubit(self, qubit: Qubit, gates: list[qgate.QGate]) -> Qubit:
+        gate = functools.reduce(qgate.compose_gates, gates)
+        state = gate @ qubit.state
+        self._update_qubit(qubit.ref_id, state)
+        return Qubit(qubit.ref_id, state)
+
+    def measure_qubit(self, qubit: Qubit, basis: qstate.QBasis) -> qstate.QState:
+        state = qstate.collapse(basis, qubit.state)
+        self._update_qubit(qubit.ref_id, state)
+        return state
+    
     def _n_alloc(self, n: int) -> list[Qubit]:
-        assert n <= self.n_available_qubits()
+        assert n <= self.n_available_qubits() # TODO: Don't use asserts like this!
 
         selection: list[int] = list(self._available())[:n]
         qubits: list[Qubit] = [self.qubits[i] for i in selection]
@@ -51,7 +73,6 @@ class QuantumDevice:
         finally:
             for q in qubits:
                 self._dealloc(q)
-        
 
     @contextlib.contextmanager
     def alloc_single(self) -> typing.Iterator[Qubit]:
