@@ -43,10 +43,10 @@ class TestQuantumState(unittest.TestCase):
             qstate.QState(vector.Vector((h, -h))),  # key minus
         ]
         target_vectors = [
-            Vector((1.0, 0.0)),
-            Vector((0.0, 1.0)),
-            Vector((0.5, 0.5)),
-            Vector((0.5, 0.5)),
+            vector.Vector((1.0, 0.0)),
+            vector.Vector((0.0, 1.0)),
+            vector.Vector((0.5, 0.5)),
+            vector.Vector((0.5, 0.5)),
         ]
         z_basis = qstate.Z_BASIS
         for psi, target in zip(quantum_states, target_vectors):
