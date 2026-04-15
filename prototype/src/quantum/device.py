@@ -6,20 +6,20 @@ import quantum.gate as qgate
 
 @dcls.dataclass
 class Qubit:
-    id: int = 0
-    state: qstate.QState = qstate.KET0
+    _id: int = 0
+    _state: qstate.QState = qstate.KET0
 
     @property
     def ref_id(self) -> int:
-        return self.id
+        return self._id
 
     def __repr__(self) -> str:
-        return f"SimQubit({self.id}, {self.state})"
+        return f"SimQubit({self._id}, {self._state})"
 
 
 class QuantumDevice:
     def __init__(self, qubits: list[Qubit]):
-        self.qubits: dict[int, Qubit] = {qubit.id: qubit for qubit in qubits}
+        self.qubits: dict[int, Qubit] = {qubit.ref_id: qubit for qubit in qubits}
         self.allocated: set[int] = set()
 
     def _available(self) -> set[int]:
@@ -38,13 +38,13 @@ class QuantumDevice:
         self.qubits[qubit.ref_id] = qubit
 
     def prepare_single_qubit(self, qubit: Qubit, gate: qgate.QGate) -> Qubit:
-        qubit = Qubit(qubit.ref_id, qgate.apply_gate(gate, qubit.state))
+        qubit = Qubit(qubit.ref_id, qgate.apply_gate(gate, qubit._state))
         self._update_qubit_register(qubit)
         return qubit
 
     
     def measure_single_qubit(self, qubit: Qubit, basis: qstate.QBasis) -> qstate.QState:
-        state = qstate.collapse(basis, qubit.state)
+        state = qstate.collapse(basis, qubit._state)
         self._update_qubit_register(Qubit(qubit.ref_id, state))
         return state
 

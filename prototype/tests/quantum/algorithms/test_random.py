@@ -6,10 +6,6 @@ import quantum.algorithms.random as random
 
 
 class MockQubit(qdev.Qubit):
-    def __init__(self, id: int, state: qstate.QState):
-        self._id = id
-        self._state = state
-
     @property
     def ref_id(self) -> int:
         return self._id
@@ -28,11 +24,11 @@ class MockDevice(qdev.QuantumDevice):
         super().__init__(qubits)
 
     def prepare_single_qubit(self, qubit: qdev.Qubit, gate: qgate.QGate) -> qdev.Qubit:
-        new_state = qgate.apply_gate(gate, qubit.state)
+        new_state = qgate.apply_gate(gate, qubit._state)
         return MockQubit(qubit.ref_id, new_state)
 
     def measure_single_qubit(self, qubit: qdev.Qubit, basis: qstate.QBasis) -> qstate.QState:
-        collapsed = qstate.collapse(basis, qubit.state)
+        collapsed = qstate.collapse(basis, qubit._state)
         return collapsed
 
 
