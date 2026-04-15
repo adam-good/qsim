@@ -26,7 +26,7 @@ class QuantumDevice:
         return self.qubits.keys() - self.allocated
 
     def n_available_qubits(self) -> int:
-        return len(self.qubits) - len(self.allocated)
+        return len(self._available())
 
     # TODO: Need to design a way for this to be called whenever we update qubits
     def _update_qubit_register(self, qubit: Qubit):
