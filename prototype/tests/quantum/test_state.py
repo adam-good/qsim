@@ -1,9 +1,8 @@
 import unittest
 import math
 import random
+import utils.math.vector as vector
 import quantum.state as qstate
-from utils.math.vector import Vector
-
 
 HADAMARD_CONST = qstate.HADAMARD_CONST
 
