@@ -6,64 +6,41 @@ import quantum.algorithms.random as random
 
 
 class MockQubit(qdev.Qubit):
-    def __init__(self, id: int, state: qstate.QState):
-        self._id = id
-        self._state = state
-
     @property
     def ref_id(self) -> int:
         return self._id
 
-    def measure(
-        self, basis: tuple[qstate.QState, qstate.QState]
-    ) -> tuple[qdev.Qubit, qstate.QState]:
-        collapsed = qstate.collapse(basis, self._state)
-        return (MockQubit(self._id, collapsed), collapsed)
+    @property
+    def state(self) -> qstate.QState:
+        return self._state
 
-    def reset(self) -> qdev.Qubit:
-        return MockQubit(self._id, qstate.KET0)
-
-    def hadamard(self) -> qdev.Qubit:
-        new_state = qgate.hadamard(self._state)
-        return MockQubit(self._id, new_state)
-
-    def negate(self) -> qdev.Qubit:
-        new_state = qgate.negate(self._state)
-        return MockQubit(self._id, new_state)
+    def __repr__(self) -> str:
+        return f"MockQubit({self._id}, {self._state})"
 
 
 class MockDevice(qdev.QuantumDevice):
     def __init__(self, n_qubits: int):
-        self._qubits = [MockQubit(i, qstate.KET0) for i in range(n_qubits)]
-        self._allocated: set[int] = set()
+        qubits = [MockQubit(i, qstate.KET0) for i in range(n_qubits)]
+        super().__init__(qubits)
 
-    def n_available_qubits(self) -> int:
-        return len(self._qubits) - len(self._allocated)
+    def prepare_single_qubit(self, qubit: qdev.Qubit, gate: qgate.QGate) -> qdev.Qubit:
+        new_state = qgate.apply_gate(gate, qubit._state)
+        return MockQubit(qubit.ref_id, new_state)
 
-    def _alloc(self) -> qdev.Qubit:
-        available = set(range(len(self._qubits))) - self._allocated
-        qubit_id = min(available)
-        self._allocated.add(qubit_id)
-        return self._qubits[qubit_id]
-
-    def _n_alloc(self, n: int) -> list[qdev.Qubit]:
-        available = sorted(set(range(len(self._qubits))) - self._allocated)
-        selected = available[:n]
-        for i in selected:
-            self._allocated.add(i)
-        return [self._qubits[i] for i in selected]
-
-    def _dealloc(self, qubit: qdev.Qubit):
-        self._allocated.remove(qubit.ref_id)
+    def measure_single_qubit(
+        self, qubit: qdev.Qubit, basis: qstate.QBasis
+    ) -> qstate.QState:
+        collapsed = qstate.collapse(basis, qubit._state)
+        return collapsed
 
 
 class TestQRNG(unittest.TestCase):
-    def test_qubit_to_bit_ket0(self):
-        result = random._qubit_to_bit(qstate.KET0)
+    def test_qstate_to_bit_ket0(self):
+        result = random._qstate_to_bit(qstate.KET0)
         self.assertEqual(result, 0)
 
-    def test_qubit_to_bit_ket1(self):
-        result = random._qubit_to_bit(qstate.KET1)
+    def test_qstate_to_bit_ket1(self):
+        result = random._qstate_to_bit(qstate.KET1)
         self.assertEqual(result, 1)
 
     def test_batch_random_bits(self):
