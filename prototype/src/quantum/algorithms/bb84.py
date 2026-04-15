@@ -1,6 +1,7 @@
 import time
 import utils.channel as chnl
 import quantum.state as qst
+import quantum.gate as qgt
 import quantum.device as qdev
 import quantum.algorithms.random as qrand
 
@@ -21,16 +22,17 @@ DEFAULT_VAL_MAP: dict[qst.QState, int] = {
 def _bb84_encode(
     device: qdev.QuantumDevice, val: int, basis_key: int
 ) -> tuple[qdev.Qubit, int]:
-    with device.alloc() as qubit:
+    with device.alloc_single() as qubit:
         match (basis_key, val):
             case (0, 0):
                 qubit = qubit  # KET0
             case (0, 1):
-                qubit = qubit.negate()  # KET1
+                qubit = device.prepare_single_qubit(qubit, qgt.X_GATE)  # KET1
             case (1, 0):
-                qubit = qubit.hadamard()  # KET PLUS
+                qubit = device.prepare_single_qubit(qubit, qgt.H_GATE)  # KET PLUS
             case (1, 1):
-                qubit = qubit.negate().hadamard()  # KET MINUS
+                gate = qgt.compose_gates([qgt.H_GATE, qgt.X_GATE])
+                qubit = device.prepare_single_qubit(qubit, gate) # KET MINUS
         return (device.pop_qubit(qubit), basis_key)
 
 
@@ -42,7 +44,7 @@ def _bb84_decode(
     value_map: dict[qst.QState, int] = DEFAULT_VAL_MAP,
 ) -> tuple[int, int]:
     basis = basis_map[basis_key]
-    qubit, state = qubit.measure(basis)
+    state = device.measure_single_qubit(qubit, basis)
     val = value_map[state]
     return (val, basis_key)
 
