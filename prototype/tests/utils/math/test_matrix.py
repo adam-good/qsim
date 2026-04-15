@@ -1,5 +1,6 @@
 import unittest
-from utils.math.matrix import Matrix
+import math
+from utils.math.matrix import Matrix, shape, row_vectors, col_vectors, transpose, is_square, is_unitary
 from utils.math.vector import Vector
 
 
@@ -57,7 +58,7 @@ class TestMatrixArithmetic(unittest.TestCase):
         m1 = Matrix(((2, 2), (2, 2)))
         m2 = Matrix(((3, 3, 3), (3, 3, 3)))
         result = m1 @ m2
-        self.assertEqual(result.shape, (2, 3))
+        self.assertEqual(shape(result), (2, 3))
 
     def test_matmul_vector_shape_mismatch(self):
         mat = Matrix(((2, 2), (2, 2)))
@@ -96,34 +97,34 @@ class TestMatrixProperties(unittest.TestCase):
     def test_matrix_row_vectors(self):
         matrix = Matrix(((1, 2), (3, 4)))
         target = (Vector((1, 2)), Vector((3, 4)))
-        result = matrix.row_vectors()
+        result = row_vectors(matrix)
         self.assertEqual(result, target)
 
     def test_matrix_col_vectors(self):
         matrix = Matrix(((1, 2), (3, 4)))
         target = (Vector((1, 3)), Vector((2, 4)))
-        result = matrix.col_vectors()
+        result = col_vectors(matrix)
         self.assertEqual(result, target)
 
     def test_matrix_transpose(self):
         matrix = Matrix(((1, 2, 3), (4, 5, 6)))
         target = Matrix(((1, 4), (2, 5), (3, 6)))
-        result = matrix.transpose()
+        result = transpose(matrix)
         self.assertEqual(result, target)
 
     def test_matrix_is_square(self):
         matrix = Matrix(((1, 2), (3, 4)))
-        self.assertTrue(matrix.is_square())
+        self.assertTrue(is_square(matrix))
 
         matrix = Matrix(((1, 2, 3), (4, 5, 6)))
-        self.assertFalse(matrix.is_square())
+        self.assertFalse(is_square(matrix))
 
     def test_matrix_is_unitary(self):
         matrix = Matrix(((1, 0), (0, 1)))
-        self.assertTrue(matrix.is_unitary())
+        self.assertTrue(is_unitary(matrix))
 
         matrix = Matrix(((1, 1), (1, -1)))
-        self.assertFalse(matrix.is_unitary())
+        self.assertFalse(is_unitary(matrix))
 
 
 if __name__ == "__main__":
