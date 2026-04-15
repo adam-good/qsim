@@ -6,13 +6,15 @@ import quantum.gate as qgate
 class TestGates(unittest.TestCase):
     def test_h_gate(self):
         psi = qstate.KET0
-        result = qgate.hgate(psi)
+        gate = qgate.H_GATE
+        result = qgate.apply_gate(gate, psi)
         target = qstate.KETPLUS
         self.assertEqual(result, target)
 
     def test_x_gate(self):
         psi = qstate.KET0
-        result = qgate.xgate(psi)
+        gate = qgate.X_GATE
+        result = qgate.apply_gate(gate, psi)
         target = qstate.KET1
         self.assertEqual(result, target)
 
