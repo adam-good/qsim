@@ -28,7 +28,6 @@ KET0: QState = QState(vector.Vector((1.0, 0.0)))
 KET1: QState = QState(vector.Vector((0.0, 1.0)))
 KETPLUS: QState = QState(vector.Vector((1, 1)) * HADAMARD_CONST)
 KETMINUS: QState = QState(vector.Vector((1, -1)) * HADAMARD_CONST)
->>>>>>> main
 Z_BASIS: QBasis = QBasis((KET0, KET1))
 X_BASIS: QBasis = QBasis((KETPLUS, KETMINUS))
 
