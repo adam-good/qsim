@@ -29,7 +29,7 @@ class QGate:
 
 
 class Gates(enum.Enum):
-    I = enum.auto()
+    I = enum.auto() # noqa: E741
     H = enum.auto()
     X = enum.auto()
 
