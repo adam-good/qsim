@@ -1,23 +1,34 @@
-from typing import NewType
+import typing
+import dataclasses
 import math
 import random
 import utils.math.scalar as scalar
 import utils.math.vector as vector
 import utils.math.helper_funcs as helper
 
-QState = NewType("QState", vector.Vector)
-QBasis = NewType("QBasis", tuple[QState, QState])
+@dataclasses.dataclass(frozen=True)
+class QState:
+    vector: vector.Vector
+
+    def __post_init__(self):
+        if not vector.validate_born_rule(self.vector):
+            raise ValueError("Quantum State Breaks Born's Rule")
+
+    def __getitem__(self, i: int) -> scalar.Scalar:
+        return self.vector.__getitem__(i)
+
+    def __repr__(self):
+        return f"\u007c{self.vector}\u27e9"
 
 
-def qstate(data: tuple[scalar.Scalar, scalar.Scalar]) -> QState:
-    return QState(vector.Vector(data))
+QBasis = typing.NewType("QBasis", tuple[QState, QState])
 
-
-hadamard_constant: scalar.Scalar = 1.0 / math.sqrt(2)
-KET0: QState = qstate((1.0, 0.0))
-KET1: QState = qstate((0.0, 1.0))
-KETPLUS: QState = qstate((hadamard_constant, hadamard_constant))
-KETMINUS: QState = qstate((hadamard_constant, -hadamard_constant))
+HADAMARD_CONST: scalar.Scalar = 1.0 / math.sqrt(2)
+KET0: QState = QState(vector.Vector((1.0, 0.0)))
+KET1: QState = QState(vector.Vector((0.0, 1.0)))
+KETPLUS: QState = QState(vector.Vector((1, 1)) * HADAMARD_CONST)
+KETMINUS: QState = QState(vector.Vector((1, -1)) * HADAMARD_CONST)
+>>>>>>> main
 Z_BASIS: QBasis = QBasis((KET0, KET1))
 X_BASIS: QBasis = QBasis((KETPLUS, KETMINUS))
 
@@ -35,7 +46,7 @@ def as_tuple(psi: QState) -> tuple[scalar.Scalar, scalar.Scalar]:
 
 
 def is_valid(psi: QState) -> bool:
-    return math.isclose(x(psi) ** 2 + y(psi) ** 2, 1.0)
+    return vector.validate_born_rule(psi.vector)
 
 
 def angle(psi: QState) -> scalar.Scalar:
@@ -52,7 +63,7 @@ def bloch_vector(psi: QState) -> vector.Vector:
 
 
 def amplitude(measurement: QState, state: QState) -> scalar.Scalar:
-    return vector.dotprod(measurement, state)
+    return vector.dotprod(measurement.vector, state.vector)
 
 
 def probability(measurement: QState, state: QState) -> scalar.Scalar:
@@ -60,16 +71,12 @@ def probability(measurement: QState, state: QState) -> scalar.Scalar:
 
 
 # NOTE: This can be made more efficient later
-def probability_distribution(
-    basis: tuple[QState, QState], state: QState
-) -> vector.Vector:
+def probability_distribution(basis: QBasis, state: QState) -> vector.Vector:
     probs = tuple(probability(m, state) for m in basis)
     return vector.Vector(probs)
 
 
-def collapse(
-    basis: tuple[QState, QState], psi: QState, rng: random.Random | None = None
-) -> QState:
+def collapse(basis: QBasis, psi: QState, rng: random.Random | None = None) -> QState:
     if rng is None:
         rng = random.Random()
     probabilities: vector.Vector = probability_distribution(basis, psi)

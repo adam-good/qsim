@@ -1,12 +1,13 @@
-from quantum.algorithms.random import generate_random_bits
-import quantum.simulation as qsim
+import quantum.algorithms.random as qrand
+import quantum.device as qdev
+
 
 
 def main():
     n_qubits = 4
-    qubits = [qsim.SimQubit(ref_id) for ref_id in range(n_qubits)]
-    device = qsim.SimDevice(qubits)
-    result = generate_random_bits(16, device)
+    qubits = [qdev.Qubit(ref_id) for ref_id in range(n_qubits)]
+    device = qdev.QuantumDevice(qubits)
+    result = qrand.generate_random_bits(16, device)
     print(result)
 
 

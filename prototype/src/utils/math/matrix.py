@@ -9,49 +9,6 @@ import utils.math.vector as vector
 class Matrix:
     raw_data: Tuple[Tuple[scalar.Scalar, ...], ...]
 
-    @property
-    def n_rows(self) -> int:
-        return len(self.raw_data) if self.raw_data else 0
-
-    @property
-    def n_cols(self) -> int:
-        return len(self.raw_data[0]) if self.raw_data else 0
-
-    @property
-    def shape(self) -> Tuple[int, int]:
-        return (self.n_rows, self.n_cols)
-
-    def col_vectors(self) -> Tuple[vector.Vector, ...]:
-        return tuple(
-            vector.Vector(c)
-            for c in zip(*self.raw_data)  # This acts as the transpose
-        )
-
-    def row_vectors(self) -> Tuple[vector.Vector, ...]:
-        return tuple(vector.Vector(r) for r in self.raw_data)
-
-    def transpose(self) -> Matrix:
-        return Matrix(tuple(zip(*self.raw_data)))
-
-    def is_square(self) -> bool:
-        return self.n_rows == self.n_cols
-
-    def is_unitary(self) -> bool:
-        if not self.is_square():
-            return False
-        identity = Matrix.identity(self.n_rows)
-        transpose = self.transpose()  # TODO: This needs to be the conjugate transpose
-        return self @ transpose == identity and transpose @ self == identity
-
-    @staticmethod
-    def identity(size: int) -> Matrix:
-        return Matrix(
-            tuple(tuple(1 if i == j else 0 for i in range(size)) for j in range(size))
-        )
-
-    def _flatten(self) -> Tuple[scalar.Scalar, ...]:
-        return tuple(x for row in self.raw_data for x in row)
-
     def __add__(self, other: Matrix) -> Matrix:
         if not isinstance(other, Matrix):
             return NotImplemented
@@ -85,6 +42,10 @@ class Matrix:
             return NotImplemented
         return Matrix(tuple(tuple(a / other for a in row) for row in self.raw_data))
 
+    @overload
+    def __matmul__(self, other: Matrix) -> Matrix: ...
+    @overload
+    def __matmul__(self, other: vector.Vector) -> vector.Vector: ...
     # TODO: Clean this up
     @overload
     def __matmul__(self, other: Matrix) -> Matrix: ...
@@ -92,28 +53,75 @@ class Matrix:
     def __matmul__(self, other: vector.Vector) -> vector.Vector: ...
     def __matmul__(self, other: Matrix | vector.Vector) -> Matrix | vector.Vector:
         if isinstance(other, Matrix):
-            if self.n_cols != other.n_rows:
+            if n_cols(self) != n_rows(other):
                 raise ValueError("Matrix matmul incompatible shapes")
             return Matrix(
                 tuple(
-                    tuple(vector.dotprod(w, v) for v in other.col_vectors())
-                    for w in self.row_vectors()
+                    tuple(vector.dotprod(w, v) for v in col_vectors(other))
+                    for w in row_vectors(self)
                 )
             )
         elif isinstance(other, vector.Vector):
-            if self.n_cols != len(other):
+            if n_cols(self) != len(other):
                 raise ValueError("Matrix-vector matmul incompatible sizes")
             return vector.Vector(
-                tuple(vector.dotprod(row, other) for row in self.row_vectors())
+                tuple(vector.dotprod(row, other) for row in row_vectors(self))
             )
         return NotImplemented
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Matrix):
             return NotImplemented
-        return all(
-            math.isclose(a, b) for a, b in zip(self._flatten(), other._flatten())
-        )
+        return all(math.isclose(a, b) for a, b in zip(flatten(self), flatten(other)))
 
     def __repr__(self):
         return f"{self.raw_data}"
+
+
+def row_vectors(m: Matrix) -> Tuple[vector.Vector, ...]:
+    return tuple(vector.Vector(r) for r in m.raw_data)
+
+
+def col_vectors(m: Matrix) -> Tuple[vector.Vector, ...]:
+    return tuple(
+        vector.Vector(c)
+        for c in zip(*m.raw_data)  # This acts as the transpose
+    )
+
+
+def flatten(m: Matrix) -> Tuple[scalar.Scalar, ...]:
+    return tuple(x for row in m.raw_data for x in row)
+
+
+def n_rows(m: Matrix) -> int:
+    return len(m.raw_data) if m.raw_data else 0
+
+
+def n_cols(m: Matrix) -> int:
+    return len(m.raw_data[0]) if m.raw_data else 0
+
+
+def shape(m: Matrix) -> Tuple[int, int]:
+    return (n_rows(m), n_cols(m))
+
+
+def identity(size: int) -> Matrix:
+    return Matrix(
+        tuple(tuple(1 if i == j else 0 for i in range(size)) for j in range(size))
+    )
+
+
+def transpose(m: Matrix) -> Matrix:
+    return Matrix(tuple(zip(*m.raw_data)))
+
+
+def is_square(m: Matrix) -> bool:
+    return n_rows(m) == n_cols(m)
+
+
+def is_unitary(m: Matrix) -> bool:
+    if not is_square(m):
+        return False
+    identity_matrix = identity(n_rows(m))
+    m_transpose = transpose(m)  # TODO: This needs to be the conjugate transpose
+    return m @ m_transpose == identity_matrix and m_transpose @ m == identity_matrix

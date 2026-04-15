@@ -1,18 +1,38 @@
+import quantum.gate as qgate
 import quantum.device as qdev
 import quantum.state as qstate
 
 
-def _qubit_to_bit(state: qstate.QState) -> int:
+def _qstate_to_bit(state: qstate.QState) -> int:
     return 0 if state == qstate.KET0 else 1
 
 
-def _batch_random_bits(n: int, device: qdev.QuantumDevice) -> list[int]:
-    assert n <= device.n_available_qubits()
+def _qstates_to_bits(states: list[qstate.QState]) -> list[int]:
+    return [_qstate_to_bit(state) for state in states]
 
-    with device.n_alloc(n) as qubits:
-        measurements = [qubit.hadamard().measure(qstate.Z_BASIS) for qubit in qubits]
-        bits = [_qubit_to_bit(state) for _,state in measurements]
-    return bits
+
+def _prepare_qubits(
+    qubits: list[qdev.Qubit], device: qdev.QuantumDevice
+) -> list[qdev.Qubit]:
+    return device.prepare_qubits(qubits, qgate.H_GATE)
+
+
+def _measure_qubits(
+    qubits: list[qdev.Qubit], device: qdev.QuantumDevice
+) -> list[qstate.QState]:
+    return device.measure_qubits(qubits, qstate.Z_BASIS)
+
+
+def _batch_random_bits(n: int, device: qdev.QuantumDevice) -> list[int]:
+    if not (n <= device.n_available_qubits()):
+        raise ValueError(f"Qubit Alloc Overflow: {n} > {device.n_available_qubits()}")
+
+    with device.alloc(n) as qubits:
+        prepared_qubits: list[qdev.Qubit] = _prepare_qubits(qubits, device)
+        measured_states: list[qstate.QState] = _measure_qubits(prepared_qubits, device)
+        bits: list[int] = [_qstate_to_bit(state) for state in measured_states]
+        return bits
+
 
 def generate_random_bits(
     n: int,

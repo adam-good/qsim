@@ -1,86 +1,91 @@
-from contextlib import contextmanager
-from typing import Iterator
-from abc import ABCMeta, abstractmethod
+import contextlib
+import typing
+import dataclasses as dcls
 import quantum.state as qstate
+import quantum.gate as qgate
 
 # TODO: Implement Device Transfer of Qubit Ownership
 
 
-class Qubit(metaclass=ABCMeta):
+@dcls.dataclass
+class Qubit:
+    _id: int = 0
+    _state: qstate.QState = qstate.KET0
+
     @property
-    @abstractmethod
     def ref_id(self) -> int:
-        pass
+        return self._id
 
-    @abstractmethod
-    def copy(self) -> Qubit:
-        pass
-
-    @abstractmethod
-    def measure(
-        self, basis: tuple[qstate.QState, qstate.QState]
-    ) -> tuple[Qubit, qstate.QState]:
-        pass
-
-    @abstractmethod
-    def reset(self) -> Qubit:
-        pass
-
-    @abstractmethod
-    def hadamard(self) -> Qubit:
-        pass
-
-    @abstractmethod
-    def negate(self) -> Qubit:
-        pass
+    def __repr__(self) -> str:
+        return f"SimQubit({self._id}, {self._state})"
 
 
-class QuantumDevice(metaclass=ABCMeta):
-    @abstractmethod
+class QuantumDevice:
+    def __init__(self, qubits: list[Qubit]):
+        self.qubits: dict[int, Qubit] = {qubit.ref_id: qubit for qubit in qubits}
+        self.allocated: set[int] = set()
+
+    def _available(self) -> set[int]:
+        return self.qubits.keys() - self.allocated
+
     def n_available_qubits(self) -> int:
-        pass
+        return len(self._available())
 
-    @abstractmethod
-    def copy(self, qubit: Qubit) -> Qubit:
-        pass
+    # TODO: Need to design a way for this to be called whenever we update qubits
+    def _update_qubit_register(self, qubit: Qubit):
+        if qubit.ref_id not in self.qubits.keys():
+            raise ValueError("Attempting Update on Foriegn Qubit")
+        if qubit.ref_id not in self.allocated:
+            raise ValueError("Attempting to Update Unallocated Qubit")
 
-    @abstractmethod
-    def pop_qubit(self, qubit: Qubit) -> Qubit:
-        pass
+        self.qubits[qubit.ref_id] = qubit
 
-    @abstractmethod
-    def push_qubit(self, qubit: Qubit):
-        pass
+    def prepare_single_qubit(self, qubit: Qubit, gate: qgate.QGate) -> Qubit:
+        qubit = Qubit(qubit.ref_id, qgate.apply_gate(gate, qubit._state))
+        self._update_qubit_register(qubit)
+        return qubit
 
-    @abstractmethod
-    def transfer(self, device: QuantumDevice, qubit: Qubit):
-        pass
+    def measure_single_qubit(self, qubit: Qubit, basis: qstate.QBasis) -> qstate.QState:
+        state = qstate.collapse(basis, qubit._state)
+        self._update_qubit_register(Qubit(qubit.ref_id, state))
+        return state
 
-    @abstractmethod
-    def _alloc(self) -> Qubit:
-        pass
+    def prepare_qubits(self, qubits: list[Qubit], gate: qgate.QGate) -> list[Qubit]:
+        return [self.prepare_single_qubit(qubit, gate) for qubit in qubits]
 
-    @abstractmethod
+    def measure_qubits(
+        self, qubits: list[Qubit], basis: qstate.QBasis
+    ) -> list[qstate.QState]:
+        return [self.measure_single_qubit(qubit, basis) for qubit in qubits]
+
     def _n_alloc(self, n: int) -> list[Qubit]:
-        pass
+        assert n <= self.n_available_qubits()  # TODO: Don't use asserts like this!
 
-    @abstractmethod
+        selection: list[int] = list(self._available())[:n]
+        qubits: list[Qubit] = [self.qubits[i] for i in selection]
+        self.allocated.update(selection)
+        return qubits
+
+    def _alloc(self) -> Qubit:
+        return self._n_alloc(1)[0]
+
     def _dealloc(self, qubit: Qubit):
-        pass
+        self.allocated.remove(qubit.ref_id)
+        self.qubits[qubit.ref_id] = qubit
 
-    @contextmanager
-    def alloc(self) -> Iterator[Qubit]:
-        qubit = self._alloc()
-        try:
-            yield qubit
-        finally:
-            self._dealloc(qubit.reset())
-
-    @contextmanager
-    def n_alloc(self, n: int) -> Iterator[list[Qubit]]:
+    @contextlib.contextmanager
+    def alloc(self, n: int) -> typing.Iterator[list[Qubit]]:
         qubits = self._n_alloc(n)
         try:
             yield qubits
         finally:
-            for qubit in qubits:
-                self._dealloc(qubit.reset())
+            for q in qubits:
+                self._dealloc(q)
+
+    @contextlib.contextmanager
+    def alloc_single(self) -> typing.Iterator[Qubit]:
+        qubit = self._alloc()
+        try:
+            yield qubit
+        finally:
+            self._dealloc(qubit)
