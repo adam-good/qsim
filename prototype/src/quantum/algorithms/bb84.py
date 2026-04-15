@@ -9,13 +9,14 @@ import quantum.algorithms.random as qrand
 # TODO: Privacy Amplification Algorithms???
 # TODO: Add Unit Tests!!!
 
-DEFAULT_BASIS_MAP: dict[int, qst.QBasis] = {0:qst.Z_BASIS, 1:qst.X_BASIS}
+DEFAULT_BASIS_MAP: dict[int, qst.QBasis] = {0: qst.Z_BASIS, 1: qst.X_BASIS}
 DEFAULT_VAL_MAP: dict[qst.QState, int] = {
-    qst.KET0:0,
-    qst.KET1:1,
-    qst.KETPLUS:0,
-    qst.KETMINUS:1
+    qst.KET0: 0,
+    qst.KET1: 1,
+    qst.KETPLUS: 0,
+    qst.KETMINUS: 1,
 }
+
 
 def _bb84_encode(
     device: qdev.QuantumDevice, val: int, basis_key: int
@@ -38,12 +39,13 @@ def _bb84_decode(
     qubit: qdev.Qubit,
     basis_key: int,
     basis_map: dict[int, qst.QBasis] = DEFAULT_BASIS_MAP,
-    value_map: dict[qst.QState, int] = DEFAULT_VAL_MAP
+    value_map: dict[qst.QState, int] = DEFAULT_VAL_MAP,
 ) -> tuple[int, int]:
     basis = basis_map[basis_key]
     qubit, state = qubit.measure(basis)
     val = value_map[state]
     return (val, basis_key)
+
 
 def bb84_send(
     device: qdev.QuantumDevice,

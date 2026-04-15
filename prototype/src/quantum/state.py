@@ -6,6 +6,7 @@ import utils.math.scalar as scalar
 import utils.math.vector as vector
 import utils.math.helper_funcs as helper
 
+
 @dataclasses.dataclass(frozen=True)
 class QState:
     vector: vector.Vector
