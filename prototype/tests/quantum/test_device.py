@@ -1,5 +1,4 @@
 import unittest
-import quantum.state as qstate
 import quantum.device as qdev
 
 
