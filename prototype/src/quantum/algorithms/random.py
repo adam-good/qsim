@@ -16,7 +16,8 @@ def _measure_qubits(qubits: list[qdev.Qubit], device: qdev.QuantumDevice) -> lis
     return device.measure_qubits(qubits, qstate.Z_BASIS)
 
 def _batch_random_bits(n: int, device: qdev.QuantumDevice) -> list[int]:
-    assert n <= device.n_available_qubits() # TODO: Don't use asserts like this!
+    if not (n <= device.n_available_qubits()):
+        raise ValueError(f"Qubit Alloc Overflow: {n} > {device.n_available_qubits()}")
 
     with device.alloc(n) as qubits:
         prepared_qubits: list[qdev.Qubit] = _prepare_qubits(qubits, device)
