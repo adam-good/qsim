@@ -29,16 +29,19 @@ class QGate:
 
 
 class Gates(enum.Enum):
-    H = 0
-    X = 1
+    I = enum.auto()
+    H = enum.auto()
+    X = enum.auto()
 
-
+_identity_matrix = matrix.identity(2)
 _hadamard_matrix = matrix.Matrix(((1, 1), (1, -1))) * qst.HADAMARD_CONST
 _negate_matrix = matrix.Matrix(((0, 1), (1, 0)))
 
+I_GATE = QGate(_identity_matrix)
 H_GATE = QGate(_hadamard_matrix)
 X_GATE = QGate(_negate_matrix)
 COMMON_GATES: dict[Gates, QGate] = {
+    Gates.I: I_GATE,
     Gates.H: H_GATE,
     Gates.X: X_GATE,
 }
