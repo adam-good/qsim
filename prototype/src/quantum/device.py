@@ -42,6 +42,12 @@ class QuantumDevice:
         assert id(x) == id(qubit)
         return x
 
+    def push_qubit(self, qubit: Qubit):
+        if qubit.ref_id in self.qubits.keys():
+            raise ValueError(f"Attempting to Push Local Qubit: {qubit.ref_id}")
+        self.qubits[qubit.ref_id] = qubit
+        self.allocated.add(qubit.ref_id)
+
     # TODO: Need to design a way for this to be called whenever we update qubits
     def _update_qubit_register(self, qubit: Qubit):
         if qubit.ref_id not in self.qubits.keys():
@@ -81,6 +87,8 @@ class QuantumDevice:
         return self._n_alloc(1)[0]
 
     def _dealloc(self, qubit: Qubit):
+        if qubit.ref_id not in self.qubits.keys():
+            return # Hope it got transferred. Otherwise this is gonna be a bug
         self.allocated.remove(qubit.ref_id)
         self.qubits[qubit.ref_id] = qubit
 
