@@ -33,7 +33,7 @@ class QuantumDevice:
         if qubit.ref_id not in self.qubits.keys():
             raise ValueError("Attempting Update on Foriegn Qubit")
         if qubit.ref_id not in self.allocated:
-            return ValueError("Attempting to Update Unallocated Qubit")
+            raise ValueError("Attempting to Update Unallocated Qubit")
 
         self.qubits[qubit.ref_id] = qubit
 
