@@ -4,6 +4,7 @@ import dataclasses as dcls
 import quantum.state as qstate
 import quantum.gate as qgate
 
+
 @dcls.dataclass
 class Qubit:
     _id: int = 0
@@ -42,7 +43,6 @@ class QuantumDevice:
         self._update_qubit_register(qubit)
         return qubit
 
-    
     def measure_single_qubit(self, qubit: Qubit, basis: qstate.QBasis) -> qstate.QState:
         state = qstate.collapse(basis, qubit._state)
         self._update_qubit_register(Qubit(qubit.ref_id, state))
@@ -51,11 +51,13 @@ class QuantumDevice:
     def prepare_qubits(self, qubits: list[Qubit], gate: qgate.QGate) -> list[Qubit]:
         return [self.prepare_single_qubit(qubit, gate) for qubit in qubits]
 
-    def measure_qubits(self, qubits: list[Qubit], basis: qstate.QBasis) -> list[qstate.QState]:
+    def measure_qubits(
+        self, qubits: list[Qubit], basis: qstate.QBasis
+    ) -> list[qstate.QState]:
         return [self.measure_single_qubit(qubit, basis) for qubit in qubits]
-    
+
     def _n_alloc(self, n: int) -> list[Qubit]:
-        assert n <= self.n_available_qubits() # TODO: Don't use asserts like this!
+        assert n <= self.n_available_qubits()  # TODO: Don't use asserts like this!
 
         selection: list[int] = list(self._available())[:n]
         qubits: list[Qubit] = [self.qubits[i] for i in selection]

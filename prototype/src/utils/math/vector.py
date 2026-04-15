@@ -54,5 +54,6 @@ class Vector:
 def dotprod(w: Vector, v: Vector) -> scalar.Scalar:
     return sum(a * b for a, b in zip(w, v))
 
+
 def validate_born_rule(w: Vector) -> bool:
-    return math.isclose( sum(x**2 for x in w), 1.0 )
+    return math.isclose(sum(x**2 for x in w), 1.0)

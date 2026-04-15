@@ -6,14 +6,22 @@ import quantum.state as qstate
 def _qstate_to_bit(state: qstate.QState) -> int:
     return 0 if state == qstate.KET0 else 1
 
+
 def _qstates_to_bits(states: list[qstate.QState]) -> list[int]:
     return [_qstate_to_bit(state) for state in states]
 
-def _prepare_qubits(qubits: list[qdev.Qubit], device: qdev.QuantumDevice) -> list[qdev.Qubit]:
+
+def _prepare_qubits(
+    qubits: list[qdev.Qubit], device: qdev.QuantumDevice
+) -> list[qdev.Qubit]:
     return device.prepare_qubits(qubits, qgate.H_GATE)
 
-def _measure_qubits(qubits: list[qdev.Qubit], device: qdev.QuantumDevice) -> list[qstate.QState]:
+
+def _measure_qubits(
+    qubits: list[qdev.Qubit], device: qdev.QuantumDevice
+) -> list[qstate.QState]:
     return device.measure_qubits(qubits, qstate.Z_BASIS)
+
 
 def _batch_random_bits(n: int, device: qdev.QuantumDevice) -> list[int]:
     if not (n <= device.n_available_qubits()):

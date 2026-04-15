@@ -47,6 +47,7 @@ COMMON_GATES: dict[Gates, QGate] = {
 def apply_gate(gate: QGate, psi: qst.QState) -> qst.QState:
     return qst.QState(gate.matrix @ psi.vector)
 
+
 def compose_gates(gates: list[QGate]) -> QGate:
     def _compose_gates(g1: QGate, g2: QGate) -> QGate:
         return QGate(g1.matrix @ g2.matrix)

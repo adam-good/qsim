@@ -10,7 +10,7 @@ def main():
     custom_state = qstate.QState(state_vector)
 
     # Collapse (such as when it is measured) quantum state
-    outcome = qstate.collapse( qstate.Z_BASIS, custom_state)
+    outcome = qstate.collapse(qstate.Z_BASIS, custom_state)
     print(f"Outcome: {outcome}")
 
 

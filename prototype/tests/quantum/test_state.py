@@ -74,7 +74,9 @@ class TestQuantumState(unittest.TestCase):
     def test_quantumstate_collapse_reproducible(self):
         rng1 = random.Random(42)
         rng2 = random.Random(42)
-        superposition = qstate.QState(vector.Vector((1 / math.sqrt(2), 1 / math.sqrt(2))))
+        superposition = qstate.QState(
+            vector.Vector((1 / math.sqrt(2), 1 / math.sqrt(2)))
+        )
         results1 = [
             qstate.collapse(qstate.Z_BASIS, superposition, rng1) for _ in range(10)
         ]

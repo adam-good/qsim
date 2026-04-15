@@ -1,5 +1,7 @@
 import unittest
 import utils.math.vector as vec
+
+
 class TestVector(unittest.TestCase):
     def test_vector_add(self):
         v1 = vec.Vector((1, 2))

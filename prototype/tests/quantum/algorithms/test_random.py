@@ -27,7 +27,9 @@ class MockDevice(qdev.QuantumDevice):
         new_state = qgate.apply_gate(gate, qubit._state)
         return MockQubit(qubit.ref_id, new_state)
 
-    def measure_single_qubit(self, qubit: qdev.Qubit, basis: qstate.QBasis) -> qstate.QState:
+    def measure_single_qubit(
+        self, qubit: qdev.Qubit, basis: qstate.QBasis
+    ) -> qstate.QState:
         collapsed = qstate.collapse(basis, qubit._state)
         return collapsed
 
