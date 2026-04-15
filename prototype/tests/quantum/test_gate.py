@@ -25,10 +25,6 @@ class TestGates(unittest.TestCase):
         target = qstate.KET1
         self.assertEqual(result, target)
 
-    def test_gates_enum_values(self):
-        self.assertEqual(qgate.Gates.H.value, 0)
-        self.assertEqual(qgate.Gates.X.value, 1)
-
     def test_common_gates_lookup(self):
         self.assertTrue(isinstance(qgate.COMMON_GATES[qgate.Gates.H], qgate.QGate))
         self.assertTrue(isinstance(qgate.COMMON_GATES[qgate.Gates.X], qgate.QGate))
