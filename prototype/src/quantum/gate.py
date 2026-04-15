@@ -56,13 +56,3 @@ def compose_gates(gates: list[QGate]) -> QGate:
         return QGate(g1.matrix @ g2.matrix)
 
     return functools.reduce(_compose_gates, gates)
-
-
-def hgate(psi: qst.QState) -> qst.QState:
-    gate: QGate = COMMON_GATES[Gates.H]
-    return apply_gate(gate, psi)
-
-
-def xgate(psi: qst.QState) -> qst.QState:
-    gate: QGate = COMMON_GATES[Gates.X]
-    return apply_gate(gate, psi)
