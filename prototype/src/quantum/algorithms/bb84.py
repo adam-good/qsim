@@ -18,22 +18,20 @@ DEFAULT_VAL_MAP: dict[qst.QState, int] = {
     qst.KETMINUS: 1,
 }
 
+ENCODE_OPS: dict[tuple[int,int], qgt.QGate] = {
+    (0,0): qgt.I_GATE,
+    (0,1): qgt.X_GATE,
+    (1,0): qgt.H_GATE,
+    (1,1): qgt.compose_gates([qgt.H_GATE, qgt.X_GATE])
+}
+
 
 def _bb84_encode(
-    device: qdev.QuantumDevice, val: int, basis_key: int
+    device: qdev.QuantumDevice, qubit: qdev.Qubit, val: int, basis_key: int
 ) -> tuple[qdev.Qubit, int]:
-    with device.alloc_single() as qubit:
-        match (basis_key, val):
-            case (0, 0):
-                qubit = qubit  # KET0
-            case (0, 1):
-                qubit = device.prepare_single_qubit(qubit, qgt.X_GATE)  # KET1
-            case (1, 0):
-                qubit = device.prepare_single_qubit(qubit, qgt.H_GATE)  # KET PLUS
-            case (1, 1):
-                gate = qgt.compose_gates([qgt.H_GATE, qgt.X_GATE])
-                qubit = device.prepare_single_qubit(qubit, gate) # KET MINUS
-        return (device.pop_qubit(qubit), basis_key)
+    gate = ENCODE_OPS[(val, basis_key)]
+    qubit = device.prepare_single_qubit(qubit, gate)
+    return (device.pop_qubit(qubit), basis_key)
 
 
 def _bb84_decode(
@@ -61,9 +59,10 @@ def bb84_send(
     idx = 0
     while idx < n_bits:
         basis_key = qrand.random_bit(device)
-        qubit, local_basis_key = _bb84_encode(device, key[idx], basis_key)
-
-        chnl.send(quantum_channel, qubit)
+        with device.alloc_single() as qubit:
+            qubit, local_basis_key = _bb84_encode(device, qubit, key[idx], basis_key)
+            qubit = device.pop_qubit(qubit)
+            chnl.send(quantum_channel, qubit)
 
         remote_basis_key = chnl.recv(auth_channel)
         chnl.send(auth_channel, local_basis_key)
