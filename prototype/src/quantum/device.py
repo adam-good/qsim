@@ -31,6 +31,17 @@ class QuantumDevice:
     def n_available_qubits(self) -> int:
         return len(self._available())
 
+    def pop_qubit(self, qubit: Qubit) -> Qubit:
+        if qubit.ref_id not in self.qubits.keys():
+            raise ValueError(f"Attempting to Pop Foriegn Qubit: {qubit.ref_id}")
+        if qubit.ref_id not in self.allocated:
+            raise ValueError(f"Attempting to Pop Unallocated Qubit: {qubit.ref_id}")
+
+        self.allocated.remove(qubit.ref_id)
+        x = self.qubits.pop(qubit.ref_id)
+        assert id(x) == id(qubit)
+        return x
+
     # TODO: Need to design a way for this to be called whenever we update qubits
     def _update_qubit_register(self, qubit: Qubit):
         if qubit.ref_id not in self.qubits.keys():
