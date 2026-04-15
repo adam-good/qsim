@@ -21,7 +21,7 @@ class QGate:
     def __matmul__(self, other: qst.QState) -> qst.QState: ...  # Gate Application
     def __matmul__(self, other: QGate | qst.QState) -> QGate | qst.QState:
         if isinstance(other, QGate):
-            return compose_gates(self, other)
+            return compose_gates([self, other])
         elif isinstance(other, qst.QState):
             return apply_gate(self, other)
         else:
