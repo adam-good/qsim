@@ -118,8 +118,8 @@ class TestBit(unittest.TestCase):
         self.assertTrue(1 >= Bit(0))
     
     def test_bit_repr(self):
-        self.assertEqual(repr(Bit(0)), "Bit(value=0)")
-        self.assertEqual(repr(Bit(1)), "Bit(value=1)")
+        self.assertEqual(repr(Bit(0)), "b0)")
+        self.assertEqual(repr(Bit(1)), "b1)")
     
     def test_bit_constants(self):
         self.assertEqual(BIT_0.value, 0)
