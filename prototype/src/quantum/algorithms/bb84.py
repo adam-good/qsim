@@ -9,6 +9,7 @@ import quantum.algorithms.random as qrand
 # TODO: Expand to work in batches instead of single qubits
 # TODO: Privacy Amplification Algorithms???
 # TODO: Add Unit Tests!!!
+# TODO: Use the bit type
 
 DEFAULT_BASIS_MAP: dict[int, qst.QBasis] = {0: qst.Z_BASIS, 1: qst.X_BASIS}
 DEFAULT_VAL_MAP: dict[qst.QState, int] = {
