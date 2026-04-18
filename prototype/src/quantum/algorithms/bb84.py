@@ -14,6 +14,10 @@ class BB84Basis(enum.Enum):
     RECTLINEAR = enum.auto()
     DIAGONAL = enum.auto()
 
+class BB84Result(enum.Enum):
+    SUCCESS = True
+    FAILURE = False
+
 @dataclasses.dataclass
 class BasisBitPair:
     basis: BB84Basis
@@ -108,5 +112,5 @@ def bb84_transmit_basis(
     transmission: BB84Transmission) -> BB84BasisPair: # TODO: How should this be implemented?
     return BB84BasisPair(basis, transmission.basis)
 
-def bb84_validate(basis: BB84BasisPair) -> bool:
-    return basis.basis1 == basis.basis2
+def bb84_validate(basis: BB84BasisPair) -> BB84Result:
+    return BB84Result(basis.basis1 == basis.basis2)
