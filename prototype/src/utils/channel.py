@@ -2,23 +2,23 @@ import dataclasses
 import typing
 
 @dataclasses.dataclass
-class Channel[T]:
+class Queue[T]:
     values: tuple[T,...]
 
 
-def _new_channel[T]() -> Channel:
-    return Channel(values=())
+def _new_channel[T]() -> Queue:
+    return Queue(values=())
 
 
-def _send[T](channel: Channel[T], data: T) -> Channel[T]:
-    return Channel(
+def _send[T](channel: Queue[T], data: T) -> Queue[T]:
+    return Queue(
         values=channel.values + (data,)
     )
 
-def _recv[T](channel: Channel[T]) -> tuple[T, Channel[T]]:
+def _recv[T](channel: Queue[T]) -> tuple[T, Queue[T]]:
     return (
         channel.values[0],
-        Channel(
+        Queue(
             channel.values[1:]
         )
     )
