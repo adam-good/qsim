@@ -1,103 +1,116 @@
-import time
-import utils.channel as chnl
+import dataclasses
+import utils.math.bit as binary
 import quantum.state as qst
 import quantum.gate as qgt
 import quantum.device as qdev
-import quantum.algorithms.random as qrand
+import enum
 
 # TODO: This file needs to be made more simple
 # TODO: Expand to work in batches instead of single qubits
 # TODO: Privacy Amplification Algorithms???
 # TODO: Add Unit Tests!!!
 
-DEFAULT_BASIS_MAP: dict[int, qst.QBasis] = {0: qst.Z_BASIS, 1: qst.X_BASIS}
-DEFAULT_VAL_MAP: dict[qst.QState, int] = {
-    qst.KET0: 0,
-    qst.KET1: 1,
-    qst.KETPLUS: 0,
-    qst.KETMINUS: 1,
+class BB84Basis(enum.Enum):
+    RECTLINEAR = enum.auto()
+    DIAGONAL = enum.auto()
+
+class BB84Result(enum.Enum):
+    SUCCESS = True
+    FAILURE = False
+
+@dataclasses.dataclass
+class BasisBitPair:
+    basis: BB84Basis
+    bit: binary.Bit
+
+@dataclasses.dataclass(frozen=True)
+class BB84EncoderInput:
+    bit: binary.Bit
+    basis: BB84Basis
+    qubit: qdev.Qubit
+
+@dataclasses.dataclass(frozen=True)
+class BB84Encoding:
+    qubit: qdev.Qubit
+
+@dataclasses.dataclass(frozen=True)
+class BB84DecoderInput:
+    qubit: qdev.Qubit
+    basis: BB84Basis
+
+@dataclasses.dataclass
+class BB84Decoding:
+    bit: binary.Bit
+
+@dataclasses.dataclass(frozen=True)
+class BB84BasisPair:
+    basis1: BB84Basis
+    basis2: BB84Basis
+
+# TODO: How am I going to actually implement transmissions?
+#       I must act as an in between for the local and remote
+
+@dataclasses.dataclass(frozen=True)
+class BB84QuantumTransmission:
+    qubit: qdev.Qubit
+    
+@dataclasses.dataclass(frozen=True)
+class BB84Transmission:
+    basis: BB84Basis
+
+DEFAULT_BASIS_MAP: dict[BB84Basis, qst.QBasis] = {
+    BB84Basis.RECTLINEAR:qst.Z_BASIS,
+    BB84Basis.DIAGONAL:qst.X_BASIS
 }
 
-ENCODE_OPS: dict[tuple[int,int], qgt.QGate] = {
-    (0,0): qgt.I_GATE,
-    (0,1): qgt.X_GATE,
-    (1,0): qgt.H_GATE,
-    (1,1): qgt.compose_gates([qgt.H_GATE, qgt.X_GATE])
+DEFAULT_VAL_MAP: dict[qst.QState, binary.Bit] = {
+    qst.KET0: binary.BIT_0,
+    qst.KET1: binary.BIT_1,
+    qst.KETPLUS: binary.BIT_0,
+    qst.KETMINUS: binary.BIT_1,
 }
 
+DEFAULT_ENCODING_OPS: dict[BasisBitPair, qgt.QGate] = {
+    BasisBitPair(BB84Basis.RECTLINEAR, binary.BIT_0) : qgt.I_GATE, # I|0⟩ = |0⟩
+    BasisBitPair(BB84Basis.RECTLINEAR, binary.BIT_1) : qgt.X_GATE, # X|0⟩
+    BasisBitPair(BB84Basis.DIAGONAL, binary.BIT_0)   : qgt.H_GATE, # H|0⟩
+    BasisBitPair(BB84Basis.DIAGONAL, binary.BIT_1)   : qgt.compose_gates([qgt.H_GATE, qgt.X_GATE]) # HX|0⟩
+}
 
-def _bb84_encode(
-    device: qdev.QuantumDevice, qubit: qdev.Qubit, val: int, basis_key: int
-) -> tuple[qdev.Qubit, int]:
-    gate = ENCODE_OPS[(val, basis_key)]
-    qubit = device.prepare_single_qubit(qubit, gate)
-    return (device.pop_qubit(qubit), basis_key)
+@dataclasses.dataclass
+class BB84Config:
+    basis_map: dict[BB84Basis, qst.QBasis] = DEFAULT_BASIS_MAP
+    value_map: dict[qst.QState, binary.Bit] = DEFAULT_VAL_MAP
+    ops: dict[BasisBitPair, qgt.QGate] = DEFAULT_ENCODING_OPS
+    dev: qdev.QuantumDevice # TODO: Better name
 
+def bb84_encode(config: BB84Config, input: BB84EncoderInput) -> BB84Encoding:
+    psi = config.dev.prepare_single_qubit(
+                        qubit=input.qubit,
+                        gate=config.ops[BasisBitPair(input.basis, input.bit)]
+                )
+    return BB84Encoding(qubit=psi)
 
-def _bb84_decode(
-    device: qdev.QuantumDevice,
-    qubit: qdev.Qubit,
-    basis_key: int,
-    basis_map: dict[int, qst.QBasis] = DEFAULT_BASIS_MAP,
-    value_map: dict[qst.QState, int] = DEFAULT_VAL_MAP,
-) -> tuple[int, int]:
-    basis = basis_map[basis_key]
-    state = device.measure_single_qubit(qubit, basis)
-    val = value_map[state]
-    return (val, basis_key)
+def bb84_transmit_encoding(config: BB84Config, encoding: BB84Encoding) -> BB84QuantumTransmission:
+    return BB84QuantumTransmission(config.dev.pop_qubit(encoding.qubit))
 
+def bb84_recieve_encoding(config: BB84Config, transmission:BB84QuantumTransmission) -> BB84Encoding:
+    config.dev.push_qubit(transmission.qubit) # TODO: This should return a qubit for work to be done
+    return BB84Encoding(transmission.qubit)
 
-def bb84_send(
-    device: qdev.QuantumDevice,
-    key: list[int],
-    n_bits: int,
-    quantum_channel: chnl.ChannelEndpoint[qdev.Qubit],
-    auth_channel: chnl.ChannelEndpoint[int],
-):
-    assert len(key) == n_bits  # NOTE: Is this good practice?
+def bb84_construct_decoder(config: BB84Config, encoding: BB84Encoding, basis: BB84Basis) -> BB84DecoderInput:
+    return BB84DecoderInput(encoding.qubit, basis)
 
-    idx = 0
-    while idx < n_bits:
-        basis_key = qrand.random_bit(device)
-        with device.alloc_single() as qubit:
-            qubit, local_basis_key = _bb84_encode(device, qubit, key[idx], basis_key)
-            qubit = device.pop_qubit(qubit)
-            chnl.send(quantum_channel, qubit)
+def bb84_decode(config: BB84Config, input: BB84DecoderInput) -> binary.Bit:
+    measurement: qst.QState = config.dev.measure_single_qubit(
+                                qubit=input.qubit,
+                                basis=config.basis_map[input.basis])
+    return config.value_map[measurement]
 
-        remote_basis_key = chnl.recv(auth_channel)
-        chnl.send(auth_channel, local_basis_key)
+def bb84_transmit_basis(
+    basis: BB84Basis,
+    transmission: BB84Transmission) -> BB84BasisPair: # TODO: How should this be implemented?
+    return BB84BasisPair(basis, transmission.basis)
 
-        if local_basis_key == remote_basis_key:
-            idx += 1
-
-
-def bb84_recv(
-    device: qdev.QuantumDevice,
-    n_bits: int,
-    primary_channel: chnl.ChannelEndpoint[qdev.Qubit],
-    auth_channel: chnl.ChannelEndpoint[int],
-    verbose=False,
-) -> list[int]:
-    key: list[int | None] = n_bits * [None]
-    idx = 0
-    while idx < n_bits:
-        basis_key = qrand.random_bit(device)
-        qubit = chnl.recv(primary_channel)
-        val, local_basis_key = _bb84_decode(device, qubit, basis_key)
-
-        chnl.send(auth_channel, local_basis_key)
-        remote_basis_key = chnl.recv(auth_channel)
-
-        if local_basis_key == remote_basis_key:
-            key[idx] = val
-            idx += 1
-
-        if verbose:
-            time.sleep(0.1)
-            print(
-                f"Data: {''.join([str(k) if k is not None else ' ' for k in key])}",
-                end="\r",
-            )
-    if verbose:
-        print("")
-    return [k for k in key if k]
+def bb84_validate(basis: BB84BasisPair) -> BB84Result:
+    return BB84Result(basis.basis1 == basis.basis2)
