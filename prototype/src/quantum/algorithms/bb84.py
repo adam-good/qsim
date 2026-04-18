@@ -1,5 +1,6 @@
 import time
 import utils.channel as chnl
+import utils.math.bit as bit
 import quantum.state as qst
 import quantum.gate as qgt
 import quantum.device as qdev
@@ -11,25 +12,25 @@ import quantum.algorithms.random as qrand
 # TODO: Add Unit Tests!!!
 # TODO: Use the bit type
 
-DEFAULT_BASIS_MAP: dict[int, qst.QBasis] = {0: qst.Z_BASIS, 1: qst.X_BASIS}
-DEFAULT_VAL_MAP: dict[qst.QState, int] = {
-    qst.KET0: 0,
-    qst.KET1: 1,
-    qst.KETPLUS: 0,
-    qst.KETMINUS: 1,
+DEFAULT_BASIS_MAP: dict[bit.Bit, qst.QBasis] = {bit.BIT_0: qst.Z_BASIS, bit.BIT_1: qst.X_BASIS}
+DEFAULT_VAL_MAP: dict[qst.QState, bit.Bit] = {
+    qst.KET0: bit.BIT_0,
+    qst.KET1: bit.BIT_1,
+    qst.KETPLUS: bit.BIT_0,
+    qst.KETMINUS: bit.BIT_1,
 }
 
-ENCODE_OPS: dict[tuple[int,int], qgt.QGate] = {
-    (0,0): qgt.I_GATE,
-    (0,1): qgt.X_GATE,
-    (1,0): qgt.H_GATE,
-    (1,1): qgt.compose_gates([qgt.H_GATE, qgt.X_GATE])
+ENCODE_OPS: dict[tuple[bit.Bit, bit.Bit], qgt.QGate] = {
+    (bit.BIT_0, bit.BIT_0): qgt.I_GATE,
+    (bit.BIT_0, bit.BIT_1): qgt.X_GATE,
+    (bit.BIT_1, bit.BIT_0): qgt.H_GATE,
+    (bit.BIT_1, bit.BIT_1): qgt.compose_gates([qgt.H_GATE, qgt.X_GATE])
 }
 
 
 def _bb84_encode(
-    device: qdev.QuantumDevice, qubit: qdev.Qubit, val: int, basis_key: int
-) -> tuple[qdev.Qubit, int]:
+    device: qdev.QuantumDevice, qubit: qdev.Qubit, val: bit.Bit, basis_key: bit.Bit
+) -> tuple[qdev.Qubit, bit.Bit]:
     gate = ENCODE_OPS[(val, basis_key)]
     qubit = device.prepare_single_qubit(qubit, gate)
     return (device.pop_qubit(qubit), basis_key)
@@ -38,10 +39,10 @@ def _bb84_encode(
 def _bb84_decode(
     device: qdev.QuantumDevice,
     qubit: qdev.Qubit,
-    basis_key: int,
-    basis_map: dict[int, qst.QBasis] = DEFAULT_BASIS_MAP,
-    value_map: dict[qst.QState, int] = DEFAULT_VAL_MAP,
-) -> tuple[int, int]:
+    basis_key: bit.Bit,
+    basis_map: dict[bit.Bit, qst.QBasis] = DEFAULT_BASIS_MAP,
+    value_map: dict[qst.QState, bit.Bit] = DEFAULT_VAL_MAP,
+) -> tuple[bit.Bit, bit.Bit]:
     basis = basis_map[basis_key]
     state = device.measure_single_qubit(qubit, basis)
     val = value_map[state]
@@ -50,7 +51,7 @@ def _bb84_decode(
 
 def bb84_send(
     device: qdev.QuantumDevice,
-    key: list[int],
+    key: list[bit.Bit],
     n_bits: int,
     quantum_channel: chnl.ChannelEndpoint[qdev.Qubit],
     auth_channel: chnl.ChannelEndpoint[int],
