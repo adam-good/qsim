@@ -1,7 +1,8 @@
+from src.quantum.state import Z_BASIS
 import dataclasses
 import time
 import utils.channel as chnl
-import utils.math.bit as bit
+import utils.math.bit as binary
 import quantum.state as qst
 import quantum.gate as qgt
 import quantum.device as qdev
@@ -13,98 +14,45 @@ import enum
 # TODO: Privacy Amplification Algorithms???
 # TODO: Add Unit Tests!!!
 
+class BB84Basis(enum.Enum):
+    RECTLINEAR = enum.auto()
+    DIAGONAL = enum.auto()
+
 @dataclasses.dataclass(frozen=True)
-class BasisBitPair:
-    basis: qst.QBasis
-    bit: bit.Bit
+class BB84Input:
+    bit: binary.Bit
+    basis: BB84Basis
+    qubit: qdev.Qubit
 
-class BB84Encoding(BasisBitPair): ...
-class BB84Decoding(BasisBitPair): ...
+@dataclasses.dataclass(frozen=True)
+class BB84Encoding:
+    qubit: qdev.Qubit
 
-DEFAULT_VAL_MAP: dict[qst.QState, bit.Bit] = {
-    qst.KET0: bit.BIT_0,
-    qst.KET1: bit.BIT_1,
-    qst.KETPLUS: bit.BIT_0,
-    qst.KETMINUS: bit.BIT_1,
-}
-
-ENCODE_OPS: dict[BB84Encoding, qgt.QGate] = {
-    BB84Encoding(qst.Z_BASIS, bit.BIT_0): qgt.I_GATE,
-    BB84Encoding(qst.Z_BASIS, bit.BIT_1): qgt.X_GATE,
-    BB84Encoding(qst.X_BASIS, bit.BIT_0): qgt.H_GATE,
-    BB84Encoding(qst.X_BASIS, bit.BIT_1): qgt.compose_gates([qgt.H_GATE, qgt.X_GATE])
-}
-
-
-def _bb84_encode(
-    device: qdev.QuantumDevice,
-    qubit: qdev.Qubit,
+# TODO: How am I going to actually implement this?
+#       I must act as an in between for the local and remote
+@dataclasses.dataclass(frozen=True)
+class BB84QuantumTransmission:
     encoding: BB84Encoding
-) -> qdev.Qubit:
-    gate = ENCODE_OPS[encoding]
-    qubit = device.prepare_single_qubit(qubit, gate)
-    return device.pop_qubit(qubit)
+    ...
 
+@dataclasses.dataclass(frozen=True)
+class BB84Decoder:
+    qubit: qdev.Qubit
+    basis: BB84Basis
 
-def _bb84_decode(
-    device: qdev.QuantumDevice,
-    qubit: qdev.Qubit,
-    basis: qst.QBasis
-) -> BB84Decoding:
-    measured_state = device.measure_single_qubit(qubit, basis)
-    return BB84Decoding(basis, DEFAULT_VAL_MAP[measured_state])
+@dataclasses.dataclass
+class BB84Decoding:
+    bit: binary.Bit
 
-def bb84_send(
-    device: qdev.QuantumDevice,
-    key: list[bit.Bit],
-    n_bits: int,
-    quantum_channel: chnl.ChannelEndpoint[qdev.Qubit],
-    auth_channel: chnl.ChannelEndpoint[bit.Bit],
-):
-    assert len(key) == n_bits  # NOTE: Is this good practice?
+DEFAULT_BASIS_MAP: dict[BB84Basis, qst.QBasis] = {
+    BB84Basis.RECTLINEAR:qst.Z_BASIS,
+    BB84Basis.DIAGONAL:qst.X_BASIS
+}
 
-    idx = 0
-    while idx < n_bits:
-        basis_key = qrand.random_bit(device)
-        with device.alloc_single() as qubit:
-            qubit, local_basis_key = _bb84_encode(device, qubit, key[idx], basis_key)
-            qubit = device.pop_qubit(qubit)
-            chnl.send(quantum_channel, qubit)
+DEFAULT_VAL_MAP: dict[qst.QState, binary.Bit] = {
+    qst.KET0: binary.BIT_0,
+    qst.KET1: binary.BIT_1,
+    qst.KETPLUS: binary.BIT_0,
+    qst.KETMINUS: binary.BIT_1,
+}
 
-        remote_basis_key = chnl.recv(auth_channel)
-        chnl.send(auth_channel, local_basis_key)
-
-        if local_basis_key == remote_basis_key:
-            idx += 1
-
-
-def bb84_recv(
-    device: qdev.QuantumDevice,
-    n_bits: int,
-    primary_channel: chnl.ChannelEndpoint[qdev.Qubit],
-    auth_channel: chnl.ChannelEndpoint[bit.Bit],
-    verbose=False,
-) -> list[int]:
-    key: list[int | None] = n_bits * [None]
-    idx = 0
-    while idx < n_bits:
-        basis_key = qrand.random_bit(device)
-        qubit = chnl.recv(primary_channel)
-        val, local_basis_key = _bb84_decode(device, qubit, basis_key)
-
-        chnl.send(auth_channel, local_basis_key)
-        remote_basis_key = chnl.recv(auth_channel)
-
-        if local_basis_key == remote_basis_key:
-            key[idx] = val
-            idx += 1
-
-        if verbose:
-            time.sleep(0.1)
-            print(
-                f"Data: {''.join([str(k) if k is not None else ' ' for k in key])}",
-                end="\r",
-            )
-    if verbose:
-        print("")
-    return [k for k in key if k]
