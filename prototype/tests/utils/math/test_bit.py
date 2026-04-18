@@ -15,15 +15,15 @@ class TestBit(unittest.TestCase):
         with self.assertRaises(ValueError):
             Bit(-1)
         with self.assertRaises(ValueError):
-            Bit(0.5)
+            Bit(0.5) # type: ignore
         with self.assertRaises(ValueError):
-            Bit(0.0)
+            Bit(0.0) # type: ignore
         with self.assertRaises(ValueError):
-            Bit(1.0)
+            Bit(1.0) # type: ignore
         with self.assertRaises(ValueError):
-            Bit("0")
+            Bit("0") # type: ignore
         with self.assertRaises(ValueError):
-            Bit(None)
+            Bit(None) # type: ignore
     
     def test_bit_int_conversion(self):
         self.assertEqual(int(Bit(0)), 0)
@@ -118,8 +118,8 @@ class TestBit(unittest.TestCase):
         self.assertTrue(1 >= Bit(0))
     
     def test_bit_repr(self):
-        self.assertEqual(repr(Bit(0)), "Bit(value=0)")
-        self.assertEqual(repr(Bit(1)), "Bit(value=1)")
+        self.assertEqual(repr(Bit(0)), "b0")
+        self.assertEqual(repr(Bit(1)), "b1")
     
     def test_bit_constants(self):
         self.assertEqual(BIT_0.value, 0)

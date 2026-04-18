@@ -162,7 +162,7 @@ class Bit:
         return NotImplemented
     
     def __repr__(self) -> str:
-        return f"Bit(value={self.value})"
+        return f"b{self.value}"
 
 
 BIT_0: Final[Bit] = Bit.__new__(Bit)
