@@ -3,19 +3,15 @@ import typing
 
 @dataclasses.dataclass
 class Queue[T]:
-    values: tuple[T,...]
+    values: tuple[T,...] = ()
 
 
-def _new_channel[T]() -> Queue:
-    return Queue(values=())
-
-
-def _send[T](channel: Queue[T], data: T) -> Queue[T]:
+def push[T](channel: Queue[T], data: T) -> Queue[T]:
     return Queue(
         values=channel.values + (data,)
     )
 
-def _recv[T](channel: Queue[T]) -> tuple[T, Queue[T]]:
+def pop[T](channel: Queue[T]) -> tuple[T, Queue[T]]:
     return (
         channel.values[0],
         Queue(
