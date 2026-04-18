@@ -82,27 +82,37 @@ class BB84Config:
     basis_map: dict[BB84Basis, qst.QBasis] = DEFAULT_BASIS_MAP
     value_map: dict[qst.QState, binary.Bit] = DEFAULT_VAL_MAP
     ops: dict[BasisBitPair, qgt.QGate] = DEFAULT_ENCODING_OPS
-    device: qdev.QuantumDevice 
 
-def bb84_encode(config: BB84Config, input: BB84EncoderInput) -> BB84Encoding:
-    psi = config.device.prepare_single_qubit(
+def bb84_encode(
+    device: qdev.QuantumDevice,
+    config: BB84Config,
+    input: BB84EncoderInput
+) -> BB84Encoding:
+    psi: qdev.Qubit = device.prepare_single_qubit(
                         qubit=input.qubit,
                         gate=config.ops[BasisBitPair(input.basis, input.bit)]
-                )
+                    )
     return BB84Encoding(qubit=psi)
 
-def bb84_transmit_encoding(config: BB84Config, encoding: BB84Encoding) -> BB84QuantumTransmission:
-    return BB84QuantumTransmission(config.device.pop_qubit(encoding.qubit))
+def bb84_prepare_transmission(device: qdev.QuantumDevice, config: BB84Config, encoding: BB84Encoding) -> BB84QuantumTransmission:
+    return BB84QuantumTransmission(device.pop_qubit(encoding.qubit))
 
-def bb84_recieve_encoding(config: BB84Config, transmission:BB84QuantumTransmission) -> BB84Encoding:
-    config.device.push_qubit(transmission.qubit) # TODO: This should return a qubit for work to be done
+# def bb84_send(transmission: BB84QuantumTransmission): ...
+# def bb84_recv() -> BB84QuantumTransmission: ...
+
+def bb84_unpack_transmission(
+    device: qdev.QuantumDevice,
+    config: BB84Config,
+    transmission:BB84QuantumTransmission
+) -> BB84Encoding:
+    device.push_qubit(transmission.qubit) # TODO: This should return a qubit for work to be done
     return BB84Encoding(transmission.qubit)
 
 def bb84_construct_decoder(config: BB84Config, encoding: BB84Encoding, basis: BB84Basis) -> BB84DecoderInput:
     return BB84DecoderInput(encoding.qubit, basis)
 
-def bb84_decode(config: BB84Config, input: BB84DecoderInput) -> binary.Bit:
-    measurement: qst.QState = config.device.measure_single_qubit(
+def bb84_decode(device: qdev.QuantumDevice, config: BB84Config, input: BB84DecoderInput) -> binary.Bit:
+    measurement: qst.QState = device.measure_single_qubit(
                                 qubit=input.qubit,
                                 basis=config.basis_map[input.basis])
     return config.value_map[measurement]
