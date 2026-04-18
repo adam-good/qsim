@@ -1,3 +1,4 @@
+import dataclasses
 import time
 import utils.channel as chnl
 import utils.math.bit as bit
@@ -5,14 +6,21 @@ import quantum.state as qst
 import quantum.gate as qgt
 import quantum.device as qdev
 import quantum.algorithms.random as qrand
+import enum
 
 # TODO: This file needs to be made more simple
 # TODO: Expand to work in batches instead of single qubits
 # TODO: Privacy Amplification Algorithms???
 # TODO: Add Unit Tests!!!
-# TODO: Use the bit type
 
-DEFAULT_BASIS_MAP: dict[bit.Bit, qst.QBasis] = {bit.BIT_0: qst.Z_BASIS, bit.BIT_1: qst.X_BASIS}
+@dataclasses.dataclass(frozen=True)
+class BasisBitPair:
+    basis: qst.QBasis
+    bit: bit.Bit
+
+class BB84Encoding(BasisBitPair): ...
+class BB84Decoding(BasisBitPair): ...
+
 DEFAULT_VAL_MAP: dict[qst.QState, bit.Bit] = {
     qst.KET0: bit.BIT_0,
     qst.KET1: bit.BIT_1,
@@ -20,34 +28,31 @@ DEFAULT_VAL_MAP: dict[qst.QState, bit.Bit] = {
     qst.KETMINUS: bit.BIT_1,
 }
 
-ENCODE_OPS: dict[tuple[bit.Bit, bit.Bit], qgt.QGate] = {
-    (bit.BIT_0, bit.BIT_0): qgt.I_GATE,
-    (bit.BIT_0, bit.BIT_1): qgt.X_GATE,
-    (bit.BIT_1, bit.BIT_0): qgt.H_GATE,
-    (bit.BIT_1, bit.BIT_1): qgt.compose_gates([qgt.H_GATE, qgt.X_GATE])
+ENCODE_OPS: dict[BB84Encoding, qgt.QGate] = {
+    BB84Encoding(qst.Z_BASIS, bit.BIT_0): qgt.I_GATE,
+    BB84Encoding(qst.Z_BASIS, bit.BIT_1): qgt.X_GATE,
+    BB84Encoding(qst.X_BASIS, bit.BIT_0): qgt.H_GATE,
+    BB84Encoding(qst.X_BASIS, bit.BIT_1): qgt.compose_gates([qgt.H_GATE, qgt.X_GATE])
 }
 
 
 def _bb84_encode(
-    device: qdev.QuantumDevice, qubit: qdev.Qubit, val: bit.Bit, basis_key: bit.Bit
-) -> tuple[qdev.Qubit, bit.Bit]:
-    gate = ENCODE_OPS[(val, basis_key)]
+    device: qdev.QuantumDevice,
+    qubit: qdev.Qubit,
+    encoding: BB84Encoding
+) -> qdev.Qubit:
+    gate = ENCODE_OPS[encoding]
     qubit = device.prepare_single_qubit(qubit, gate)
-    return (device.pop_qubit(qubit), basis_key)
+    return device.pop_qubit(qubit)
 
 
 def _bb84_decode(
     device: qdev.QuantumDevice,
     qubit: qdev.Qubit,
-    basis_key: bit.Bit,
-    basis_map: dict[bit.Bit, qst.QBasis] = DEFAULT_BASIS_MAP,
-    value_map: dict[qst.QState, bit.Bit] = DEFAULT_VAL_MAP,
-) -> tuple[bit.Bit, bit.Bit]:
-    basis = basis_map[basis_key]
-    state = device.measure_single_qubit(qubit, basis)
-    val = value_map[state]
-    return (val, basis_key)
-
+    basis: qst.QBasis
+) -> BB84Decoding:
+    measured_state = device.measure_single_qubit(qubit, basis)
+    return BB84Decoding(basis, DEFAULT_VAL_MAP[measured_state])
 
 def bb84_send(
     device: qdev.QuantumDevice,
