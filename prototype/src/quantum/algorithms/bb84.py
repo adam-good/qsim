@@ -54,7 +54,7 @@ def bb84_send(
     key: list[bit.Bit],
     n_bits: int,
     quantum_channel: chnl.ChannelEndpoint[qdev.Qubit],
-    auth_channel: chnl.ChannelEndpoint[int],
+    auth_channel: chnl.ChannelEndpoint[bit.Bit],
 ):
     assert len(key) == n_bits  # NOTE: Is this good practice?
 
@@ -77,7 +77,7 @@ def bb84_recv(
     device: qdev.QuantumDevice,
     n_bits: int,
     primary_channel: chnl.ChannelEndpoint[qdev.Qubit],
-    auth_channel: chnl.ChannelEndpoint[int],
+    auth_channel: chnl.ChannelEndpoint[bit.Bit],
     verbose=False,
 ) -> list[int]:
     key: list[int | None] = n_bits * [None]
