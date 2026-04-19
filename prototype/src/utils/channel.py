@@ -1,33 +1,38 @@
-import dataclasses
-import typing
-
-@dataclasses.dataclass
-class Queue[T]:
-    values: tuple[T,...] = ()
+import threading
+from dataclasses import dataclass
+from queue import Queue
 
 
-def push[T](channel: Queue[T], data: T) -> Queue[T]:
-    return Queue(
-        values=channel.values + (data,)
-    )
+@dataclass
+class ChannelEndpoint[T]:
+    input: Queue[T]
+    output: Queue[T]
+    mutex: threading.Lock
 
-def pop[T](channel: Queue[T]) -> tuple[T, Queue[T]]:
-    return (
-        channel.values[0],
-        Queue(
-            channel.values[1:]
-        )
-    )
 
-class Runtime:
-    def __init__(self):
-        self._tasks: list[typing.Callable] = []
+@dataclass
+class Channel[T]:
+    endpoint_A: ChannelEndpoint[T]
+    endpoint_B: ChannelEndpoint[T]
 
-    def schedule(self, fn: typing.Callable):
-        self._tasks.append(fn)
 
-    def run(self):
-        while self._tasks:
-            task: typing.Callable = self._tasks.pop(0)
-            task()
+def new_channel[T]() -> Channel:
+    mutex = threading.Lock()
+    queue_a = Queue[T]()
+    queue_b = Queue[T]()
+    endpoint_a = ChannelEndpoint(queue_a, queue_b, mutex)
+    endpoint_b = ChannelEndpoint(queue_b, queue_a, mutex)
+    channel = Channel[T](endpoint_a, endpoint_b)
+    return channel
 
+
+def get_endpoints(chnl: Channel) -> tuple[ChannelEndpoint, ChannelEndpoint]:
+    return (chnl.endpoint_A, chnl.endpoint_B)
+
+
+def send[T](endpoint: ChannelEndpoint[T], data: T):
+    endpoint.output.put(data)
+
+
+def recv[T](endpoint: ChannelEndpoint[T]) -> T:
+    return endpoint.input.get()
