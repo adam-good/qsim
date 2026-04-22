@@ -16,5 +16,11 @@ class TestChannel(unittest.TestCase):
         result, channel = chnl.recv(channel)
         self.assertEqual(result, target_data)
         self.assertEqual(target_channel_state, channel)
-        
+
+    def test_channel_recv_empty(self):
+        channel = chnl.Channel()
+        target_channel = chnl.Channel()
+        result, channel = chnl.recv(channel)
+        self.assertIsNone(result)
+        self.assertEqual(channel, target_channel)
         
