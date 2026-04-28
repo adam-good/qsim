@@ -1,4 +1,5 @@
 import dataclasses
+import utils.channel as chnl
 import utils.math.bit as binary
 import quantum.state as qst
 import quantum.gate as qgt
@@ -9,6 +10,7 @@ import enum
 # TODO: Expand to work in batches instead of single qubits
 # TODO: Privacy Amplification Algorithms???
 # TODO: Add Unit Tests!!!
+
 
 class BB84Basis(enum.Enum):
     RECTLINEAR = enum.auto()
@@ -23,40 +25,11 @@ class BasisBitPair:
     basis: BB84Basis
     bit: binary.Bit
 
-@dataclasses.dataclass(frozen=True)
-class BB84EncoderInput:
-    bit: binary.Bit
-    basis: BB84Basis
-    qubit: qdev.Qubit
-
-@dataclasses.dataclass(frozen=True)
-class BB84Encoding:
-    qubit: qdev.Qubit
-
-@dataclasses.dataclass(frozen=True)
-class BB84DecoderInput:
-    qubit: qdev.Qubit
-    basis: BB84Basis
-
 @dataclasses.dataclass
-class BB84Decoding:
-    bit: binary.Bit
-
-@dataclasses.dataclass(frozen=True)
-class BB84BasisPair:
-    basis1: BB84Basis
-    basis2: BB84Basis
-
-# TODO: How am I going to actually implement transmissions?
-#       I must act as an in between for the local and remote
-
-@dataclasses.dataclass(frozen=True)
-class BB84QuantumTransmission:
-    qubit: qdev.Qubit
-    
-@dataclasses.dataclass(frozen=True)
-class BB84Transmission:
+class BasisQubitPair:
     basis: BB84Basis
+    qubit: qdev.Qubit
+
 
 DEFAULT_BASIS_MAP: dict[BB84Basis, qst.QBasis] = {
     BB84Basis.RECTLINEAR:qst.Z_BASIS,
@@ -83,44 +56,93 @@ class BB84Config:
     value_map: dict[qst.QState, binary.Bit] = DEFAULT_VAL_MAP
     ops: dict[BasisBitPair, qgt.QGate] = DEFAULT_ENCODING_OPS
 
-def bb84_encode(
-    device: qdev.QuantumDevice,
-    config: BB84Config,
-    input: BB84EncoderInput
-) -> BB84Encoding:
-    psi: qdev.Qubit = device.prepare_single_qubit(
-                        qubit=input.qubit,
-                        gate=config.ops[BasisBitPair(input.basis, input.bit)]
+@dataclasses.dataclass(frozen=True)
+class BB84Encoder:
+    config: BB84Config
+    device: qdev.QuantumDevice
+    qubit: qdev.Qubit
+    pair: BasisBitPair # NOTE: Should pair be part of this?
+
+    def __post__init(self):
+        # TODO: self.qubit not in self.device
+        if self.qubit.ref_id not in self.device.qubits.keys():
+            raise ValueError(f"BB84Encoder Configured With Foreign Qubit {self.qubit}")
+
+@dataclasses.dataclass(frozen=True)
+class BB84Encoding:
+    pair: BasisBitPair
+    qubit: qdev.Qubit
+
+@dataclasses.dataclass(frozen=True)
+class BB84QuantumTransmitter:
+    device: qdev.QuantumDevice
+    channel: chnl.Channel[qdev.Qubit]
+    encoding: BB84Encoding | None
+
+@dataclasses.dataclass(frozen=True)
+class BB84QuantumReciever:
+    device: qdev.QuantumDevice
+    channel: chnl.Channel[qdev.Qubit]
+
+@dataclasses.dataclass(frozen=True)
+class BB84Decoder:
+    config: BB84Config
+    device: qdev.QuantumDevice
+    pair: BasisQubitPair
+
+    def __post__init(self):
+        # TODO: self.pair.qubit not in self.device
+        if self.pair.qubit.ref_id not in self.device.qubits.keys():
+            raise ValueError(f"BB84Decoder Configured With Foreign Qubit: {self.pair.qubit}")
+    
+
+@dataclasses.dataclass(frozen=True)
+class BB84Decoding:
+    pair: BasisQubitPair
+    bit: binary.Bit
+
+@dataclasses.dataclass(frozen=True)
+class BB84BasisPair:
+    basis1: BB84Basis
+    basis2: BB84Basis
+    
+
+def bb84_encode(encoder: BB84Encoder) -> BB84Encoding:
+    qubit: qdev.Qubit = encoder.device.prepare_single_qubit(
+                        qubit=encoder.qubit,
+                        gate=encoder.config.ops[encoder.pair]
                     )
-    return BB84Encoding(qubit=psi)
+    return BB84Encoding(encoder.pair, qubit)
 
-def bb84_prepare_transmission(device: qdev.QuantumDevice, config: BB84Config, encoding: BB84Encoding) -> BB84QuantumTransmission:
-    return BB84QuantumTransmission(device.pop_qubit(encoding.qubit))
+# TODO: This does not need to be a BB84 function
+#       I should implement sending and recieving operations on devices
+# TODO: Make this recursive once BB84Transmitter is vectorized
+def bb84_transmit_qubit(transmitter: BB84QuantumTransmitter) -> BB84QuantumTransmitter:
+    if transmitter.encoding is None:
+        return transmitter
+    free_qubit = transmitter.device.pop_qubit(transmitter.encoding.qubit)
+    channel = chnl.send(transmitter.channel, free_qubit)
+    return BB84QuantumTransmitter(transmitter.device, channel, None)
 
-# def bb84_send(transmission: BB84QuantumTransmission): ...
-# def bb84_recv() -> BB84QuantumTransmission: ...
 
-def bb84_unpack_transmission(
-    device: qdev.QuantumDevice,
-    config: BB84Config,
-    transmission:BB84QuantumTransmission
-) -> BB84Encoding:
-    device.push_qubit(transmission.qubit) # TODO: This should return a qubit for work to be done
-    return BB84Encoding(transmission.qubit)
+def bb84_recieve_qubit(reciever: BB84QuantumReciever) -> tuple[qdev.Qubit | None, BB84QuantumReciever]:
+    qubit, channel = chnl.recv(reciever.channel)
+    if qubit is None:
+        return None,reciever
+    reciever.device.push_qubit(qubit)
+    return qubit, BB84QuantumReciever(reciever.device, channel)
 
-def bb84_construct_decoder(config: BB84Config, encoding: BB84Encoding, basis: BB84Basis) -> BB84DecoderInput:
-    return BB84DecoderInput(encoding.qubit, basis)
+def bb84_decode(decoder: BB84Decoder) -> BB84Decoding:
+    measurement: qst.QState = decoder.device.measure_single_qubit(
+                                qubit=decoder.pair.qubit,
+                                basis=decoder.config.basis_map[decoder.pair.basis])
+    return BB84Decoding(decoder.pair, decoder.config.value_map[measurement])
 
-def bb84_decode(device: qdev.QuantumDevice, config: BB84Config, input: BB84DecoderInput) -> binary.Bit:
-    measurement: qst.QState = device.measure_single_qubit(
-                                qubit=input.qubit,
-                                basis=config.basis_map[input.basis])
-    return config.value_map[measurement]
+# TODO: Update These
+# def bb84_transmit_basis(
+#     basis: BB84Basis,
+#     channel: chnl.Channel[BB84Basis]) -> chnl.Channel[BB84Basis]:
+#     return chnl.send(channel, basis)
 
-def bb84_transmit_basis(
-    basis: BB84Basis,
-    transmission: BB84Transmission) -> BB84BasisPair: # TODO: How should this be implemented?
-    return BB84BasisPair(basis, transmission.basis)
-
-def bb84_validate(basis: BB84BasisPair) -> BB84Result:
-    return BB84Result(basis.basis1 == basis.basis2)
+# def bb84_validate(basis: BB84BasisPair) -> BB84Result:
+#     return BB84Result(basis.basis1 == basis.basis2)
