@@ -80,6 +80,11 @@ class BB84QuantumTransmitter:
     encoding: BB84Encoding | None
 
 @dataclasses.dataclass(frozen=True)
+class BB84BasisTransmitter:
+    channel: chnl.Channel[BB84Basis]
+    basis: BB84Basis | None
+
+@dataclasses.dataclass(frozen=True)
 class BB84QuantumReciever:
     device: qdev.QuantumDevice
     channel: chnl.Channel[qdev.Qubit]
@@ -138,11 +143,13 @@ def bb84_decode(decoder: BB84Decoder) -> BB84Decoding:
                                 basis=decoder.config.basis_map[decoder.pair.basis])
     return BB84Decoding(decoder.pair, decoder.config.value_map[measurement])
 
-# TODO: Update These
-# def bb84_transmit_basis(
-#     basis: BB84Basis,
-#     channel: chnl.Channel[BB84Basis]) -> chnl.Channel[BB84Basis]:
-#     return chnl.send(channel, basis)
+def bb84_transmit_basis(transmitter: BB84BasisTransmitter) -> BB84BasisTransmitter:
+    if transmitter.basis is None:
+        return transmitter
+    return BB84BasisTransmitter(
+        chnl.send(transmitter.channel, transmitter.basis),
+        None
+    )
 
 # def bb84_validate(basis: BB84BasisPair) -> BB84Result:
 #     return BB84Result(basis.basis1 == basis.basis2)
