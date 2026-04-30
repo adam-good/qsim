@@ -126,16 +126,16 @@ def bb84_transmit_qubit(transmitter: BB84QuantumTransmitter) -> BB84QuantumTrans
     if transmitter.encoding is None:
         return transmitter
     free_qubit = transmitter.device.pop_qubit(transmitter.encoding.qubit)
-    channel = chnl.send(transmitter.channel, free_qubit)
-    return BB84QuantumTransmitter(transmitter.device, channel, None)
+    transmitter.channel.send(free_qubit)
+    return BB84QuantumTransmitter(transmitter.device, transmitter.channel, None)
 
 
 def bb84_recieve_qubit(reciever: BB84QuantumReciever) -> tuple[qdev.Qubit | None, BB84QuantumReciever]:
-    qubit, channel = chnl.recv(reciever.channel)
+    qubit = reciever.channel.recv()
     if qubit is None:
         return None,reciever
     reciever.device.push_qubit(qubit)
-    return qubit, BB84QuantumReciever(reciever.device, channel)
+    return qubit, BB84QuantumReciever(reciever.device, reciever.channel)
 
 def bb84_decode(decoder: BB84Decoder) -> BB84Decoding:
     measurement: qst.QState = decoder.device.measure_single_qubit(
@@ -147,9 +147,9 @@ def bb84_transmit_basis(transmitter: BB84BasisTransmitter) -> BB84BasisTransmitt
     if transmitter.basis is None:
         return transmitter
     return BB84BasisTransmitter(
-        chnl.send(transmitter.channel, transmitter.basis),
+        transmitter.channel.send(transmitter.basis),
         None
     )
 
-# def bb84_validate(basis: BB84BasisPair) -> BB84Result:
-#     return BB84Result(basis.basis1 == basis.basis2)
+def bb84_validate(basis: BB84BasisPair) -> BB84Result:
+    return BB84Result(basis.basis1 == basis.basis2)
