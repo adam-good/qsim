@@ -1,16 +1,12 @@
 import dataclasses
+import queue
 
 @dataclasses.dataclass
 class Channel[T]:
-    values: tuple[T,...] = ()
+    values: queue.Queue[T] = queue.Queue[T]()
 
-def send[T](chnl: Channel[T], data: T) -> Channel[T]:
-    return Channel(chnl.values + (data,))
-    return chnl
+    def send(self, data: T):
+        self.values.put(data)
 
-def recv[T](chnl: Channel[T]) -> tuple[T | None, Channel[T]]:
-    if not chnl.values:
-        return (None, Channel())
-    head = chnl.values[0]
-    tail = chnl.values[1:]
-    return (head, Channel(tail))
+    def recv(self) -> T:
+        return self.values.get()
