@@ -90,6 +90,10 @@ class BB84QuantumReciever:
     channel: chnl.Channel[qdev.Qubit]
 
 @dataclasses.dataclass(frozen=True)
+class BB84BasisReciever:
+    channel: chnl.Channel[BB84Basis]
+
+@dataclasses.dataclass(frozen=True)
 class BB84Decoder:
     config: BB84Config
     device: qdev.QuantumDevice
@@ -130,10 +134,8 @@ def bb84_transmit_qubit(transmitter: BB84QuantumTransmitter) -> BB84QuantumTrans
     return BB84QuantumTransmitter(transmitter.device, transmitter.channel, None)
 
 
-def bb84_recieve_qubit(reciever: BB84QuantumReciever) -> tuple[qdev.Qubit | None, BB84QuantumReciever]:
+def bb84_recieve_qubit(reciever: BB84QuantumReciever) -> tuple[qdev.Qubit, BB84QuantumReciever]:
     qubit = reciever.channel.recv()
-    if qubit is None:
-        return None,reciever
     reciever.device.push_qubit(qubit)
     return qubit, BB84QuantumReciever(reciever.device, reciever.channel)
 
@@ -150,6 +152,10 @@ def bb84_transmit_basis(transmitter: BB84BasisTransmitter) -> BB84BasisTransmitt
         transmitter.channel.send(transmitter.basis),
         None
     )
+
+def bb84_recv_basis(reciever: BB84BasisReciever) -> tuple[BB84Basis, BB84BasisReciever]:
+    basis = reciever.channel.recv()
+    return basis,reciever
 
 def bb84_validate(basis: BB84BasisPair) -> BB84Result:
     return BB84Result(basis.basis1 == basis.basis2)
