@@ -3,10 +3,18 @@ import queue
 
 @dataclasses.dataclass
 class Channel[T]:
-    values: queue.Queue[T] = queue.Queue[T]()
+    transmitter: queue.Queue[T] = queue.Queue[T]()
+    reciever: queue.Queue[T] = queue.Queue[T]()
 
     def send(self, data: T):
-        self.values.put(data)
+        self.transmitter.put(data)
 
     def recv(self) -> T:
-        return self.values.get()
+        return self.reciever.get()
+
+def compliment(channel: Channel) -> Channel:
+    return Channel(channel.reciever, channel.transmitter)
+
+def channel_pair[T]() -> tuple[Channel[T], Channel[T]]:
+    channel = Channel[T]()
+    return channel, compliment(channel)
