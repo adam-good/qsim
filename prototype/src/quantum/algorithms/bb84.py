@@ -11,29 +11,35 @@ import enum
 # TODO: Privacy Amplification Algorithms???
 # TODO: Add Unit Tests!!!
 
+@dataclasses.dataclass(frozen=True)
+class Key:
+    bits: list[binary.Bit | None]
+    
+    def __repr__(self):
+        return "".join( ('-' if k is None else str(k) for k in self.bits) )
 
-class BB84Basis(enum.Enum):
+class Basis(enum.Enum):
     RECTLINEAR = enum.auto()
     DIAGONAL = enum.auto()
 
-class BB84Result(enum.Enum):
+class Result(enum.Enum):
     SUCCESS = True
     FAILURE = False
 
 @dataclasses.dataclass
 class BasisBitPair:
-    basis: BB84Basis
+    basis: Basis
     bit: binary.Bit
 
 @dataclasses.dataclass
 class BasisQubitPair:
-    basis: BB84Basis
+    basis: Basis
     qubit: qdev.Qubit
 
 
-DEFAULT_BASIS_MAP: dict[BB84Basis, qst.QBasis] = {
-    BB84Basis.RECTLINEAR:qst.Z_BASIS,
-    BB84Basis.DIAGONAL:qst.X_BASIS
+DEFAULT_BASIS_MAP: dict[Basis, qst.QBasis] = {
+    Basis.RECTLINEAR:qst.Z_BASIS,
+    Basis.DIAGONAL:qst.X_BASIS
 }
 
 DEFAULT_VAL_MAP: dict[qst.QState, binary.Bit] = {
@@ -44,58 +50,51 @@ DEFAULT_VAL_MAP: dict[qst.QState, binary.Bit] = {
 }
 
 DEFAULT_ENCODING_OPS: dict[BasisBitPair, qgt.QGate] = {
-    BasisBitPair(BB84Basis.RECTLINEAR, binary.BIT_0) : qgt.I_GATE, # I|0⟩ = |0⟩
-    BasisBitPair(BB84Basis.RECTLINEAR, binary.BIT_1) : qgt.X_GATE, # X|0⟩
-    BasisBitPair(BB84Basis.DIAGONAL, binary.BIT_0)   : qgt.H_GATE, # H|0⟩
-    BasisBitPair(BB84Basis.DIAGONAL, binary.BIT_1)   : qgt.compose_gates([qgt.H_GATE, qgt.X_GATE]) # HX|0⟩
+    BasisBitPair(Basis.RECTLINEAR, binary.BIT_0) : qgt.I_GATE, # I|0⟩ = |0⟩
+    BasisBitPair(Basis.RECTLINEAR, binary.BIT_1) : qgt.X_GATE, # X|0⟩
+    BasisBitPair(Basis.DIAGONAL, binary.BIT_0)   : qgt.H_GATE, # H|0⟩
+    BasisBitPair(Basis.DIAGONAL, binary.BIT_1)   : qgt.compose_gates([qgt.H_GATE, qgt.X_GATE]) # HX|0⟩
 }
 
 @dataclasses.dataclass
-class BB84Config:
-    basis_map: dict[BB84Basis, qst.QBasis] = DEFAULT_BASIS_MAP
+class Config:
+    basis_map: dict[Basis, qst.QBasis] = DEFAULT_BASIS_MAP
     value_map: dict[qst.QState, binary.Bit] = DEFAULT_VAL_MAP
     ops: dict[BasisBitPair, qgt.QGate] = DEFAULT_ENCODING_OPS
 
 @dataclasses.dataclass(frozen=True)
-class BB84Encoder:
-    config: BB84Config
+class Encoder:
+    config: Config
     device: qdev.QuantumDevice
-    qubit: qdev.Qubit
     pair: BasisBitPair # NOTE: Should pair be part of this?
 
-    def __post__init(self):
-        # TODO: self.qubit not in self.device
-        if self.qubit.ref_id not in self.device.qubits.keys():
-            raise ValueError(f"BB84Encoder Configured With Foreign Qubit {self.qubit}")
-
 @dataclasses.dataclass(frozen=True)
-class BB84Encoding:
-    pair: BasisBitPair
+class Encoding:
     qubit: qdev.Qubit
 
 @dataclasses.dataclass(frozen=True)
-class BB84QuantumTransmitter:
+class QuantumTransmitter:
     device: qdev.QuantumDevice
     channel: chnl.Channel[qdev.Qubit]
-    encoding: BB84Encoding | None
+    encoding: Encoding | None
 
 @dataclasses.dataclass(frozen=True)
-class BB84BasisTransmitter:
-    channel: chnl.Channel[BB84Basis]
-    basis: BB84Basis | None
+class BasisTransmitter:
+    channel: chnl.Channel[Basis]
+    basis: Basis | None
 
 @dataclasses.dataclass(frozen=True)
-class BB84QuantumReciever:
+class QuantumReciever:
     device: qdev.QuantumDevice
     channel: chnl.Channel[qdev.Qubit]
 
 @dataclasses.dataclass(frozen=True)
-class BB84BasisReciever:
-    channel: chnl.Channel[BB84Basis]
+class BasisReciever:
+    channel: chnl.Channel[Basis]
 
 @dataclasses.dataclass(frozen=True)
-class BB84Decoder:
-    config: BB84Config
+class Decoder:
+    config: Config
     device: qdev.QuantumDevice
     pair: BasisQubitPair
 
@@ -106,56 +105,55 @@ class BB84Decoder:
     
 
 @dataclasses.dataclass(frozen=True)
-class BB84Decoding:
-    pair: BasisQubitPair
+class Decoding:
     bit: binary.Bit
 
 @dataclasses.dataclass(frozen=True)
-class BB84BasisPair:
-    basis1: BB84Basis
-    basis2: BB84Basis
+class BasisPair:
+    basis1: Basis
+    basis2: Basis
     
 
-def bb84_encode(encoder: BB84Encoder) -> BB84Encoding:
+def bb84_encode(encoder: Encoder) -> Encoding:
     qubit: qdev.Qubit = encoder.device.prepare_single_qubit(
                         qubit=encoder.qubit,
                         gate=encoder.config.ops[encoder.pair]
                     )
-    return BB84Encoding(encoder.pair, qubit)
+    return Encoding(encoder.pair, qubit)
 
 # TODO: This does not need to be a BB84 function
 #       I should implement sending and recieving operations on devices
 # TODO: Make this recursive once BB84Transmitter is vectorized
-def bb84_transmit_qubit(transmitter: BB84QuantumTransmitter) -> BB84QuantumTransmitter:
+def bb84_transmit_qubit(transmitter: QuantumTransmitter) -> QuantumTransmitter:
     if transmitter.encoding is None:
         return transmitter
     free_qubit = transmitter.device.pop_qubit(transmitter.encoding.qubit)
     transmitter.channel.send(free_qubit)
-    return BB84QuantumTransmitter(transmitter.device, transmitter.channel, None)
+    return QuantumTransmitter(transmitter.device, transmitter.channel, None)
 
 
-def bb84_recieve_qubit(reciever: BB84QuantumReciever) -> tuple[qdev.Qubit, BB84QuantumReciever]:
+def bb84_recieve_qubit(reciever: QuantumReciever) -> tuple[qdev.Qubit, QuantumReciever]:
     qubit = reciever.channel.recv()
     reciever.device.push_qubit(qubit)
-    return qubit, BB84QuantumReciever(reciever.device, reciever.channel)
+    return qubit, QuantumReciever(reciever.device, reciever.channel)
 
-def bb84_decode(decoder: BB84Decoder) -> BB84Decoding:
+def bb84_decode(decoder: Decoder) -> Decoding:
     measurement: qst.QState = decoder.device.measure_single_qubit(
                                 qubit=decoder.pair.qubit,
                                 basis=decoder.config.basis_map[decoder.pair.basis])
-    return BB84Decoding(decoder.pair, decoder.config.value_map[measurement])
+    return Decoding(decoder.pair, decoder.config.value_map[measurement])
 
-def bb84_transmit_basis(transmitter: BB84BasisTransmitter) -> BB84BasisTransmitter:
+def bb84_transmit_basis(transmitter: BasisTransmitter) -> BasisTransmitter:
     if transmitter.basis is None:
         return transmitter
-    return BB84BasisTransmitter(
+    return BasisTransmitter(
         transmitter.channel.send(transmitter.basis),
         None
     )
 
-def bb84_recv_basis(reciever: BB84BasisReciever) -> tuple[BB84Basis, BB84BasisReciever]:
+def bb84_recv_basis(reciever: BasisReciever) -> tuple[Basis, BasisReciever]:
     basis = reciever.channel.recv()
     return basis,reciever
 
-def bb84_validate(basis: BB84BasisPair) -> BB84Result:
-    return BB84Result(basis.basis1 == basis.basis2)
+def bb84_validate(basis: BasisPair) -> Result:
+    return Result(basis.basis1 == basis.basis2)
