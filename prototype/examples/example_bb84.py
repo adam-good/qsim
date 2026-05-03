@@ -1,4 +1,3 @@
-from src.quantum.algorithms.bb84 import BB84BasisReciever, BB84BasisTransmitter, BB84BasisPair
 import quantum.algorithms.random as qrand
 import quantum.algorithms.bb84 as bb84
 import quantum.device as qdev
@@ -29,7 +28,7 @@ def send_key(
             transmitter = bb84.BB84QuantumTransmitter(device, quant_send, encoding)
             _ = bb84.bb84_transmit_qubit(transmitter)
         
-        reciever = BB84BasisReciever(auth_recv)
+        reciever = bb84.BB84BasisReciever(auth_recv)
         remote_basis, _ = bb84.bb84_recv_basis(reciever)
 
         transmitter = bb84.BB84BasisTransmitter(auth_send, basis)
@@ -67,12 +66,13 @@ def recv_key(
         basis_reciever = bb84.BB84BasisReciever(auth_recv)
         remote_basis, basis_reciever = bb84.bb84_recv_basis(basis_reciever)
 
-        basis_pair = BB84BasisPair(remote_basis, basis)
+        basis_pair = bb84.BB84BasisPair(remote_basis, basis)
         result[i] = bb84.bb84_validate(basis_pair)
         if result[i] == bb84.BB84Result(True):
             key[i] = decoding.bit
 
-        
+
+    return bb84.BB84Result(all(result)), key
 
     
 
