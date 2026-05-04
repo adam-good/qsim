@@ -46,3 +46,7 @@ def generate_random_bits(
         result.extend(_batch_random_bits(batch_size, device))
         i += batch_size
     return result
+
+
+def random_bit(device: qdev.QuantumDevice) -> bit.Bit:
+    return generate_random_bits(1, device)[0]

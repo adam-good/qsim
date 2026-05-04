@@ -21,7 +21,7 @@ class QGate:
     def __matmul__(self, other: qst.QState) -> qst.QState: ...  # Gate Application
     def __matmul__(self, other: QGate | qst.QState) -> QGate | qst.QState:
         if isinstance(other, QGate):
-            return compose_gates(self, other)
+            return compose_gates([self, other])
         elif isinstance(other, qst.QState):
             return apply_gate(self, other)
         else:
@@ -29,16 +29,19 @@ class QGate:
 
 
 class Gates(enum.Enum):
-    H = 0
-    X = 1
+    I = enum.auto() # noqa: E741
+    H = enum.auto()
+    X = enum.auto()
 
-
+_identity_matrix = matrix.identity(2)
 _hadamard_matrix = matrix.Matrix(((1, 1), (1, -1))) * qst.HADAMARD_CONST
 _negate_matrix = matrix.Matrix(((0, 1), (1, 0)))
 
+I_GATE = QGate(_identity_matrix)
 H_GATE = QGate(_hadamard_matrix)
 X_GATE = QGate(_negate_matrix)
 COMMON_GATES: dict[Gates, QGate] = {
+    Gates.I: I_GATE,
     Gates.H: H_GATE,
     Gates.X: X_GATE,
 }
@@ -53,13 +56,3 @@ def compose_gates(gates: list[QGate]) -> QGate:
         return QGate(g1.matrix @ g2.matrix)
 
     return functools.reduce(_compose_gates, gates)
-
-
-def hgate(psi: qst.QState) -> qst.QState:
-    gate: QGate = COMMON_GATES[Gates.H]
-    return apply_gate(gate, psi)
-
-
-def xgate(psi: qst.QState) -> qst.QState:
-    gate: QGate = COMMON_GATES[Gates.X]
-    return apply_gate(gate, psi)

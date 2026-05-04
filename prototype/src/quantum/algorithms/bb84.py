@@ -1,0 +1,153 @@
+import dataclasses
+import utils.comms.channel as chnl
+import utils.math.binary as bin
+import quantum.state as qst
+import quantum.gate as qgt
+import quantum.device as qdev
+import quantum.algorithms.random as qrand
+import enum
+
+# TODO: This file needs to be made more simple
+# TODO: Expand to work in batches instead of single qubits
+# TODO: Privacy Amplification Algorithms???
+# TODO: Add Unit Tests!!!
+
+class Basis(enum.Enum):
+    RECTLINEAR = enum.auto()
+    DIAGONAL = enum.auto()
+
+class Result(enum.Enum):
+    SUCCESS = True
+    FAILURE = False
+
+@dataclasses.dataclass(frozen=True)
+class Key(bin.Bitstring): ...
+
+@dataclasses.dataclass
+class BasisBitPair:
+    basis: Basis
+    bit: bin.Bit
+
+@dataclasses.dataclass
+class BasisQubitPair:
+    basis: Basis
+    qubit: qdev.Qubit
+
+
+DEFAULT_BASIS_MAP: dict[Basis, qst.QBasis] = {
+    Basis.RECTLINEAR:qst.Z_BASIS,
+    Basis.DIAGONAL:qst.X_BASIS
+}
+
+DEFAULT_VAL_MAP: dict[qst.QState, bin.Bit] = {
+    qst.KET0: bin.BIT_0,
+    qst.KET1: bin.BIT_1,
+    qst.KETPLUS: bin.BIT_0,
+
+    qst.KETMINUS: bin.BIT_1,
+}
+
+DEFAULT_ENCODING_OPS: dict[BasisBitPair, qgt.QGate] = {
+    BasisBitPair(Basis.RECTLINEAR, bin.BIT_0) : qgt.I_GATE, # I|0⟩ = |0⟩
+    BasisBitPair(Basis.RECTLINEAR, bin.BIT_1) : qgt.X_GATE, # X|0⟩
+    BasisBitPair(Basis.DIAGONAL, bin.BIT_0)   : qgt.H_GATE, # H|0⟩
+    BasisBitPair(Basis.DIAGONAL, bin.BIT_1)   : qgt.compose_gates([qgt.H_GATE, qgt.X_GATE]) # HX|0⟩
+}
+
+@dataclasses.dataclass
+class Config:
+    basis_map: dict[Basis, qst.QBasis] = DEFAULT_BASIS_MAP
+    value_map: dict[qst.QState, bin.Bit] = DEFAULT_VAL_MAP
+    ops: dict[BasisBitPair, qgt.QGate] = DEFAULT_ENCODING_OPS
+
+@dataclasses.dataclass(frozen=True)
+class Encoder:
+    config: Config
+    device: qdev.QuantumDevice
+    qubit: qdev.Qubit
+    
+@dataclasses.dataclass(frozen=True)
+class Encoding:
+    qubit: qdev.Qubit
+
+@dataclasses.dataclass(frozen=True)
+class QuantumTransmitter:
+    device: qdev.QuantumDevice
+    channel: chnl.Channel[qdev.Qubit]
+
+@dataclasses.dataclass(frozen=True)
+class BasisTransmitter:
+    channel: chnl.Channel[Basis]
+    basis: Basis | None
+
+@dataclasses.dataclass(frozen=True)
+class QuantumReciever:
+    device: qdev.QuantumDevice
+    channel: chnl.Channel[qdev.Qubit]
+
+@dataclasses.dataclass(frozen=True)
+class BasisReciever:
+    channel: chnl.Channel[Basis]
+
+@dataclasses.dataclass(frozen=True)
+class Decoder:
+    config: Config
+    device: qdev.QuantumDevice
+
+@dataclasses.dataclass(frozen=True)
+class Decoding:
+    bit: bin.Bit
+
+@dataclasses.dataclass(frozen=True)
+class BasisPair:
+    basis1: Basis
+    basis2: Basis
+
+# TODO: add Quantum RNG Object as argument
+def key(device: qdev.QuantumDevice, n: int) -> Key:
+    return Key(tuple(bin.Bit(value) for value in qrand.generate_random_bits(n, device)) )
+
+def get_basis_bit_pairs(key: Key, basises: bin.Bitstring) -> tuple[BasisBitPair, ...]:
+    return tuple(BasisBitPair(basis, bit) for basis,bit in zip(basises, key))
+
+def encode(encoder: Encoder, data: BasisBitPair) -> Encoding:
+    qubit: qdev.Qubit = encoder.device.prepare_single_qubit(
+                        qubit=encoder.qubit,
+                        gate=encoder.config.ops[data]
+                    )
+    return Encoding(qubit)
+
+# TODO: This does not need to be a BB84 function
+#       I should implement sending and recieving operations on devices
+# TODO: Make this recursive once BB84Transmitter is vectorized
+def transmit_qubit(transmitter: QuantumTransmitter, qubit: qdev.Qubit) -> QuantumTransmitter:
+    free_qubit = transmitter.device.pop_qubit(qubit)
+    transmitter.channel.send(free_qubit)
+    return QuantumTransmitter(transmitter.device, transmitter.channel)
+
+
+def recieve_qubit(reciever: QuantumReciever) -> tuple[qdev.Qubit, QuantumReciever]:
+    qubit = reciever.channel.recv()
+    reciever.device.push_qubit(qubit)
+    return qubit, QuantumReciever(reciever.device, reciever.channel)
+
+def decode(decoder: Decoder, data: BasisQubitPair) -> Decoding:
+    measurement: qst.QState = decoder.device.measure_single_qubit(
+                                qubit=data.qubit,
+                                basis=decoder.config.basis_map[data.basis])
+    return Decoding(decoder.config.value_map[measurement])
+
+def transmit_basis(transmitter: BasisTransmitter) -> BasisTransmitter:
+    if transmitter.basis is None:
+        return transmitter
+    return BasisTransmitter(
+        transmitter.channel.send(transmitter.basis),
+        None
+    )
+
+def recv_basis(reciever: BasisReciever) -> tuple[Basis, BasisReciever]:
+    basis = reciever.channel.recv()
+    return basis,reciever
+
+def validate_basis(basis: BasisPair) -> Result:
+    return Result(basis.basis1 == basis.basis2)

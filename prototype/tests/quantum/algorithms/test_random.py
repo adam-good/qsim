@@ -33,6 +33,20 @@ class MockDevice(qdev.QuantumDevice):
         collapsed = qstate.collapse(basis, qubit._state)
         return collapsed
 
+    def pop_qubit(self, qubit: qdev.Qubit) -> qdev.Qubit:
+        assert qubit.ref_id in self._allocated
+        self._allocated.remove(qubit.ref_id)
+        return self._qubits[qubit.ref_id]
+
+    def push_qubit(self, qubit: qdev.Qubit):
+        assert qubit.ref_id not in self._allocated
+        self._qubits.append(qubit)
+        self._allocated.add(qubit.ref_id)
+
+    def transfer(self, device: qdev.QuantumDevice, qubit: qdev.Qubit):
+        qubit = self.pop_qubit(qubit)
+        device.push_qubit(qubit)
+
 
 class TestQRNG(unittest.TestCase):
     def test_qstate_to_bit_ket0(self):

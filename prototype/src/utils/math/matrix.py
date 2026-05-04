@@ -47,6 +47,10 @@ class Matrix:
     @overload
     def __matmul__(self, other: vector.Vector) -> vector.Vector: ...
     # TODO: Clean this up
+    @overload
+    def __matmul__(self, other: Matrix) -> Matrix: ...
+    @overload
+    def __matmul__(self, other: vector.Vector) -> vector.Vector: ...
     def __matmul__(self, other: Matrix | vector.Vector) -> Matrix | vector.Vector:
         if isinstance(other, Matrix):
             if n_cols(self) != n_rows(other):

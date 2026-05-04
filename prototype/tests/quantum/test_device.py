@@ -21,6 +21,21 @@ class TestDeviceImpl(qdev.QuantumDevice):
         super()._dealloc(qubit)
         self._dealloc_calls.append(qubit.ref_id)
 
+    def pop_qubit(self, qubit: qdev.Qubit) -> qdev.Qubit:
+        assert qubit.ref_id in self._allocated
+        self._allocated.remove(qubit.ref_id)
+        return self._qubits[qubit.ref_id]
+
+    def push_qubit(self, qubit: qdev.Qubit):
+        assert qubit.ref_id not in self._qubits
+        assert qubit.ref_id not in self._allocated
+        self._qubits.append(qubit)
+        self._allocated.add(qubit.ref_id)
+
+    def transfer(self, device: qdev.QuantumDevice, qubit: qdev.Qubit):
+        qubit = self.pop_qubit(qubit)
+        device.push_qubit(qubit)
+
 
 class TestQuantumDeviceInterface(unittest.TestCase):
     def test_alloc_single_context_manager(self):
