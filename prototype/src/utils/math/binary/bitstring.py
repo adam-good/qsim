@@ -3,7 +3,7 @@ from utils.math.binary import bit
 
 @dataclasses.dataclass(frozen=True)
 class Bitstring:
-    bits: list[bit.Bit]
+    bits: tuple[bit.Bit, ...]
 
     def __eq__(self, other: object) -> bool:
         if isinstance(other, Bitstring):

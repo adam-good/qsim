@@ -4,19 +4,13 @@ import utils.math.binary as bin
 import quantum.state as qst
 import quantum.gate as qgt
 import quantum.device as qdev
+import quantum.algorithms.random as qrand
 import enum
 
 # TODO: This file needs to be made more simple
 # TODO: Expand to work in batches instead of single qubits
 # TODO: Privacy Amplification Algorithms???
 # TODO: Add Unit Tests!!!
-
-@dataclasses.dataclass(frozen=True)
-class Key:
-    bits: list[bin.Bit | None]
-    
-    def __repr__(self):
-        return "".join( ('-' if k is None else str(k) for k in self.bits) )
 
 class Basis(enum.Enum):
     RECTLINEAR = enum.auto()
@@ -25,6 +19,9 @@ class Basis(enum.Enum):
 class Result(enum.Enum):
     SUCCESS = True
     FAILURE = False
+
+@dataclasses.dataclass(frozen=True)
+class Key(bin.Bitstring): ...
 
 @dataclasses.dataclass
 class BasisBitPair:
@@ -46,6 +43,7 @@ DEFAULT_VAL_MAP: dict[qst.QState, bin.Bit] = {
     qst.KET0: bin.BIT_0,
     qst.KET1: bin.BIT_1,
     qst.KETPLUS: bin.BIT_0,
+
     qst.KETMINUS: bin.BIT_1,
 }
 
@@ -104,7 +102,13 @@ class Decoding:
 class BasisPair:
     basis1: Basis
     basis2: Basis
-    
+
+# TODO: add Quantum RNG Object as argument
+def key(device: qdev.QuantumDevice, n: int) -> Key:
+    return Key(tuple(bin.Bit(value) for value in qrand.generate_random_bits(n, device)) )
+
+def get_basis_bit_pairs(key: Key, basises: bin.Bitstring) -> tuple[BasisBitPair, ...]:
+    return tuple(BasisBitPair(basis, bit) for basis,bit in zip(basises, key))
 
 def encode(encoder: Encoder, data: BasisBitPair) -> Encoding:
     qubit: qdev.Qubit = encoder.device.prepare_single_qubit(
