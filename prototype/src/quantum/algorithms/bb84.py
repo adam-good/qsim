@@ -1,6 +1,6 @@
 import dataclasses
 import utils.comms.channel as chnl
-import utils.math.bit as binary
+import utils.math.binary as bin
 import quantum.state as qst
 import quantum.gate as qgt
 import quantum.device as qdev
@@ -13,7 +13,7 @@ import enum
 
 @dataclasses.dataclass(frozen=True)
 class Key:
-    bits: list[binary.Bit | None]
+    bits: list[bin.Bit | None]
     
     def __repr__(self):
         return "".join( ('-' if k is None else str(k) for k in self.bits) )
@@ -29,7 +29,7 @@ class Result(enum.Enum):
 @dataclasses.dataclass
 class BasisBitPair:
     basis: Basis
-    bit: binary.Bit
+    bit: bin.Bit
 
 @dataclasses.dataclass
 class BasisQubitPair:
@@ -42,24 +42,24 @@ DEFAULT_BASIS_MAP: dict[Basis, qst.QBasis] = {
     Basis.DIAGONAL:qst.X_BASIS
 }
 
-DEFAULT_VAL_MAP: dict[qst.QState, binary.Bit] = {
-    qst.KET0: binary.BIT_0,
-    qst.KET1: binary.BIT_1,
-    qst.KETPLUS: binary.BIT_0,
-    qst.KETMINUS: binary.BIT_1,
+DEFAULT_VAL_MAP: dict[qst.QState, bin.Bit] = {
+    qst.KET0: bin.BIT_0,
+    qst.KET1: bin.BIT_1,
+    qst.KETPLUS: bin.BIT_0,
+    qst.KETMINUS: bin.BIT_1,
 }
 
 DEFAULT_ENCODING_OPS: dict[BasisBitPair, qgt.QGate] = {
-    BasisBitPair(Basis.RECTLINEAR, binary.BIT_0) : qgt.I_GATE, # I|0⟩ = |0⟩
-    BasisBitPair(Basis.RECTLINEAR, binary.BIT_1) : qgt.X_GATE, # X|0⟩
-    BasisBitPair(Basis.DIAGONAL, binary.BIT_0)   : qgt.H_GATE, # H|0⟩
-    BasisBitPair(Basis.DIAGONAL, binary.BIT_1)   : qgt.compose_gates([qgt.H_GATE, qgt.X_GATE]) # HX|0⟩
+    BasisBitPair(Basis.RECTLINEAR, bin.BIT_0) : qgt.I_GATE, # I|0⟩ = |0⟩
+    BasisBitPair(Basis.RECTLINEAR, bin.BIT_1) : qgt.X_GATE, # X|0⟩
+    BasisBitPair(Basis.DIAGONAL, bin.BIT_0)   : qgt.H_GATE, # H|0⟩
+    BasisBitPair(Basis.DIAGONAL, bin.BIT_1)   : qgt.compose_gates([qgt.H_GATE, qgt.X_GATE]) # HX|0⟩
 }
 
 @dataclasses.dataclass
 class Config:
     basis_map: dict[Basis, qst.QBasis] = DEFAULT_BASIS_MAP
-    value_map: dict[qst.QState, binary.Bit] = DEFAULT_VAL_MAP
+    value_map: dict[qst.QState, bin.Bit] = DEFAULT_VAL_MAP
     ops: dict[BasisBitPair, qgt.QGate] = DEFAULT_ENCODING_OPS
 
 @dataclasses.dataclass(frozen=True)
@@ -98,7 +98,7 @@ class Decoder:
 
 @dataclasses.dataclass(frozen=True)
 class Decoding:
-    bit: binary.Bit
+    bit: bin.Bit
 
 @dataclasses.dataclass(frozen=True)
 class BasisPair:
