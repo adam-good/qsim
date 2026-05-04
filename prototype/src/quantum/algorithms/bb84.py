@@ -106,7 +106,7 @@ class BasisPair:
     basis2: Basis
     
 
-def bb84_encode(encoder: Encoder, data: BasisBitPair) -> Encoding:
+def encode(encoder: Encoder, data: BasisBitPair) -> Encoding:
     qubit: qdev.Qubit = encoder.device.prepare_single_qubit(
                         qubit=encoder.qubit,
                         gate=encoder.config.ops[data]
@@ -127,13 +127,13 @@ def recieve_qubit(reciever: QuantumReciever) -> tuple[qdev.Qubit, QuantumRecieve
     reciever.device.push_qubit(qubit)
     return qubit, QuantumReciever(reciever.device, reciever.channel)
 
-def bb84_decode(decoder: Decoder, data: BasisQubitPair) -> Decoding:
+def decode(decoder: Decoder, data: BasisQubitPair) -> Decoding:
     measurement: qst.QState = decoder.device.measure_single_qubit(
                                 qubit=data.qubit,
                                 basis=decoder.config.basis_map[data.basis])
     return Decoding(decoder.config.value_map[measurement])
 
-def bb84_transmit_basis(transmitter: BasisTransmitter) -> BasisTransmitter:
+def transmit_basis(transmitter: BasisTransmitter) -> BasisTransmitter:
     if transmitter.basis is None:
         return transmitter
     return BasisTransmitter(
@@ -141,9 +141,9 @@ def bb84_transmit_basis(transmitter: BasisTransmitter) -> BasisTransmitter:
         None
     )
 
-def bb84_recv_basis(reciever: BasisReciever) -> tuple[Basis, BasisReciever]:
+def recv_basis(reciever: BasisReciever) -> tuple[Basis, BasisReciever]:
     basis = reciever.channel.recv()
     return basis,reciever
 
-def bb84_validate(basis: BasisPair) -> Result:
+def validate_basis(basis: BasisPair) -> Result:
     return Result(basis.basis1 == basis.basis2)
