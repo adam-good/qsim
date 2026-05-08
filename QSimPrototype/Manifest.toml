@@ -1,0 +1,10 @@
+# This file is machine-generated - editing it directly is not advised
+
+julia_version = "1.13.0-rc1"
+manifest_format = "2.1"
+project_hash = "2927699a21c7f7c1ce50b6ee4858b161097f1265"
+
+[[deps.QSim]]
+path = "."
+uuid = "e2966959-09c4-4ab2-8fa7-778662f0a0a5"
+version = "0.1.0"
