@@ -1,9 +1,9 @@
 module QSim
 
-export Scalar, QuantumState
+export Quantum
 
 include("Utils.jl")
 include("quantum/QuantumState.jl")
-
+using .Quantum
 
 end # module QSimPrototype
