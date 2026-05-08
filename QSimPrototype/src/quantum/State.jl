@@ -1,9 +1,9 @@
 module Quantum
 using ..Utils: Scalar
 
-export QuantumState
+export State
 
-struct QuantumState
+struct State
     vector::Vector{Scalar}
 end
 
