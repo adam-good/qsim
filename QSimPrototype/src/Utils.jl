@@ -24,5 +24,5 @@ angle2d(w::Vector)::Angle                              = angle2d(convert(Vector{
 angle2d(w::Vector, transform::Function)::Angle         = angle2d(convert(Vector{Scalar}, w), transform)
 angle2d(w::Vector{Scalar}, transform::Function)::Angle = transform(atand(y(w), x(w)))
 
-dotprod(w::Vector, v::Vector) = sum(w .* v)
+dotprod(w::Vector, v::Vector)::Scalar = sum(w .* v)
 end

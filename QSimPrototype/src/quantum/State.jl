@@ -16,16 +16,13 @@ struct State
     end
 end
 
-Base.show(io::IO, x::State) = begin
-    print(io,"|$(angle(x))⟩")
-end
+Base.show(io::IO, x::State) = print(io,"|$(angle(x))⟩")
 
-angle(ψ::State) = angle2d(ψ.vector)
-bloch_angle(ψ::State) = angle2d(ψ.vector, x -> 2*x)
+angle(ψ::State)::Angle          = angle2d(ψ.vector)
+bloch_angle(ψ::State)::Angle    = angle2d(ψ.vector, x -> 2*x)
 
-amplitude(ψ::State, ω::State) =  dotprod(ψ.vector, ω.vector)
-
-probability(ψ::State, ω::State) = amplitude(ψ,ω) ^ 2
+amplitude(ψ::State, ω::State)::Scalar   = dotprod(ψ.vector, ω.vector)
+probability(ψ::State, ω::State)::Scalar = amplitude(ψ,ω) ^ 2
 
 
 end # module Quantum
