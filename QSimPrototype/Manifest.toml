@@ -1,8 +1,8 @@
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.13.0-rc1"
+julia_version = "1.12.6"
 manifest_format = "2.1"
-project_hash = "2927699a21c7f7c1ce50b6ee4858b161097f1265"
+project_hash = "66b79877145258d10b4e5e0e6e434d9bab96b30d"
 
 [[deps.QSim]]
 path = "."
