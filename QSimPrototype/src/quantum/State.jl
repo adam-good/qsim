@@ -1,5 +1,5 @@
 module Quantum
-using ..Utils: Scalar, SatisfiesBornRule, angle2d
+using ..MathUtils
 
 export State
 
@@ -8,7 +8,7 @@ struct State
 
     function State(vector::Vector)
         vector = convert(Vector{Scalar}, vector)
-        if SatisfiesBornRule(vector)
+        if born_rule_constraint(vector)
             return new(vector)
         else
             throw(DomainError("$vector does not satisfy Born Rule"))
@@ -18,5 +18,10 @@ end
 
 angle(ψ::State) = angle2d(ψ.vector)
 bloch_angle(ψ::State) = angle2d(ψ.vector, x -> 2*x)
+
+amplitude(ψ::State, ω::State) =  dotprod(ψ.vector, ω.vector)
+
+probability(ψ::State, ω::State) = amplitude(ψ,ω) ^ 2
+
 
 end # module Quantum
