@@ -1,5 +1,5 @@
 module Quantum
-using ..Utils: Scalar, SatisfiesBornRule
+using ..Utils: Scalar, SatisfiesBornRule, angle2d
 
 export State
 
@@ -15,5 +15,8 @@ struct State
         end
     end
 end
+
+to_angle(ψ::State) = angle2d(ψ.vector)
+to_bloch_angle(ψ::State) = angle2d(ψ.vector, x -> 2*x)
 
 end # module Quantum

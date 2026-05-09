@@ -1,5 +1,7 @@
 module Utils
 
+export Scalar, Angle, angle2d
+
 const Scalar::DataType = AbstractFloat # NOTE: This will be updated to Complex later
 
 struct Angle
@@ -13,7 +15,7 @@ end
 
 Base.convert(::Type{Angle}, x::Real) = Angle(x)
 
-SatisfiesBornRule(w::Vector{Scalar})::Bool = sum(x^2 for x in w) == 1.0
+SatisfiesBornRule(w::Vector{Scalar})::Bool =  sum(x^2 for x in w) ≈ 1.0
 
 x(w::Vector{Scalar})::Scalar = w[1]
 y(w::Vector{Scalar})::Scalar = w[2]
