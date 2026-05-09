@@ -16,6 +16,10 @@ struct State
     end
 end
 
+Base.show(io::IO, x::State) = begin
+    print(io,"|$(angle(x))⟩")
+end
+
 angle(ψ::State) = angle2d(ψ.vector)
 bloch_angle(ψ::State) = angle2d(ψ.vector, x -> 2*x)
 

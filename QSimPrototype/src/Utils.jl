@@ -12,7 +12,7 @@ struct Angle
         new( (θ + 360) % 360 ) 
     end
 end
-
+Base.show(io::IO, x::Angle) = print(io, "$(x.value)°")
 Base.convert(::Type{Angle}, x::Real) = Angle(x)
 
 born_rule_constraint(w::Vector{Scalar})::Bool =  sum(x^2 for x in w) ≈ 1.0
