@@ -5,10 +5,9 @@ export Scalar, Angle, angle2d, dotprod, born_rule_constraint
 const Scalar::DataType = AbstractFloat # NOTE: This will be updated to Complex later
 
 struct Angle
-    value::Scalar
+    value::Real
 
     function Angle(θ::Real)::Angle
-        θ = convert(Scalar, θ)
         new( (θ + 360) % 360 ) 
     end
 end
