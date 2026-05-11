@@ -1,6 +1,6 @@
 module MathUtils
 
-export Scalar, Angle, angle2d, dotprod, born_rule_constraint
+export Scalar, Angle, Vector2, angle2d, dotprod, born_rule_constraint
 
 const Scalar::DataType = AbstractFloat # NOTE: This will be updated to Complex later
 
@@ -38,11 +38,11 @@ Base.getindex(w::Vector2, I::Vararg{Int, 2}) = getindex(w, I)
 
 born_rule_constraint(w::Vector2)::Bool =  sum(x^2 for x in w) ≈ 1.0
 
-x(w::Vector2)::Scalar = w[1]
-y(w::Vector2)::Scalar = w[2]
+x(w::Vector)::Scalar = w[1]
+y(w::Vector)::Scalar = w[2]
 
-angle2d(w::Vector)::Angle                              = angle2d(convert(Vector{Scalar},w), x -> x)
-angle2d(w::Vector, transform::Function)::Angle         = angle2d(convert(Vector{Scalar}, w), transform)
+angle2d(w::Vector)::Angle = angle2d(convert(Vector{Scalar},w), x -> x)
+angle2d(w::Vector, transform::Function)::Angle = angle2d(convert(Vector{Scalar}, w), transform)
 angle2d(w::Vector{Scalar}, transform::Function)::Angle = transform(atand(y(w), x(w)))
 
 dotprod(w::Vector, v::Vector)::Scalar = sum(w .* v)
