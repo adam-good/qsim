@@ -92,17 +92,17 @@ Return the Bloch sphere angle (twice the polar angle) of state `ψ`.
 bloch_angle(ψ::State)::Angle = polar_angle(vector(ψ), x -> 2 * x)
 
 """
-    amplitude(ψ, ω) -> Scalar
+    amplitude(ψ, ϕ) -> Scalar
 
-Compute the inner product ⟨ψ|ω⟩ between two states.
+Compute the inner product ⟨ϕ|ψ⟩ between two states.
 """
-amplitude(ψ::State, ω::State)::Scalar = dotprod(vector(ψ), vector(ω))
+amplitude(ψ::State, ϕ::State)::Scalar = dotprod(vector(ψ), vector(ϕ))
 
 """
-    probability(ψ, ω) -> Scalar
+    probability(ψ, ϕ) -> Scalar
 
-Compute the probability of measuring `ψ` in state `ω` via the Born rule.
+Compute the probability of measuring `ψ` in state `ϕ` via the Born rule.
 """
-probability(ψ::State, ω::State)::Scalar = amplitude(ψ, ω)^2
+probability(ψ::State, ϕ::State)::Scalar = amplitude(ψ, ϕ)^2
 
 end  # module Quantum
