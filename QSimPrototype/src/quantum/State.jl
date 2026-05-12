@@ -9,36 +9,6 @@ using ..MathUtils
 export State, angle, bloch_angle, amplitude, probability
 
 """
-    Basis
-
-Represents an orthonormal basis for a quantum Hilbert space.
-Each element is a state vector in `Vector{Scalar}` form.
-"""
-struct Basis
-    vectors::Vector{Vector{Scalar}}
-
-    function Basis(a::Vector, b::Vector)
-        a = convert(Vector{Scalar}, a)
-        b = convert(Vector{Scalar}, b)
-        return Basis([a, b])
-    end
-
-    function Basis(vecs::Vector{Vector{Scalar}})
-        # TODO: Check vectors are all orthogonal
-        return new(vecs)
-    end
-end
-
-Base.getindex(basis::Basis, idx) = basis.vectors[idx]
-
-"""
-    ZBasis
-
-The computational (Z) basis: `|0⟩ = [1, 0]` and `|1⟩ = [0, 1]`.
-"""
-const ZBasis = Basis([1, 0], [0, 1])
-
-"""
     State(α, β)
 
 Represents a quantum state with amplitudes `α` and `β`.
@@ -69,6 +39,34 @@ struct State
 end
 
 Base.show(io::IO, x::State) = print(io, "|$(angle(x))⟩")
+
+"""
+    KET0
+
+The Quantum State `|0⟩ = [1,0]`
+"""
+const KET0 = State(1,0)
+
+"""
+    KET1
+
+The Quantum State `|1⟩ = [0,1]`
+"""
+const KET1 = State(0,1)
+
+"""
+    KETPLUS
+
+The Quantum Superposition `|+⟩ = (|0⟩ + |1⟩) / √2`
+"""
+const KETPLUS = (vector(KET0) + vector(KET1)) / sqrt(2)
+
+"""
+    KETMINUS
+
+The Quantum Superposition `|-⟩ = (|0⟩ - |1⟩) / √2`
+"""
+const KETMINUS = (vector(KET0) - vector(KET1)) / sqrt(2)
 
 """
     vector(ψ, basis=ZBasis) -> Vector{Scalar}
