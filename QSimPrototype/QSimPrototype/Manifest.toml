@@ -1,0 +1,10 @@
+# This file is machine-generated - editing it directly is not advised
+
+julia_version = "1.12.6"
+manifest_format = "2.0"
+project_hash = "66b79877145258d10b4e5e0e6e434d9bab96b30d"
+
+[[deps.QSim]]
+path = "/home/agood/projects/qsim/QSimPrototype"
+uuid = "e2966959-09c4-4ab2-8fa7-778662f0a0a5"
+version = "0.1.0"

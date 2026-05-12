@@ -9,7 +9,7 @@ module QSim
 export Quantum
 
 include("Utils.jl")
-include("quantum/State.jl")
+include("quantum/Quantum.jl")
 using .Quantum
 
 end  # module QSim

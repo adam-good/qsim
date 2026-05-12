@@ -24,21 +24,13 @@ julia --project=QSimPrototype -e 'using Pkg; Pkg.update()'
 ### Running Tests
 
 ```bash
-# Run all tests (uses [extras] + [targets] in Project.toml)
-julia --project=QSimPrototype -e 'using Pkg; Pkg.test()'
+# Run all tests (direct include approach)
+julia --project=QSimPrototype -e 'using Test; include("test/runtests.jl")'
 
-# Run tests in a standalone test environment (for interactive testing)
-julia --project=test
-# Then: using Pkg; Pkg.instantiate(); using Test; include("runtests.jl")
+# Run tests with package precompiled first
+julia --project=QSimPrototype -e 'using Pkg; Pkg.precompile(); using Test; include("test/runtests.jl")'
 
-# Run a specific test file or function
-julia --project=QSimPrototype -e '
-    using Test
-    using QSim
-    include("test/runtests.jl")
-'
-
-# Run a single @testset
+# Run a specific @testset
 julia --project=QSimPrototype -e '
     using Test
     using QSim
@@ -251,15 +243,14 @@ end
 
 ```
 QSimPrototype/
-├── Project.toml          # Package manifest ([extras] + [targets] for tests)
+├── Project.toml          # Package manifest
 ├── Manifest.toml         # Dependency lockfile (do not edit manually)
 ├── src/
 │   ├── QSim.jl           # Main module, re-exports public API
 │   ├── Utils.jl          # MathUtils submodule (Angle, Vector2, etc.)
 │   └── quantum/
-│       └── State.jl      # Quantum submodule (State, Basis, etc.)
+│       └── Quantum.jl    # Quantum submodule (State, Basis, etc.)
 └── test/
-    ├── Project.toml      # Test-specific dependencies (workspace pattern)
     └── runtests.jl       # Test entry point
 ```
 
@@ -289,6 +280,7 @@ For larger projects, use the workspace pattern with `test/Project.toml`.
 ## Conventions
 
 - Quantum states: `State` struct with `α`, `β` amplitudes.
+- Polar angle of state via `state_angle()` (renamed to avoid conflict with `Base.angle`).
 - Bloch sphere angles via `bloch_angle()`.
 - Born rule constraint: `born_rule_constraint()`.
 - Ket notation for display: `|ψ⟩`.

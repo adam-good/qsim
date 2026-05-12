@@ -6,7 +6,7 @@ Provides geometric primitives, constraints, and linear algebra helpers.
 """
 module MathUtils
 
-export Scalar, Angle, polar_angle, dotprod, born_rule_constraint
+export Scalar, Angle, vec_x, vec_y, polar_angle, dotprod, born_rule_constraint
 
 """
     Scalar
