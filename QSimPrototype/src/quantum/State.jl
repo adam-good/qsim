@@ -59,7 +59,7 @@ struct State
     function State(α::Real, β::Real)
         α = Scalar(α)
         β = Scalar(β)
-        vec = Vector2([α, β])
+        vec = Vector([α, β])
         if born_rule_constraint(vec)
             return new(α, β)
         else
