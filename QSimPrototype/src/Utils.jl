@@ -6,7 +6,7 @@ Provides geometric primitives, constraints, and linear algebra helpers.
 """
 module MathUtils
 
-export Scalar, Angle, angle2d, dotprod, born_rule_constraint
+export Scalar, Angle, polar_angle, dotprod, born_rule_constraint
 
 """
     Scalar
@@ -59,9 +59,9 @@ vec_y(w::Vector)::Scalar = w[2]
 Compute the 2D angle of vector `w` from the positive x-axis, in degrees,
 after applying `transform` to the raw angle.
 """
-angle2d(w::Vector)::Angle = angle2d(convert(Vector{Scalar}, w), identity)
-angle2d(w::Vector, transform::Function)::Angle = angle2d(convert(Vector{Scalar}, w), transform)
-angle2d(w::Vector{Scalar}, transform::Function)::Angle = transform(atand(vec_y(w), vec_x(w)))
+polar_angle(w::Vector)::Angle = polar_angle(convert(Vector{Scalar}, w), identity)
+polar_angle(w::Vector, transform::Function)::Angle = polar_angle(convert(Vector{Scalar}, w), transform)
+polar_angle(w::Vector{Scalar}, transform::Function)::Angle = transform(atand(vec_y(w), vec_x(w)))
 
 """
     dotprod(w, v) -> Scalar

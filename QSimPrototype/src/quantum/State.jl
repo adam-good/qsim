@@ -82,14 +82,14 @@ vector(ψ::State, basis::Basis=ZBasis)::Vector{Scalar} = ψ.α * basis[1] + ψ.�
 
 Return the polar angle of state `ψ`.
 """
-angle(ψ::State)::Angle = angle2d(vector(ψ))
+angle(ψ::State)::Angle = polar_angle(vector(ψ))
 
 """
     bloch_angle(ψ) -> Angle
 
 Return the Bloch sphere angle (twice the polar angle) of state `ψ`.
 """
-bloch_angle(ψ::State)::Angle = angle2d(vector(ψ), x -> 2 * x)
+bloch_angle(ψ::State)::Angle = polar_angle(vector(ψ), x -> 2 * x)
 
 """
     amplitude(ψ, ω) -> Scalar
