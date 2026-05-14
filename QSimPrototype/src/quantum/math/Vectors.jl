@@ -20,8 +20,8 @@ export Vector2D, polar_angle
 Vector of the set ℝ² = {(x,y) | x,y ∈ ℝ}
 """
 struct Vector2D <: AbstractVector{Scalar}
-    x::Scalar
-    y::Scalar
+    _x::Scalar
+    _y::Scalar
     Vector2D(x, y) = return Vector2D(Scalar(x), Scalar(y))
     Vector2D(x::Scalar, y::Scalar) = return Vector2D([x,y])
     Vector2D(v::Vector) = return Vector2D(Vector{Scalar}(v))
@@ -35,15 +35,29 @@ end
 Base.size(::Vector2D) = return(2,)
 Base.getindex(v::Vector2D, i::Int) = begin
     if i == 1
-        return v.x
+        return vec_x(v)
     elseif  i == 2
-        return v.y
+        return vec_y(v)
     else
         error("index $i out of range for Vector2D $v")
     end
 end
-Base.:(+)(w::Vector2D, v::Vector2D) = Vector2D(w.x+v.x, w.y+v.y)
+Base.:(+)(w::Vector2D, v::Vector2D) = Vector2D(vec_x(w)+vec_x(v), vec_y(w)+vec_y(v))
 Base.:(*)(c::Scalar, w::Vector2D) = Vector2D(c * w.x, c * w.y)
+
+"""
+    vec_x(w) -> Scalar
+
+Returns the x element of w
+"""
+vec_x(w::Vector2D)::Scalar = return w._x
+
+"""
+    vec_y(w) -> Scalar
+
+Returns the y element of w
+"""
+vec_y(w::Vector2D)::Scalar = return w._y
 
 """
     polar_angle(w, transform) -> Angle
@@ -51,7 +65,7 @@ Base.:(*)(c::Scalar, w::Vector2D) = Vector2D(c * w.x, c * w.y)
 Compute the 2D angle of vector `w` from the positive x-axis, in degrees,
 after applying `transform` to the raw angle.
 """
-polar_angle(w::Vector2D, transform::Function)::Angle = Angle(transform(atand(w.y, w.x)))
+polar_angle(w::Vector2D, transform::Function)::Angle = Angle(transform(atand(vec_y(w), vec_x(w))))
 polar_angle(w::Vector, transform::Function)::Angle = polar_angle(Vector2D(w), transform)
 polar_angle(w::Vector)::Angle = polar_angle(w, identity)
 
