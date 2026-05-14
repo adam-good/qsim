@@ -6,10 +6,13 @@ a more concrete implementation.
 """
 module QSim
 
+export MathUtils
 export Quantum
 
-include("Utils.jl")
+include("MathUtils/MathUtils.jl")
 include("quantum/Quantum.jl")
+
+using .MathUtils
 using .Quantum
 
 end  # module QSim
