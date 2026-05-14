@@ -9,7 +9,7 @@ module QSim
 export MathUtils
 export Quantum
 
-include("MathUtils/MathUtils.jl")
+include("utils/MathUtils.jl")
 include("quantum/Quantum.jl")
 
 using .MathUtils
