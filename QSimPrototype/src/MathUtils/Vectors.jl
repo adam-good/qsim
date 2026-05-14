@@ -52,6 +52,7 @@ Compute the 2D angle of vector `w` from the positive x-axis, in degrees,
 after applying `transform` to the raw angle.
 """
 polar_angle(w::Vector2D, transform::Function)::Angle = Angle(transform(atand(w.y, w.x)))
-polar_angle(w::Vector2D)::Angle = polar_angle(w, identity)
+polar_angle(w::Vector, transform::Function)::Angle = polar_angle(Vector2D(w), transform)
+polar_angle(w::Vector)::Angle = polar_angle(w, identity)
 
 end # module Vector2D
