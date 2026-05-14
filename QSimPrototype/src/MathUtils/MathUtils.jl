@@ -5,8 +5,8 @@ export Vector2D, polar_angle
 export Angle
 
 include("HelperTypes.jl")
-include("Angle.jl")
-include("Vector2D.jl")
+include("Angles.jl")
+include("Vectors.jl")
 
 using .HelperTypes: Scalar
 using .VectorUtils: Vector2D, polar_angle
