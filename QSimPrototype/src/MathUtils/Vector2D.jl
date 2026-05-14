@@ -10,8 +10,9 @@ V: (ℝ², +, ⋅)
 module VectorUtils
 
 using ..HelperTypes: Scalar
+using ..Angles: Angle
 
-export Vector2D
+export Vector2D, polar_angle
 
 """
     Vector2D
@@ -43,5 +44,14 @@ Base.getindex(v::Vector2D, i::Int) = begin
 end
 Base.:(+)(w::Vector2D, v::Vector2D) = Vector2D(w.x+v.x, w.y+v.y)
 Base.:(*)(c::Scalar, w::Vector2D) = Vector2D(c * w.x, c * w.y)
+
+"""
+    polar_angle(w, transform) -> Angle
+
+Compute the 2D angle of vector `w` from the positive x-axis, in degrees,
+after applying `transform` to the raw angle.
+"""
+polar_angle(w::Vector2D, transform::Function)::Angle = Angle(transform(atand(w.y, w.x)))
+polar_angle(w::Vector2D)::Angle = polar_angle(w, identity)
 
 end # module Vector2D
