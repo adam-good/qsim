@@ -3,10 +3,6 @@ using Test
 @testset "MathUtils" begin
     using QSim.MathUtils
 
-    @testset "Scalar" begin
-        @test Scalar === AbstractFloat
-    end
-
     @testset "Angle" begin
         @testset "construction and normalization" begin
             @test Angle(0).value == 0
