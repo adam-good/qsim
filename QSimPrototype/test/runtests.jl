@@ -32,4 +32,11 @@ using Test
             @test polar_angle([1.0, 1.0], x -> 2 * x).value == 90
         end
     end
+
+    @testset "is_normalized" begin
+        @test is_normalized([1.0, 0.0]) == true
+        @test is_normalized([0.0, 1.0]) == true
+        @test is_normalized([1/sqrt(2), 1/sqrt(2)]) == true
+        @test is_normalized([1.0, 1.0]) == false
+    end
 end

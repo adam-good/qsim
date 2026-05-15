@@ -11,7 +11,7 @@ module VectorUtils
 
 using ..Angles: Angle
 
-export Vector2D, polar_angle
+export Vector2D, polar_angle, is_normalized
 
 """
     Vector2D
@@ -70,5 +70,12 @@ polar_angle(w::Vector2D, transform::Function)::Angle = begin
     y = real(vec_y(w))
     return Angle(transform(atand(y,x)))
 end
+
+"""
+   is_normalized(w) -> bool
+
+Checks whether vector is normalized, meaning it has a magnitude of 1
+"""
+is_normalized(w::Vector) = sum(x^2 for x in w) ≈ 1.0
 
 end # module Vector2D
