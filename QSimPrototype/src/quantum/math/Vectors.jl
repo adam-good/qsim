@@ -11,7 +11,7 @@ module VectorUtils
 
 using ..Angles: Angle
 
-export Vector2D, polar_angle, is_normalized
+export Vector2D, polar_angle, magnitude, is_normalized
 
 """
     Vector2D
@@ -48,14 +48,14 @@ Base.:(*)(c::Complex, w::Vector2D) = Vector2D(c * w.x, c * w.y)
 
 Returns the x element of w
 """
-vec_x(w::Vector2D)::Complex = return w._x
+vec_x(w::Vector2D)::Complex = w._x
 
 """
     vec_y(w) -> Scalar
 
 Returns the y element of w
 """
-vec_y(w::Vector2D)::Complex = return w._y
+vec_y(w::Vector2D)::Complex = w._y
 
 """
     polar_angle(w, transform) -> Angle
@@ -72,10 +72,17 @@ polar_angle(w::Vector2D, transform::Function)::Angle = begin
 end
 
 """
+    magnitude(w) -> real
+
+Compute the magnitude of w
+"""
+magnitude(w::Vector)::Real = sum(x^2 for x in w)
+
+"""
    is_normalized(w) -> bool
 
 Checks whether vector is normalized, meaning it has a magnitude of 1
 """
-is_normalized(w::Vector) = sum(x^2 for x in w) ≈ 1.0
+is_normalized(w::Vector) = magnitude(w) ≈ 1.0
 
 end # module Vector2D
