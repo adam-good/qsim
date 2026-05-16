@@ -49,6 +49,13 @@ end
         @testset "construction" begin
             @test QState([1,0]).vec == [1,0]
         end
+
+        @testset "show" begin
+            @test sprint(show, QState([1,0])) == "Quantum State\n  α=1\n  β=0"
+            @test sprint(show, QState([0,1])) == "Quantum State\n  α=0\n  β=1"
+            @test sprint(show, QState([1,1] / sqrt(2))) == "Quantum State\n  α=$(1/sqrt(2))\n  β=$(1/sqrt(2))"
+            @test sprint(show, QState([1,-1] / sqrt(2))) == "Quantum State\n  α=$(1/sqrt(2))\n  β=$(-1/sqrt(2))"
+        end
         
     end
 end

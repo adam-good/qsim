@@ -12,6 +12,7 @@ Quantum State represented as a 2 Dimensional Vector
 struct QState
     vec::Vector2D
 
+    QState(α::Complex, β::Complex) = QState([α, β])
     QState(vec::Vector) = QState(Vector2D(vec))
     QState(vec::Vector2D) = begin
         if !is_normalized(vec)
@@ -20,6 +21,13 @@ struct QState
         return new(vec)
     end
 end
+
+Base.show(io::IO, ψ::QState) = print(io, "Quantum State\n  α=$(real(ψ.vec[1]))\n  β=$(real(ψ.vec[2]))")
+
+const KET0 = QState([1,0])
+const KET1 = QState([0,1])
+const KETPLUS = QState([1,1] / sqrt(2))
+const KETMINUS = QState([1,-1] / sqrt(2))
 
 """
     qstate_α(ψ) -> Scalar
