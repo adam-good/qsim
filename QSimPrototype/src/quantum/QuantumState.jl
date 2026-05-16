@@ -2,7 +2,7 @@ module QuantumStates
 
 using ..MathUtils: Vector2D, is_normalized
 
-export QState
+export QState, KET0, KET1, KETMINUS, KETPLUS
 
 """
     QState
