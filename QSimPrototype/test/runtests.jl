@@ -40,3 +40,15 @@ using Test
         @test is_normalized([1.0, 1.0]) == false
     end
 end
+
+@testset "Quantum" begin
+    using QSim.Quantum
+
+    @testset "QState" begin
+        
+        @testset "construction" begin
+            @test QState([1,0]).vec == [1,0]
+        end
+        
+    end
+end
