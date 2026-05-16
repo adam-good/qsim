@@ -63,8 +63,8 @@ vec_y(w::Vector2D)::Complex = w._y
 Compute the 2D angle of vector `w` from the positive x-axis, in degrees,
 after applying `transform` to the raw angle.
 """
-polar_angle(w::Vector, transform::Function)::Angle = polar_angle(Vector2D(w), transform)
-polar_angle(w::Vector)::Angle = polar_angle(w, identity)
+polar_angle(w::AbstractVector, transform::Function)::Angle = polar_angle(Vector2D(w), transform)
+polar_angle(w::AbstractVector)::Angle = polar_angle(w, identity)
 polar_angle(w::Vector2D, transform::Function)::Angle = begin
     x = real(vec_x(w))
     y = real(vec_y(w))
@@ -76,13 +76,13 @@ end
 
 Compute the magnitude of w
 """
-magnitude(w::Vector)::Real = sum(x^2 for x in w)
+magnitude(w::AbstractVector)::Real = sum(x^2 for x in w)
 
 """
    is_normalized(w) -> bool
 
 Checks whether vector is normalized, meaning it has a magnitude of 1
 """
-is_normalized(w::Vector) = magnitude(w) ≈ 1.0
+is_normalized(w::AbstractVector) = magnitude(w) ≈ 1.0
 
 end # module Vector2D
