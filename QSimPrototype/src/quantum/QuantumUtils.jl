@@ -9,7 +9,7 @@ export MathUtils
 export QState, KET0, KET1, KETPLUS, KETMINUS
 
 include("math/MathUtils.jl")
-include("QuantumState.jl")
+include("State.jl")
 
 using .MathUtils
 using .QuantumStates: QState, KET0, KET1, KETPLUS, KETMINUS
