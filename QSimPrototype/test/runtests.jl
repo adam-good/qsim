@@ -1,5 +1,7 @@
 using Test
 
+include("matrices.jl")
+
 @testset "MathUtils" begin
     using QSim.MathUtils
 
@@ -39,6 +41,7 @@ using Test
         @test is_normalized([1/sqrt(2), 1/sqrt(2)]) == true
         @test is_normalized([1.0, 1.0]) == false
     end
+
 end
 
 @testset "Quantum" begin
