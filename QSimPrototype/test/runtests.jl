@@ -1,24 +1,10 @@
 using Test
 
-include("matrices.jl")
+include("test_Angles.jl")
+include("test_Matrices.jl")
 
 @testset "MathUtils" begin
     using QSim.MathUtils
-
-    @testset "Angle" begin
-        @testset "construction and normalization" begin
-            @test Angle(0).value == 0
-            @test Angle(360).value == 0
-            @test Angle(720).value == 0
-            @test Angle(45).value == 45
-            @test Angle(-45).value == 315
-            @test Angle(450).value == 90
-        end
-
-        @testset "show" begin
-            @test sprint(show, Angle(45)) == "45°"
-        end
-    end
 
     @testset "polar_angle" begin
         @testset "with identity transform" begin
