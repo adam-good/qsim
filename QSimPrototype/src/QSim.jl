@@ -6,9 +6,12 @@ a more concrete implementation.
 """
 module QSim
 
-export Quantum, MathUtils
-include("quantum/QuantumUtils.jl")
+export Quantum, CoreMath 
+
+include("CoreMath/CoreMath.jl")
+include("Quantum/Quantum.jl")
+
+using .CoreMath
 using .Quantum
-using .Quantum: MathUtils
 
 end  # module QSim

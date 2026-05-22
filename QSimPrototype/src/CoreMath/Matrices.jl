@@ -29,15 +29,22 @@ Base.getindex(A::UnitaryMatrix, i::Vararg{Int, 2}) = A.mat[i...]
 
 nrows(m::AbstractMatrix)::Int = size(m, 1)
 ncols(m::AbstractMatrix)::Int = size(m, 2)
-is_2d(m::AbstractMatrix)::Bool = ndims(m) == 2
-is_square(m::AbstractMatrix)::Bool = is_2d(m) && nrows(m) == ncols(m)
+is_square(m::AbstractMatrix)::Bool = nrows(m) == ncols(m)
 
-identity(rows::Int, cols::Int)::Matrix = begin
-    [ i == j ? 1 : 0 for i = 1:rows, j = 1:cols ]
+"""
+    identity(n) -> Matrix
+
+Generate the identity matrix of size nxn
+"""
+identity(n::Int)::Matrix = begin
+    [ i == j ? 1 : 0 for i = 1:n, j = 1:n ]
 end 
 conjugate_transpose(m::AbstractMatrix)::AbstractMatrix = conj.(transpose(m))
 is_unitary(m::AbstractMatrix)::Bool = begin
-    conjugate_transpose(m) * m ≈ identity(nrows(m), ncols(m))
+    if !is_square(m)
+       return false 
+    end
+    conjugate_transpose(m) * m ≈ identity(nrows(m))
 end
 
 end #module MatrixUtils

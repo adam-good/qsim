@@ -1,7 +1,7 @@
 using Test
 
 @testset "Angle Unittests" begin
-    using QSim.MathUtils.Angles: Angle
+    using QSim.CoreMath.Angles: Angle
 
     @testset "Angle" begin
         

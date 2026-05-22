@@ -1,6 +1,6 @@
 module QuantumStates
 
-using ..MathUtils: Vector2D, is_normalized
+using ..CoreMath: Scalar, scalar, Vector2D, is_normalized
 
 export QState, KET0, KET1, KETMINUS, KETPLUS
 
@@ -12,7 +12,7 @@ Quantum State represented as a 2 Dimensional Vector
 struct QState
     vec::Vector2D
 
-    QState(α::Complex, β::Complex) = QState([α, β])
+    QState(α::Number, β::Number) = QState(Vector2D(α, β))
     QState(vec::Vector) = QState(Vector2D(vec))
     QState(vec::Vector2D) = begin
         if !is_normalized(vec)
@@ -34,14 +34,14 @@ const KETMINUS = QState([1,-1] / sqrt(2))
 
 Computes the probability amplitude α associated with |0⟩
 """
-qstate_α(state::QState)::Complex = state.vec[1]
+qstate_α(state::QState)::Scalar = state.vec[1]
 
 """
    qstate_β
 
 Computes the probability amplitude β associated with |1⟩
 """
-qstate_β(state::QState)::Complex = state.vec[2]
+qstate_β(state::QState)::Scalar = state.vec[2]
 
 """
     amplitudes(ψ) -> (α, β)
