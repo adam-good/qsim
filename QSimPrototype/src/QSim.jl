@@ -6,7 +6,7 @@ a more concrete implementation.
 """
 module QSim
 
-export Quantum, CoreMath 
+export Quantum, CoreMath
 
 include("CoreMath/CoreMath.jl")
 include("Quantum/Quantum.jl")

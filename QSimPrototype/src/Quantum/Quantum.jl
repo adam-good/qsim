@@ -5,9 +5,12 @@ Quantum mechanics primitives: states, bases, and measurement operations.
 """
 module Quantum
 
-using ..CoreMath
-
 export QState, KET0, KET1, KETPLUS, KETMINUS
+
+using ..CoreMath:
+    ScalarUtils as Scalars,
+    VectorUtils as Vectors,
+    CoreMathErrors as MathErrors
 
 include("State.jl")
 

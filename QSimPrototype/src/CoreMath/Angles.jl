@@ -1,4 +1,4 @@
-module Angles
+module AngleUtils
 
 export Angle
 
@@ -17,5 +17,5 @@ end
 Base.show(io::IO, θ::Angle) = print(io, "$(θ.value)°")
 Base.:(+)(θ::Angle, ϕ::Angle) = Angle(θ.value + ϕ.value)
 Base.:(-)(θ::Angle, ϕ::Angle) = Angle(θ.value - ϕ.value)
- 
+
 end

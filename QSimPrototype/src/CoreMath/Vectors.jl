@@ -1,5 +1,5 @@
 """
-   VectorUtils 
+   VectorUtils
 
 Submodule of MathUtils to define a Vector Space V for QSim
 V: (𝕊², +, ⋅)
@@ -10,7 +10,7 @@ V: (𝕊², +, ⋅)
 module VectorUtils
 
 using ..ScalarUtils: Scalar, scalar
-using ..Angles: Angle
+using ..AngleUtils: Angle
 
 export Vector2D, polar_angle, norm2, is_normalized
 
@@ -27,21 +27,21 @@ struct Vector2D <: AbstractVector{Scalar}
         if length(v) != 2
             error("Vector2D must be 2 dimensional")
         end
-        return Vector2D(v[1], v[2]) 
+        return Vector2D(v[1], v[2])
     end
     Vector2D(x, y) = return new(scalar(x), scalar(y))
 end
-Base.size(::Vector2D) = return(2,)
+Base.size(::Vector2D) = return (2,)
 Base.getindex(v::Vector2D, i::Int) = begin
     if i == 1
         return vec_x(v)
-    elseif  i == 2
+    elseif i == 2
         return vec_y(v)
     else
         error("index $i out of range for Vector2D $v")
     end
 end
-Base.:(+)(w::Vector2D, v::Vector2D) = Vector2D(w.x+v.x, w.y+v.y)
+Base.:(+)(w::Vector2D, v::Vector2D) = Vector2D(w.x + v.x, w.y + v.y)
 Base.:(*)(c::Scalar, w::Vector2D) = Vector2D(c * w.x, c * w.y)
 Base.:(==)(w::Vector2D, v::AbstractVector) = (w.x, w.y) == (v[1], v[2])
 
@@ -61,6 +61,7 @@ Returns the y element of w
 vec_y(w::AbstractVector) = w[2]
 vec_y(w::Vector2D)::Scalar = w.y
 
+# TODO: I think polar_angle should exist elsewhere because it combines Vectors and Angles
 """
     polar_angle(w, transform) -> Angle
 
@@ -71,13 +72,13 @@ polar_angle(w::AbstractVector)::Angle = polar_angle(w, identity)
 polar_angle(w::AbstractVector, transform::Function)::Angle = begin
     x = vec_x(w)
     y = vec_y(w)
-    return Angle(transform(atand(y,x)))
+    return Angle(transform(atand(y, x)))
 end
 
 """
-    norm2(w) -> ??? 
+    norm2(w) -> ???
 
-Compute the norm squared |w|² 
+Compute the norm squared |w|²
 """
 norm2(w::AbstractVector) = sum(x^2 for x in w)
 

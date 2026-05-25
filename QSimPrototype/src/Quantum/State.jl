@@ -1,6 +1,8 @@
 module QuantumStates
 
-using ..CoreMath: Scalar, scalar, Vector2D, is_normalized
+using ..Scalars: Scalar
+using ..Vectors: Vector2D, is_normalized
+using ..MathErrors: VectorNotNormalException
 
 export QState, KET0, KET1, KETMINUS, KETPLUS
 
@@ -16,7 +18,7 @@ struct QState
     QState(vec::Vector) = QState(Vector2D(vec))
     QState(vec::Vector2D) = begin
         if !is_normalized(vec)
-            error("Vector of Quantum State must be normal")
+            throw(VectorNotNormalException())
         end
         return new(vec)
     end
@@ -24,10 +26,10 @@ end
 
 Base.show(io::IO, ψ::QState) = print(io, "Quantum State\n  α=$(real(ψ.vec[1]))\n  β=$(real(ψ.vec[2]))")
 
-const KET0 = QState([1,0])
-const KET1 = QState([0,1])
-const KETPLUS = QState([1,1] / sqrt(2))
-const KETMINUS = QState([1,-1] / sqrt(2))
+const KET0 = QState([1, 0])
+const KET1 = QState([0, 1])
+const KETPLUS = QState([1, 1] / sqrt(2))
+const KETMINUS = QState([1, -1] / sqrt(2))
 
 """
     qstate_α(ψ) -> Scalar
