@@ -1,10 +1,7 @@
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.12.6"
+julia_version = "1.11.9"
 manifest_format = "2.1"
-project_hash = "66b79877145258d10b4e5e0e6e434d9bab96b30d"
+project_hash = "da39a3ee5e6b4b0d3255bfef95601890afd80709"
 
-[[deps.QSim]]
-path = "."
-uuid = "e2966959-09c4-4ab2-8fa7-778662f0a0a5"
-version = "0.1.0"
+[deps]
