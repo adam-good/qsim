@@ -10,7 +10,8 @@ using Test
         end
 
         @testset "construction error" begin
-            @test_throws ErrorException("Unitary Matrix Isn't Unitary") UnitaryMatrix([1 2; 3 4])
+            using QSim.CoreMath.CoreMathErrors: MatrixNotUnitaryException
+            @test_throws MatrixNotUnitaryException UnitaryMatrix([1 2; 3 4])
         end
 
         @testset "size" begin

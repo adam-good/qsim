@@ -5,6 +5,8 @@ Submodule of MathUtils to define Unitary Operators on Vector Space V for QSim
 """
 module MatrixUtils
 
+using ..CoreMathErrors: MatrixNotUnitaryException
+
 export UnitaryMatrix, conjugate_transpose
 
 """
@@ -17,8 +19,7 @@ struct UnitaryMatrix <: AbstractMatrix{Complex}
 
     function UnitaryMatrix(matrix::AbstractMatrix)
         if !is_unitary(matrix)
-
-            error("Unitary Matrix Isn't Unitary")
+            throw(MatrixNotUnitaryException())
         end
         return new(matrix)
     end
