@@ -17,6 +17,7 @@ struct QState
     QState(α::Number, β::Number) = QState(Vector2D(α, β))
     QState(vec::Vector) = QState(Vector2D(vec))
     QState(vec::Vector2D) = begin
+        # TODO: Just make NormalVector a type
         if !is_normalized(vec)
             throw(VectorNotNormalException())
         end
