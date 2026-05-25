@@ -39,6 +39,15 @@ Base.:(*)(x::Number, y::Scalar) = scalar(x * y.val)
 Base.:(/)(x::Number, y::Scalar) = scalar(x / y.val)
 Base.:(^)(x::Number, y::Scalar) = scalar(x^y.val)
 
+Base.convert(::Type{Scalar}, x::Int64) = Scalar(x)
+Base.show(io::IO, x::Scalar) = print(io, "$(x.val)")
+Base.show(io::IO, w::AbstractVector{Scalar}) = begin
+    for x in w
+        print(io, "$x ")
+    end
+    print(io, "\n")
+end
+
 scalar(x::Scalar) = x
 scalar(x) = Scalar(x)
 
