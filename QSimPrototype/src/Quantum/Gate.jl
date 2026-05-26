@@ -1,6 +1,6 @@
 module QuantumGates
 
-using Base: beginsym
+using ..QuantumStates: QState
 using ..Matrices: UnitaryMatrix
 
 struct QGate
@@ -14,5 +14,8 @@ Base.show(io::IO, U::QGate) = begin
         print(io, "    $row")
     end
 end
+
+Base.:(*)(U::QGate, V::QGate)::QGate = QGate(U.mat * V.mat)
+Base.:(*)(U::QGate, ψ::QState)::QState = QState(U.mat * ψ.vec)
 
 end # module QuantumGates
