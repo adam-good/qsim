@@ -14,7 +14,8 @@ Base.show(io::IO, U::QGate) = begin
         print(io, "    $row")
     end
 end
-
+Base.isapprox(x::QGate, y::QGate)::Bool = isapprox(x.mat, y.mat)
+Base.:(==)(x::QGate, y::QGate)::Bool = isapprox(x,y)
 Base.:(*)(U::QGate, V::QGate)::QGate = QGate(U.mat * V.mat)
 Base.:(*)(U::QGate, ψ::QState)::QState = QState(U.mat * ψ.vec)
 
