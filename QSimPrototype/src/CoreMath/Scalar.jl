@@ -12,32 +12,42 @@ export Scalar, scalar
 
 Currently ℝ but will soon be Upgraded to ℂ
 """
-struct Scalar
-    val::AbstractFloat # TODO: Upgrade this to Complex eventually
+struct Scalar <: Real
+    val::Float64 # TODO: Upgrade this to Complex eventually
 end
 
-Base.:(≈)(x::Scalar, y::Float64) = isapprox(x.val, y)
+# TODO: Needs updated when Scalar is upgraded to complex
+Base.Float64(x::Scalar)::Float64 = x.val
+Base.float(x::Scalar)::AbstractFloat = x.val
+
+Base.isapprox(x::Scalar, y::Scalar) = isapprox(x.val, y.val)
+Base.isapprox(x::Scalar, y::AbstractFloat) = isapprox(x.val, y)
+Base.isapprox(x::Scalar, y::Int) = isapprox(x.val, y)
 
 Base.:(==)(x::Scalar, y::Scalar) = isapprox(x.val, y.val)
 Base.:(+)(x::Scalar, y::Scalar) = scalar(x.val + y.val)
 Base.:(-)(x::Scalar, y::Scalar) = scalar(x.val - y.val)
 Base.:(*)(x::Scalar, y::Scalar) = scalar(x.val * y.val)
 Base.:(/)(x::Scalar, y::Scalar) = scalar(x.val / y.val)
-Base.:(^)(x::Scalar, y::Scalar) = scalar(x.val^y.val)
+Base.:(^)(x::Scalar, y::Scalar) = scalar(x.val ^ y.val)
 
-Base.:(==)(x::Scalar, y::Number) = isapprox(x.val, y)
-Base.:(+)(x::Scalar, y::Number) = scalar(x.val + y)
-Base.:(-)(x::Scalar, y::Number) = scalar(x.val - y)
-Base.:(*)(x::Scalar, y::Number) = scalar(x.val * y)
-Base.:(/)(x::Scalar, y::Number) = scalar(x.val / y)
-Base.:(^)(x::Scalar, y::Number) = scalar(x.val^y)
+Base.:(==)(x::Scalar, y::Real) = isapprox(x.val, y)
+Base.:(+)(x::Scalar, y::Real) = scalar(x.val + y)
+Base.:(-)(x::Scalar, y::Real) = scalar(x.val - y)
+Base.:(*)(x::Scalar, y::Real) = scalar(x.val * y)
+Base.:(/)(x::Scalar, y::Real) = scalar(x.val / y)
+# Base.:(^)(x::Scalar, y::Real) = scalar(x.val^y)
 
-Base.:(==)(x::Number, y::Scalar) = isapprox(x.val, y)
-Base.:(+)(x::Number, y::Scalar) = scalar(x + y.val)
-Base.:(-)(x::Number, y::Scalar) = scalar(x - y.val)
-Base.:(*)(x::Number, y::Scalar) = scalar(x * y.val)
-Base.:(/)(x::Number, y::Scalar) = scalar(x / y.val)
-Base.:(^)(x::Number, y::Scalar) = scalar(x^y.val)
+Base.:(==)(x::Real, y::Scalar) = isapprox(x.val, y)
+Base.:(+)(x::Real, y::Scalar) = scalar(x + y.val)
+Base.:(-)(x::Real, y::Scalar) = scalar(x - y.val)
+Base.:(*)(x::Real, y::Scalar) = scalar(x * y.val)
+Base.:(/)(x::Real, y::Scalar) = scalar(x / y.val)
+# Base.:(^)(x::Real, y::Scalar) = scalar(x^y.val)
+
+Base.zero(::Scalar) = Scalar(0)
+Base.transpose(x::Scalar) = x
+Base.conj(x::Scalar) = x # TODO: This must change when Scalar is upgraded to complex
 
 Base.convert(::Type{Scalar}, x::Int64) = Scalar(x)
 Base.convert(::Type{Scalar}, x::Float64) = Scalar(x)
