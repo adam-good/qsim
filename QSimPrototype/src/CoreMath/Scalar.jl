@@ -40,6 +40,8 @@ Base.:(/)(x::Number, y::Scalar) = scalar(x / y.val)
 Base.:(^)(x::Number, y::Scalar) = scalar(x^y.val)
 
 Base.convert(::Type{Scalar}, x::Int64) = Scalar(x)
+Base.convert(::Type{Scalar}, x::Float64) = Scalar(x)
+
 Base.show(io::IO, x::Scalar) = print(io, "$(x.val)")
 Base.show(io::IO, w::AbstractVector{Scalar}) = begin
     for x in w
