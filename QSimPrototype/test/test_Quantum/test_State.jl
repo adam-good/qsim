@@ -1,7 +1,6 @@
 using Test
 
 @testset "Quantum State Unittests" begin
-    using QSim.CoreMath: Vector2D
 
     @testset "QState" begin
         using QSim.Quantum.QuantumStates: QState
