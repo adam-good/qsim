@@ -47,7 +47,9 @@ is_unitary(m::AbstractMatrix)::Bool = begin
     if !is_square(m)
         return false
     end
-    conjugate_transpose(m) * m ≈ identity_matrix(nrows(m))
+    #TODO: Why isn't isapprox working???
+    # isapprox(conjugate_transpose(m)*m, identity_matrix(nrows(m)))
+    all([isapprox(a,b) for (a,b) in zip(conjugate_transpose(m)*m, identity_matrix(nrows(m)))])
 end
 
 end #module MatrixUtils

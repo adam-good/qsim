@@ -15,7 +15,7 @@ using Test
         end
 
         @testset "multiplication" begin
-            # @test QGate([0 1; 1 0]) * QGate([1 1; 1 -1] / sqrt(2)) == QGate([1 -1; 1 1] / sqrt(2))
+            @test QGate([0 1; 1 0]) * QGate([1 1; 1 -1] / sqrt(2)) == QGate([1 -1; 1 1] / sqrt(2))
         end
     end
 end
