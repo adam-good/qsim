@@ -14,28 +14,28 @@ export Scalar, scalar
 Currently ℝ but will soon be Upgraded to ℂ
 """
 struct Scalar <: Real
-    val::Float64 # TODO: Upgrade this to Complex eventually
+    value::Float64 # TODO: Upgrade this to Complex eventually
 end
 
 # Addition
-Base.:(+)(x::Scalar, y::Scalar) = Scalar(x.val + y.val)
-Base.:(+)(x::Scalar, y::Real)   = Scalar(x.val + y)
-Base.:(+)(x::Real, y::Scalar)   = Scalar(x     + y.val)
+Base.:(+)(x::Scalar, y::Scalar) = Scalar(x.value + y.value)
+Base.:(+)(x::Scalar, y::Real)   = Scalar(x.value + y)
+Base.:(+)(x::Real,   y::Scalar) = Scalar(x       + y.value)
 
 # Subtraction
-Base.:(-)(x::Scalar, y::Scalar) = Scalar(x.val - y.val)
-Base.:(-)(x::Scalar, y::Real)   = Scalar(x.val - y)
-Base.:(-)(x::Real, y::Scalar)   = Scalar(x     - y.val)
+Base.:(-)(x::Scalar, y::Scalar) = Scalar(x.value - y.value)
+Base.:(-)(x::Scalar, y::Real)   = Scalar(x.value - y)
+Base.:(-)(x::Real,   y::Scalar) = Scalar(x       - y.value)
 
 # Multiplication
-Base.:(*)(x::Scalar, y::Scalar) = Scalar(x.val * y.val)
-Base.:(*)(x::Scalar, y::Real)   = Scalar(x.val * y)
-Base.:(*)(x::Real, y::Scalar)   = Scalar(x     * y.val)
+Base.:(*)(x::Scalar, y::Scalar) = Scalar(x.value * y.value)
+Base.:(*)(x::Scalar, y::Real)   = Scalar(x.value * y)
+Base.:(*)(x::Real,   y::Scalar) = Scalar(x       * y.value)
 
 # Division
-Base.:(/)(x::Scalar, y::Scalar) = Scalar(x.val / y.val)
-Base.:(/)(x::Scalar, y::Real)   = Scalar(x.val / y)
-Base.:(/)(x::Real, y::Scalar)   = Scalar(x     / y.val)
+Base.:(/)(x::Scalar, y::Scalar) = Scalar(x.value / y.value)
+Base.:(/)(x::Scalar, y::Real)   = Scalar(x.value / y)
+Base.:(/)(x::Real,   y::Scalar) = Scalar(x       / y.value)
 
 # # Power
 # Base.:(^)(x::Scalar, y::Scalar) = Scalar(x.val ^ y.val)
@@ -43,21 +43,21 @@ Base.:(/)(x::Real, y::Scalar)   = Scalar(x     / y.val)
 # Base.:(^)(x::Real, y::Scalar)   = Scalar(x     ^ y.val)
 
 # Comparisons
-Base.isapprox(x::Scalar, y::Scalar) = isapprox(x.val, y.val)
-Base.isapprox(x::Scalar, y::Real)   = isapprox(x.val, y)
-Base.isapprox(x::Real, y::Scalar)   = isapprox(x    , y.val)
+Base.isapprox(x::Scalar, y::Scalar) = isapprox(x.value, y.value)
+Base.isapprox(x::Scalar, y::Real)   = isapprox(x.value, y)
+Base.isapprox(x::Real,   y::Scalar) = isapprox(x      , y.value)
 
-Base.:(==)(x::Scalar, y::Scalar) = isapprox(x.val, y.val)
-Base.:(==)(x::Scalar, y::Real)   = isapprox(x.val, y)
-Base.:(==)(x::Real, y::Scalar)   = isapprox(x    , y.val)
+Base.:(==)(x::Scalar, y::Scalar) = isapprox(x.value, y.value)
+Base.:(==)(x::Scalar, y::Real)   = isapprox(x.value, y)
+Base.:(==)(x::Real,   y::Scalar) = isapprox(x      , y.value)
 
-Base.isless(x::Scalar, y::Scalar) = isless(x.val, y.val)
-Base.isless(x::Scalar, y::Real)   = isless(x.val, y)
-Base.isless(x::Real, y::Scalar)   = isless(x    , y.val)
+Base.isless(x::Scalar, y::Scalar) = isless(x.value, y.value)
+Base.isless(x::Scalar, y::Real)   = isless(x.value, y)
+Base.isless(x::Real,   y::Scalar) = isless(x      , y.value)
 
-Base.isgreater(x::Scalar, y::Scalar) = isgreater(x.val, y.val)
-Base.isgreater(x::Scalar, y::Real)   = isgreater(x.val, y)
-Base.isgreater(x::Real, y::Scalar)   = isgreater(x    , y.val)
+Base.isgreater(x::Scalar, y::Scalar) = isgreater(x.value, y.value)
+Base.isgreater(x::Scalar, y::Real)   = isgreater(x.value, y)
+Base.isgreater(x::Real,   y::Scalar) = isgreater(x      , y.value)
 
 # Identities
 Base.one(::Scalar)  = Scalar(1)
@@ -67,12 +67,8 @@ Base.zero(::Scalar) = Scalar(0)
 Base.transpose(x::Scalar) = x
 Base.conj(x::Scalar) = x # TODO: This must change when Scalar is upgraded to complex
 
-# Conversions
-Base.convert(::Type{Scalar}, x::Int64) = Scalar(x)
-Base.convert(::Type{Scalar}, x::Float64) = Scalar(x)
-
 # Display Functions
-Base.show(io::IO, x::Scalar) = print(io, "$(x.val)")
+Base.show(io::IO, x::Scalar) = print(io, "$(x.value)")
 Base.show(io::IO, w::AbstractVector{Scalar}) = begin
     for x in w
         print(io, "$x ")
