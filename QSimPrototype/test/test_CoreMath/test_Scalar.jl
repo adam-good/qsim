@@ -70,6 +70,13 @@ using Test
             @test z3 == target
         end
 
+        @testset "power" begin
+            x = 2; y = 4
+            target = Scalar(16)
+            z = Scalar(x) ^ Scalar(y)
+            @test z == target
+        end
+
         @testset "isapprox" begin
             @test isapprox(Scalar(5), Scalar(5.0-eps(5.)))   == true
             @test isapprox(Scalar(5), 5.0-eps(5.))           == true
@@ -86,8 +93,8 @@ using Test
 
         @testset "isless" begin
             @test isless(Scalar(5.0) , Scalar(6.0)) == true
-            # @test isless(Scalar(5.0) , 6.0) # TODO: ambiguous??
-            # @test isless(5.0         , Scalar(6.0)) # TODO: ambiguous??
+            @test isless(Scalar(5.0) , 6.0)
+            @test isless(5.0         , Scalar(6.0))
             @test isless(Scalar(6.0), Scalar(5.0)) == false
         end
 

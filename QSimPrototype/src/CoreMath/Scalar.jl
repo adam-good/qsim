@@ -5,7 +5,6 @@ Submodule of CoreMath to define the set of scalars 𝕊 for vector space V
 """
 module ScalarUtils
 
-using Base: isgreater
 export Scalar, scalar
 
 """
@@ -37,10 +36,8 @@ Base.:(/)(x::Scalar, y::Scalar) = Scalar(x.value / y.value)
 Base.:(/)(x::Scalar, y::Real)   = Scalar(x.value / y)
 Base.:(/)(x::Real,   y::Scalar) = Scalar(x       / y.value)
 
-# # Power
-# Base.:(^)(x::Scalar, y::Scalar) = Scalar(x.val ^ y.val)
-# Base.:(^)(x::Scalar, y::Real)   = Scalar(x.val ^ y)
-# Base.:(^)(x::Real, y::Scalar)   = Scalar(x     ^ y.val)
+# Power
+Base.:(^)(x::Scalar, y::Scalar) = Scalar(x.value ^ y.value)
 
 # Comparisons
 Base.isapprox(x::Scalar, y::Scalar) = isapprox(x.value, y.value)
@@ -51,13 +48,10 @@ Base.:(==)(x::Scalar, y::Scalar) = isapprox(x.value, y.value)
 Base.:(==)(x::Scalar, y::Real)   = isapprox(x.value, y)
 Base.:(==)(x::Real,   y::Scalar) = isapprox(x      , y.value)
 
+# NOTE: Why does this need to be abstract float isntead of real??
 Base.isless(x::Scalar, y::Scalar) = isless(x.value, y.value)
-Base.isless(x::Scalar, y::Real)   = isless(x.value, y)
-Base.isless(x::Real,   y::Scalar) = isless(x      , y.value)
-
-Base.isgreater(x::Scalar, y::Scalar) = isgreater(x.value, y.value)
-Base.isgreater(x::Scalar, y::Real)   = isgreater(x.value, y)
-Base.isgreater(x::Real,   y::Scalar) = isgreater(x      , y.value)
+Base.isless(x::Scalar, y::AbstractFloat) = isless(x.value, y)
+Base.isless(x::AbstractFloat, y::Scalar) = isless(x, y.value)
 
 # Identities
 Base.one(::Scalar)  = Scalar(1)
