@@ -11,10 +11,11 @@ export DimensionSizeMismatchError
 
 struct DimensionSizeMismatchError <: Exception
     msg::String
-    rank::Int
-    expected::Int
-    found::Int
+    rank::Int64
+    expected::Int64
+    found::Int64
 end
+DimensionSizeMismatchError(; msg::String, rank::Int, expected::Int, found::Int) = DimensionSizeMismatchError(msg,rank,expected,found) # Keyword arg support
 Base.showerror(io::IO, err::DimensionSizeMismatchError) = begin
     print(io, "DimensionSizeMismatch: ")
     print(io, err.msg)

@@ -2,8 +2,8 @@ using Test
 
 include("test_Scalar.jl")
 include("test_Angles.jl")
-include("test_Matrices.jl")
 include("test_Vectors.jl")
+include("test_Matrices.jl")
 
 
 # CoreMath Integration Tests
