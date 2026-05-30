@@ -28,8 +28,13 @@ struct VectorNotNormalException <: Exception
     msg::String
 end
 
+# TODO: Is there a field I can add here to show the issue?
 struct MatrixNotUnitaryException <: Exception
     msg::String
+end
+Base.showerror(io::IO, err::MatrixNotUnitaryException) = begin
+	print(io, "MatrixNotUnitaryException: ")
+	print(io, err.msg)
 end
 
 end

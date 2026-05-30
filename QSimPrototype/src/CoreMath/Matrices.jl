@@ -20,7 +20,8 @@ struct UnitaryMatrix <: AbstractMatrix{Scalar}
 
     function UnitaryMatrix(matrix::AbstractMatrix)
         if !is_unitary(matrix)
-            throw(MatrixNotUnitaryException())
+            # TODO: Maybe this should throw a value error?
+            throw(MatrixNotUnitaryException("Failed to Construct Unitary Matrix with Given Values"))
         end
         return new(matrix)
     end
