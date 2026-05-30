@@ -9,6 +9,7 @@ V: (𝕊², +, ⋅)
 """
 module VectorUtils
 
+using ..CoreMathErrors: DimensionSizeMismatchError
 using ..ScalarUtils: Scalar, scalar
 using ..AngleUtils: Angle
 
@@ -25,13 +26,20 @@ struct Vector2D <: AbstractVector{Scalar}
 
     Vector2D(v::Vector) = begin
         if length(v) != 2
-            error("Vector2D must be 2 dimensional")
+            throw(DimensionSizeMismatchError(
+                msg="Vector2D Must Be Length 2",
+                rank=1,
+                expected=2,
+                found=length(v)
+            ))
         end
         return Vector2D(v[1], v[2])
     end
-    Vector2D(x, y) = return new(scalar(x), scalar(y))
+    Vector2D(x, y) = new(scalar(x), scalar(y))
 end
-Base.size(::Vector2D) = return (2,)
+
+# Array Functionality
+Base.size(::Vector2D) = (2,)
 Base.getindex(v::Vector2D, i::Int) = begin
     if i == 1
         return vec_x(v)
@@ -41,9 +49,32 @@ Base.getindex(v::Vector2D, i::Int) = begin
         error("index $i out of range for Vector2D $v")
     end
 end
+Base.ndims(::Vector2D) = 1
+
+# Addition
 Base.:(+)(w::Vector2D, v::Vector2D) = Vector2D(w.x + v.x, w.y + v.y)
+Base.:(+)(w::Vector2D, v::AbstractVector) = v + w # Taking advantage of commutative addition
+Base.:(+)(w::AbstractVector, v::Vector2D) = length(w) == 2 ? Vector2D(w) + v : throw( DimensionSizeMismatchError(
+    msg="Vector Addition Size Mismatch",
+    rank=1,
+    expected=2,
+    found=length(v)
+))
+
+# Multiplication
 Base.:(*)(c::Scalar, w::Vector2D) = Vector2D(c * w.x, c * w.y)
-Base.:(==)(w::Vector2D, v::AbstractVector) = (w.x, w.y) == (v[1], v[2])
+Base.:(*)(w::Vector2D, c::Scalar) = c * w # Taking advantage of commutative multiplication
+
+# Comparison
+Base.:(==)(w::Vector2D, v::Vector2D) = w.x == v.x && w.y == v.y
+Base.:(==)(w::Vector2D, v::AbstractVector) = v == w
+Base.:(==)(w::AbstractVector, v::Vector2D) = length(w) == 2 ? Vector2D(w) == v : throw(
+    DimensionSizeMismatchError(
+        msg="Vector Comparison Size Mismatch",
+        rank=1,
+        expected=2,
+        found=length(w)
+))
 
 """
     vec_x(w) -> Scalar
@@ -61,7 +92,6 @@ Returns the y element of w
 vec_y(w::AbstractVector) = w[2]
 vec_y(w::Vector2D)::Scalar = w.y
 
-# TODO: I think polar_angle should exist elsewhere because it combines Vectors and Angles
 """
     polar_angle(w, transform) -> Angle
 

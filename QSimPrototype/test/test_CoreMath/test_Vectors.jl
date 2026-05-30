@@ -14,8 +14,9 @@ using Test
         end
 
         @testset "construction error" begin
-            @test_throws ErrorException("Vector2D must be 2 dimensional") Vector2D([1])
-            @test_throws ErrorException("Vector2D must be 2 dimensional") Vector2D([1, 2, 3])
+            using QSim.CoreMath.CoreMathErrors: DimensionSizeMismatchError
+            @test_throws DimensionSizeMismatchError("Vector2D Must Be Length 2",1,2,1) Vector2D([1])
+            @test_throws DimensionSizeMismatchError("Vector2D Must Be Length 2",1,2,3)  Vector2D([1, 2, 3])
         end
 
         @testset "size" begin
