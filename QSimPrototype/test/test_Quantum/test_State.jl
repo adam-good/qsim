@@ -13,7 +13,7 @@ using Test
 
         @testset "construction throws" begin
             using QSim.CoreMath.CoreMathErrors: VectorNotNormalException
-            @test_throws VectorNotNormalException() QState(1, 1)
+            @test_throws VectorNotNormalException QState(1, 1)
         end
 
         @testset "show" begin

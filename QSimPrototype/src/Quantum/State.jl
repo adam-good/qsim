@@ -19,7 +19,7 @@ struct QState
     QState(vec::Vector2D) = begin
         # TODO: Just make NormalVector a type
         if !is_normalized(vec)
-            throw(VectorNotNormalException())
+            throw(VectorNotNormalException("Quantum State Vector Must Be Normal"))
         end
         return new(vec)
     end
