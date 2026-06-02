@@ -1,6 +1,7 @@
 import unittest
 import utils.channel as chnl
 
+
 class TestChannel(unittest.TestCase):
     def test_channel_send(self):
         data = 1
@@ -23,4 +24,3 @@ class TestChannel(unittest.TestCase):
         result, channel = chnl.recv(channel)
         self.assertIsNone(result)
         self.assertEqual(channel, target_channel)
-        
