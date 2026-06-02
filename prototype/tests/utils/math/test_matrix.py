@@ -1,6 +1,7 @@
 import unittest
-import utils.math.matrix as mat
-import utils.math.vector as vec
+
+import src.utils.math.matrix as mat
+import src.utils.math.vector as vec
 
 
 class TestMatrixArithmetic(unittest.TestCase):

@@ -188,29 +188,6 @@ wheels = [
 ]
 
 [[package]]
-name = "prototype"
-version = "0.1.0"
-source = { virtual = "." }
-
-[package.dev-dependencies]
-dev = [
-    { name = "jedi-language-server" },
-    { name = "python-lsp-server" },
-    { name = "ruff" },
-    { name = "ty" },
-]
-
-[package.metadata]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "jedi-language-server", specifier = ">=0.46.0" },
-    { name = "python-lsp-server", specifier = ">=1.14.0" },
-    { name = "ruff", specifier = ">=0.14.14" },
-    { name = "ty", specifier = ">=0.0.13" },
-]
-
-[[package]]
 name = "pygls"
 version = "2.0.0"
 source = { registry = "https://pypi.org/simple" }
@@ -270,6 +247,29 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/8d/de/a6f5e43115b4fbf4b93aa87d6c83c79932cdb084f9711daae04549e1e4ad/pytokens-0.4.0-cp314-cp314t-musllinux_1_2_x86_64.whl", hash = "sha256:4b5770abeb2a24347380a1164a558f0ebe06e98aedbd54c45f7929527a5fb26e", size = 305652, upload-time = "2026-01-19T07:59:33.685Z" },
     { url = "https://files.pythonhosted.org/packages/ab/3d/c136e057cb622e36e0c3ff7a8aaa19ff9720050c4078235691da885fe6ee/pytokens-0.4.0-cp314-cp314t-win_amd64.whl", hash = "sha256:74500d72c561dad14c037a9e86a657afd63e277dd5a3bb7570932ab7a3b12551", size = 115472, upload-time = "2026-01-19T07:59:34.734Z" },
     { url = "https://files.pythonhosted.org/packages/7c/3c/6941a82f4f130af6e1c68c076b6789069ef10c04559bd4733650f902fd3b/pytokens-0.4.0-py3-none-any.whl", hash = "sha256:0508d11b4de157ee12063901603be87fb0253e8f4cb9305eb168b1202ab92068", size = 13224, upload-time = "2026-01-19T07:59:49.822Z" },
+]
+
+[[package]]
+name = "qsim"
+version = "0.1.0"
+source = { virtual = "." }
+
+[package.dev-dependencies]
+dev = [
+    { name = "jedi-language-server" },
+    { name = "python-lsp-server" },
+    { name = "ruff" },
+    { name = "ty" },
+]
+
+[package.metadata]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "jedi-language-server", specifier = ">=0.46.0" },
+    { name = "python-lsp-server", specifier = ">=1.14.0" },
+    { name = "ruff", specifier = ">=0.14.14" },
+    { name = "ty", specifier = ">=0.0.13" },
 ]
 
 [[package]]

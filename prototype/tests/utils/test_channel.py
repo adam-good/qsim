@@ -1,5 +1,6 @@
 import unittest
-import utils.channel as chnl
+
+import src.utils.channel as chnl
 
 
 class TestChannel(unittest.TestCase):

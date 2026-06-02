@@ -1,5 +1,6 @@
 import unittest
-import utils.math.vector as vec
+
+import src.utils.math.vector as vec
 
 
 class TestVector(unittest.TestCase):

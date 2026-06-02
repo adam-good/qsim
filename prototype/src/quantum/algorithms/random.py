@@ -1,7 +1,7 @@
-import utils.math.bit as bit
-import quantum.gate as qgate
-import quantum.device as qdev
-import quantum.state as qstate
+import src.utils.math.bit as bit
+import src.quantum.gate as qgate
+import src.quantum.device as qdev
+import src.quantum.state as qstate
 
 
 def _qstate_to_bit(state: qstate.QState) -> bit.Bit:

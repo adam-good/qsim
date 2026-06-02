@@ -1,5 +1,6 @@
 import unittest
-from utils.math.bit import Bit, BIT_0, BIT_1
+
+from src.utils.math.bit import BIT_0, BIT_1, Bit
 
 
 class TestBit(unittest.TestCase):

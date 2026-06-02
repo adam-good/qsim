@@ -2,7 +2,7 @@ import math
 from dataclasses import dataclass
 from typing import Iterator, Tuple
 
-import utils.math.scalar as scalar
+import src.utils.math.scalar as scalar
 from src.utils.math.angle import Angle
 
 

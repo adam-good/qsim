@@ -1,8 +1,8 @@
 import math
 from typing import Tuple, overload
 from dataclasses import dataclass
-import utils.math.scalar as scalar
-import utils.math.vector as vector
+import src.utils.math.scalar as scalar
+import src.utils.math.vector as vector
 
 
 @dataclass(frozen=True)

@@ -1,6 +1,7 @@
 import unittest
-import quantum.state as qstate
-import quantum.gate as qgate
+
+import src.quantum.gate as qgate
+import src.quantum.state as qstate
 
 
 class TestGates(unittest.TestCase):

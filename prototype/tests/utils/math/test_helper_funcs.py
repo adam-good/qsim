@@ -1,6 +1,7 @@
-import unittest
 import math
-from utils.math.helper_funcs import rad2deg, deg2rad, vec2d_to_angle
+import unittest
+
+from src.utils.math.helper_funcs import deg2rad, rad2deg, vec2d_to_angle
 
 
 class TestMathUtils(unittest.TestCase):

@@ -3,9 +3,9 @@ import math
 import random
 import typing
 
-import utils.math.helper_funcs as helper
-import utils.math.scalar as scalar
-import utils.math.vector as vector
+import src.utils.math.helper_funcs as helper
+import src.utils.math.scalar as scalar
+import src.utils.math.vector as vector
 
 
 @dataclasses.dataclass(frozen=True)

@@ -1,6 +1,6 @@
 import unittest
 
-from utils.math.angle import Angle
+from src.utils.math.angle import Angle
 
 
 class TestAngle(unittest.TestCase):

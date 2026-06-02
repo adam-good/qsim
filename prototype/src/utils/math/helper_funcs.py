@@ -1,6 +1,6 @@
 import math
 from typing import Callable
-import utils.math.scalar as scalar
+import src.utils.math.scalar as scalar
 
 
 def rad2deg(theta: scalar.Scalar) -> scalar.Scalar:

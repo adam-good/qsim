@@ -1,5 +1,6 @@
 import unittest
-import quantum.device as qdev
+
+import src.quantum.device as qdev
 
 
 class TestQubitImpl(qdev.Qubit):

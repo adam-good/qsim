@@ -1,8 +1,8 @@
 import contextlib
 import typing
 import dataclasses as dcls
-import quantum.state as qstate
-import quantum.gate as qgate
+import src.quantum.state as qstate
+import src.quantum.gate as qgate
 
 
 @dcls.dataclass

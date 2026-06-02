@@ -2,8 +2,8 @@ import functools
 import typing
 import dataclasses
 import enum
-import quantum.state as qst
-import utils.math.matrix as matrix
+import src.quantum.state as qst
+import src.utils.math.matrix as matrix
 
 
 @dataclasses.dataclass(frozen=True)

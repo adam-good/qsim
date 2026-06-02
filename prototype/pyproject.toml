@@ -1,5 +1,5 @@
 [project]
-name = "prototype"
+name = "qsim"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"

@@ -1,8 +1,9 @@
 import unittest
-import quantum.gate as qgate
-import quantum.state as qstate
-import quantum.device as qdev
-import quantum.algorithms.random as random
+
+import src.quantum.algorithms.random as random
+import src.quantum.device as qdev
+import src.quantum.gate as qgate
+import src.quantum.state as qstate
 
 
 class MockQubit(qdev.Qubit):
