@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from typing import Iterator, Tuple
 
 import utils.math.scalar as scalar
+from src.utils.math.angle import Angle
 
 
 @dataclass(frozen=True)
@@ -58,6 +59,10 @@ def dotprod(w: Vector, v: Vector) -> scalar.Scalar:
 
 def magnitude(w: Vector) -> scalar.Scalar:
     return math.sqrt(sum(x**2 for x in w))
+
+
+def polar_angle(w: Vector) -> Angle:
+    return Angle(math.atan2(w[1], w[0]))
 
 
 def is_normal(w: Vector) -> bool:
