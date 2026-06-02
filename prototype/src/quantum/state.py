@@ -1,10 +1,11 @@
-import typing
 import dataclasses
 import math
 import random
+import typing
+
+import utils.math.helper_funcs as helper
 import utils.math.scalar as scalar
 import utils.math.vector as vector
-import utils.math.helper_funcs as helper
 
 
 @dataclasses.dataclass(frozen=True)
@@ -12,8 +13,8 @@ class QState:
     vector: vector.Vector
 
     def __post_init__(self):
-        if not vector.validate_born_rule(self.vector):
-            raise ValueError("Quantum State Breaks Born's Rule")
+        if not vector.is_normal(self.vector):
+            raise ValueError("Quantum State Must Be Normal")
 
     def __getitem__(self, i: int) -> scalar.Scalar:
         return self.vector.__getitem__(i)
@@ -33,28 +34,22 @@ Z_BASIS: QBasis = QBasis((KET0, KET1))
 X_BASIS: QBasis = QBasis((KETPLUS, KETMINUS))
 
 
-def x(psi: QState) -> scalar.Scalar:
+def alpha_amplitude(psi: QState) -> scalar.Scalar:
     return psi[0]
 
 
-def y(psi: QState) -> scalar.Scalar:
+def beta_amplitude(psi: QState) -> scalar.Scalar:
     return psi[1]
 
 
-def as_tuple(psi: QState) -> tuple[scalar.Scalar, scalar.Scalar]:
-    return (x(psi), y(psi))
-
-
-def is_valid(psi: QState) -> bool:
-    return vector.validate_born_rule(psi.vector)
-
-
 def angle(psi: QState) -> scalar.Scalar:
-    return helper.vec2d_to_angle(x(psi), y(psi))
+    return helper.vec2d_to_angle(alpha_amplitude(psi), beta_amplitude(psi))
 
 
 def bloch_angle(psi: QState) -> scalar.Scalar:
-    return helper.vec2d_to_angle(x(psi), y(psi), lambda x: 2 * x)
+    return helper.vec2d_to_angle(
+        alpha_amplitude(psi), beta_amplitude(psi), lambda x: 2 * x
+    )
 
 
 def bloch_vector(psi: QState) -> vector.Vector:
