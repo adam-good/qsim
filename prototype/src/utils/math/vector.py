@@ -8,6 +8,10 @@ import utils.math.scalar as scalar
 class Vector:
     raw_data: Tuple[scalar.Scalar, ...]
 
+    @property
+    def shape(self) -> int:
+        return len(self.raw_data)
+
     def __add__(self, other: Vector) -> Vector:
         if not isinstance(other, Vector):
             return NotImplemented
